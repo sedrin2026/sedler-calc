@@ -1,7 +1,8 @@
-const CACHE_NAME = 'cyber-calc-v9';
+const CACHE_NAME = 'cyber-calc-v10';
 const ASSETS = [
   './',
-  './index.html'
+  './index.html',
+  './manifest.json'
 ];
 
 self.addEventListener('install', (e) => {
