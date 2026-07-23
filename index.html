@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CYBER_CALC // PERFECT FULLSCREEN</title>
-  <link rel="manifest" href="manifest.json">
+  <title>CYBER_CALC</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
   <style>
     :root {
       --bg: #000000;
@@ -55,7 +57,7 @@
       flex-shrink: 0;
     }
 
-    /* ディスプレイ領域（高さをしっかりキープ） */
+    /* ディスプレイ領域 */
     .display-panel {
       background: #000000;
       border: 2px solid var(--neon-cyan);
@@ -148,13 +150,13 @@
       border-radius: 4px;
     }
 
-    /* 🔥 メインボタンエリア（下の空きスペースまでピッタリ拡張！） */
+    /* メインボタンエリア */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(7, 1fr); /* 7段均等で隙間を全埋め */
+      grid-template-rows: repeat(7, 1fr);
       gap: 4px;
-      flex: 1; /* 残りの縦幅を限界まで使う */
+      flex: 1;
       min-height: 0;
     }
 
@@ -181,7 +183,6 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* 演算子（＋−×÷） */
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
@@ -189,7 +190,6 @@
       background: #171805;
     }
 
-    /* ＝（イコール） */
     .btn-action {
       background: var(--neon-pink) !important;
       color: #ffffff !important;
