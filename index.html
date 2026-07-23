@@ -67,26 +67,26 @@
       flex-shrink: 0;
     }
 
-    /* ディスプレイ領域（水色のサイバー蛍光色） */
+    /* ディスプレイ領域（水色のサイバー蛍光色・縦長に拡大） */
     .display-panel {
       background: #00f3ff !important;
       border: 2px solid #00c8d7;
       border-radius: 6px;
-      padding: 2px 8px;
+      padding: 4px 8px;
       margin-bottom: 4px;
       text-align: right;
       box-shadow: 0 0 12px rgba(0, 243, 255, 0.6);
       position: relative;
-      flex-shrink: 0;
+      flex: 1; /* メモリボタン縮小分の空きスペースを自動吸収して拡大 */
+      min-height: 75px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      height: 60px;
     }
 
     .memory-indicator {
       position: absolute;
-      top: 2px;
+      top: 4px;
       left: 6px;
       font-size: 0.7rem;
       color: #000000;
@@ -94,9 +94,9 @@
     }
 
     .expr-line {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       color: #334155;
-      min-height: 14px;
+      min-height: 16px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -110,7 +110,7 @@
       outline: none;
       color: #000000 !important;
       font-family: inherit;
-      font-size: 1.8rem;
+      font-size: 2.2rem; /* 表示領域拡大に合わせて文字も少し大きく */
       font-weight: 900;
       text-align: right;
       letter-spacing: 1px;
@@ -161,13 +161,13 @@
       border-radius: 4px;
     }
 
-    /* メインボタンエリア */
+    /* メインボタンエリア（グリッドの高さを調整） */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(7, 1fr);
+      grid-template-rows: 0.5fr repeat(6, 1fr); /* 1行目（メモリボタン）の高さを半分（0.5fr）に指定 */
       gap: 3px;
-      flex: 1;
+      flex: 2;
       min-height: 0;
     }
 
@@ -194,11 +194,12 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* 演算子ボタン（÷, ×, ＋, － などを1.4remに統一） */
+    /* 演算子ボタン（÷, ×, ＋, － のフォントサイズを完全に統一） */
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
       font-size: 1.4rem !important;
+      font-weight: 900 !important;
       background: #171805;
     }
 
@@ -211,12 +212,15 @@
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
 
+    /* メモリボタン（高さを抑えてスッキリ表示） */
     .btn-mem {
       color: #c084fc;
       border-color: #7e22ce;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       background: #12091f;
+      font-weight: bold;
     }
+
     .btn-clear {
       color: var(--neon-pink);
       border-color: var(--neon-pink);
@@ -350,9 +354,9 @@
 </div>
 
 <script>
-  // オフライン化：外部ファイル sw.js を登録
+  /* おまじない：バージョン番号を v=11 に繰り上げ */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=9').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=11').catch(() => {});
   }
 
   function updateClock() {
