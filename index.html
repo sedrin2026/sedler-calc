@@ -13,7 +13,6 @@
 
   <style>
     :root {
-      /* 全体背景：薄いサイバーシルバー */
       --bg: #1e293b; 
       --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
       --neon-cyan: #00f3ff;
@@ -67,63 +66,91 @@
       flex-shrink: 0;
     }
 
-    /* ディスプレイ領域（水色のサイバー蛍光色・縦長に拡大） */
-    .display-panel {
-      background: #00f3ff !important;
-      border: 2px solid #00c8d7;
-      border-radius: 6px;
-      padding: 4px 8px;
+    /* ディスプレイ領域（3分割コンテナ） */
+    .display-panel-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
       margin-bottom: 4px;
+      flex: 1;
+      min-height: 120px;
+    }
+
+    /* 各スロット共通スタイル */
+    .slot-panel {
+      background: #00f3ff;
+      border: 2px solid #00c8d7;
+      border-radius: 5px;
+      padding: 2px 6px;
       text-align: right;
-      box-shadow: 0 0 12px rgba(0, 243, 255, 0.6);
       position: relative;
-      flex: 1; /* メモリボタン縮小分の空きスペースを自動吸収して拡大 */
-      min-height: 75px;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      flex: 1;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      opacity: 0.75;
     }
 
-    .memory-indicator {
+    /* アクティブ（選択中）のスロット：黄色いネオンで強調 */
+    .slot-panel.active {
+      border: 2.5px solid var(--neon-yellow);
+      background: #33f7ff;
+      box-shadow: 0 0 10px rgba(255, 230, 0, 0.7);
+      opacity: 1;
+    }
+
+    .slot-label {
       position: absolute;
-      top: 4px;
-      left: 6px;
-      font-size: 0.7rem;
-      color: #000000;
+      top: 2px;
+      left: 4px;
+      font-size: 0.6rem;
+      color: #0f172a;
       font-weight: bold;
     }
 
-    .expr-line {
-      font-size: 0.9rem;
+    .memory-indicator-slot {
+      position: absolute;
+      top: 2px;
+      right: 6px;
+      font-size: 0.65rem;
+      color: #7e22ce;
+      font-weight: bold;
+    }
+
+    .expr-line-slot {
+      font-size: 0.75rem;
       color: #334155;
-      min-height: 16px;
+      min-height: 12px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       font-weight: bold;
+      margin-top: 6px;
     }
 
-    #display {
+    .display-slot-value {
       width: 100%;
       background: transparent;
       border: none;
       outline: none;
-      color: #000000 !important;
+      color: #000000;
       font-family: inherit;
-      font-size: 2.2rem; /* 表示領域拡大に合わせて文字も少し大きく */
+      font-size: 1.4rem;
       font-weight: 900;
       text-align: right;
       letter-spacing: 1px;
     }
 
-    /* 割引入力エリア（枠線を蛍光色の水色に変更） */
+    /* 割引入力エリア */
     .discount-custom-box {
       display: flex;
       gap: 4px;
       margin-bottom: 4px;
       align-items: center;
       background: #0f172a;
-      border: 1.5px solid var(--neon-cyan) !important;
+      border: 1.5px solid var(--neon-cyan);
       box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
       padding: 2px 4px;
       border-radius: 4px;
@@ -148,24 +175,23 @@
       font-weight: bold;
       border-radius: 4px;
     }
-    /* %OFF実行ボタン（濃いサイバーグレーに変更） */
     .btn-apply-disc {
       flex: 1;
       height: 24px;
-      background: #1a1f2c !important;
-      color: var(--neon-cyan) !important;
-      border: 1px solid var(--neon-cyan) !important;
+      background: #1a1f2c;
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
       font-size: 0.8rem;
       font-weight: 900;
       cursor: pointer;
       border-radius: 4px;
     }
 
-    /* メインボタンエリア（グリッドの高さを調整） */
+    /* メインボタンエリア */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: 0.5fr repeat(6, 1fr); /* 1行目（メモリボタン）の高さを半分（0.5fr）に指定 */
+      grid-template-rows: 0.5fr repeat(6, 1fr);
       gap: 3px;
       flex: 2;
       min-height: 0;
@@ -194,7 +220,6 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* 演算子ボタン（÷, ×, ＋, － のフォントサイズを完全に統一） */
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
@@ -203,7 +228,6 @@
       background: #171805;
     }
 
-    /* ＝ボタン（濃いサイバーグレー＋文字色蛍光水色） */
     .btn-action {
       background: #1a1f2c !important;
       color: var(--neon-cyan) !important;
@@ -212,7 +236,6 @@
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
 
-    /* メモリボタン（高さを抑えてスッキリ表示） */
     .btn-mem {
       color: #c084fc;
       border-color: #7e22ce;
@@ -296,10 +319,28 @@
     <button class="toggle-history-btn" onclick="toggleHistory()">履歴 📂</button>
   </div>
 
-  <div class="display-panel">
-    <div class="memory-indicator" id="mem-indicator"></div>
-    <div class="expr-line" id="expr">READY</div>
-    <input type="text" id="display" readonly value="0">
+  <!-- 3分割ディスプレイ領域 -->
+  <div class="display-panel-container">
+    <div class="slot-panel active" id="slot-0" onclick="switchSlot(0)">
+      <span class="slot-label">[SLOT 1]</span>
+      <span class="memory-indicator-slot" id="mem-0"></span>
+      <div class="expr-line-slot" id="expr-0">READY</div>
+      <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
+    </div>
+
+    <div class="slot-panel" id="slot-1" onclick="switchSlot(1)">
+      <span class="slot-label">[SLOT 2]</span>
+      <span class="memory-indicator-slot" id="mem-1"></span>
+      <div class="expr-line-slot" id="expr-1">READY</div>
+      <input type="text" class="display-slot-value" id="disp-1" readonly value="0">
+    </div>
+
+    <div class="slot-panel" id="slot-2" onclick="switchSlot(2)">
+      <span class="slot-label">[SLOT 3]</span>
+      <span class="memory-indicator-slot" id="mem-2"></span>
+      <div class="expr-line-slot" id="expr-2">READY</div>
+      <input type="text" class="display-slot-value" id="disp-2" readonly value="0">
+    </div>
   </div>
 
   <div class="discount-custom-box">
@@ -354,9 +395,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン番号を v=11 に繰り上げ */
+  /* おまじない：バージョン番号 v=12 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=11').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=12').catch(() => {});
   }
 
   function updateClock() {
@@ -374,85 +415,135 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  const display = document.getElementById('display');
-  const expr = document.getElementById('expr');
-  let isNew = true;
-  let memory = 0;
+  // 3スロットの状態管理
+  let activeSlot = 0;
+  let slots = [
+    { value: '0', expr: 'READY', isNew: true, memory: 0 },
+    { value: '0', expr: 'READY', isNew: true, memory: 0 },
+    { value: '0', expr: 'READY', isNew: true, memory: 0 }
+  ];
   let historyArr = [];
 
+  function switchSlot(index) {
+    activeSlot = index;
+    for (let i = 0; i < 3; i++) {
+      const panel = document.getElementById(`slot-${i}`);
+      if (i === index) {
+        panel.classList.add('active');
+      } else {
+        panel.classList.remove('active');
+      }
+    }
+  }
+
+  function updateView() {
+    for (let i = 0; i < 3; i++) {
+      document.getElementById(`disp-${i}`).value = slots[i].value;
+      document.getElementById(`expr-${i}`).textContent = slots[i].expr;
+      document.getElementById(`mem-${i}`).textContent = slots[i].memory !== 0 ? '[M]' : '';
+    }
+  }
+
   function append(val) {
+    let s = slots[activeSlot];
     if (val === 'del') {
       deleteChar();
       return;
     }
-    if (display.value === '0' || isNew) {
+    if (s.value === '0' || s.isNew) {
       if (['+', '*', '/', '%'].includes(val)) return;
-      display.value = val;
-      isNew = false;
+      s.value = val;
+      s.isNew = false;
     } else {
-      display.value += val;
+      s.value += val;
     }
-    expr.textContent = display.value;
+    s.expr = s.value;
+    updateView();
   }
 
   function deleteChar() {
-    if (display.value.length > 1) {
-      display.value = display.value.slice(0, -1);
+    let s = slots[activeSlot];
+    if (s.value.length > 1) {
+      s.value = s.value.slice(0, -1);
     } else {
-      display.value = '0';
-      isNew = true;
+      s.value = '0';
+      s.isNew = true;
     }
-    expr.textContent = display.value;
+    s.expr = s.value;
+    updateView();
   }
 
   function clearDisplay() {
-    display.value = '0';
-    expr.textContent = 'READY';
-    isNew = true;
+    let s = slots[activeSlot];
+    s.value = '0';
+    s.expr = 'READY';
+    s.isNew = true;
+    updateView();
   }
 
-  function updateMemoryIndicator() {
-    document.getElementById('mem-indicator').textContent = memory !== 0 ? '[M]' : '';
+  function memClear() {
+    slots[activeSlot].memory = 0;
+    updateView();
   }
-  function memClear() { memory = 0; updateMemoryIndicator(); }
-  function memPlus() { memory += parseFloat(display.value) || 0; updateMemoryIndicator(); isNew = true; }
-  function memMinus() { memory -= parseFloat(display.value) || 0; updateMemoryIndicator(); isNew = true; }
-  function memRecall() { display.value = memory; expr.textContent = `MEM(${memory})`; isNew = true; }
+  function memPlus() {
+    let s = slots[activeSlot];
+    s.memory += parseFloat(s.value) || 0;
+    s.isNew = true;
+    updateView();
+  }
+  function memMinus() {
+    let s = slots[activeSlot];
+    s.memory -= parseFloat(s.value) || 0;
+    s.isNew = true;
+    updateView();
+  }
+  function memRecall() {
+    let s = slots[activeSlot];
+    s.value = s.memory;
+    s.expr = `MEM(${s.memory})`;
+    s.isNew = true;
+    updateView();
+  }
 
   function applyCustomDiscount() {
+    let s = slots[activeSlot];
     let rateInput = parseInt(document.getElementById('discount-input').value);
     if (isNaN(rateInput) || rateInput < 0) rateInput = 0;
     if (rateInput > 85) rateInput = 85;
     document.getElementById('discount-input').value = rateInput;
 
     try {
-      let current = parseFloat(display.value);
+      let current = parseFloat(s.value);
       if (!isNaN(current)) {
         let multiplier = (100 - rateInput) / 100;
         let result = Math.floor(current * multiplier);
-        let formula = `${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
-        expr.textContent = formula;
-        display.value = result;
+        let formula = `[S${activeSlot+1}] ${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
+        s.expr = `${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
+        s.value = result;
         addHistory(formula + ` = ${result}`);
-        isNew = true;
+        s.isNew = true;
+        updateView();
       }
-    } catch (e) { display.value = 'ERR'; }
+    } catch (e) { s.value = 'ERR'; updateView(); }
   }
 
   function calculate() {
+    let s = slots[activeSlot];
     try {
-      let rawExpr = display.value.replace(/%/g, '/100');
-      let fullExpr = display.value;
+      let rawExpr = s.value.replace(/%/g, '/100');
+      let fullExpr = s.value;
       let res = Function('"use strict";return (' + rawExpr + ')')();
       
-      expr.textContent = fullExpr + ' =';
-      display.value = res;
-      addHistory(fullExpr + ` = ${res}`);
-      isNew = true;
+      s.expr = fullExpr + ' =';
+      s.value = res;
+      addHistory(`[S${activeSlot+1}] ${fullExpr} = ${res}`);
+      s.isNew = true;
+      updateView();
     } catch (e) {
-      display.value = 'ERR';
-      expr.textContent = 'ERROR';
-      isNew = true;
+      s.value = 'ERR';
+      s.expr = 'ERROR';
+      s.isNew = true;
+      updateView();
     }
   }
 
