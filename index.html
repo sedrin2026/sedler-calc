@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CYBER_CALC // PERFECT FIT</title>
+  <title>CYBER_CALC // ULTIMATE FIT</title>
   <link rel="manifest" href="manifest.json">
   <style>
     :root {
@@ -19,27 +19,28 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
+    /* 全体のスクロールを許可してはみ出しを完全回避 */
     body {
       background: var(--bg);
       color: var(--neon-cyan);
       font-family: 'Courier New', Consolas, sans-serif;
       width: 100vw;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      overflow: hidden;
+      align-items: flex-start;
+      overflow-y: auto; /* 万が一の時もスクロールで＝を押せるように */
     }
 
     .calc-card {
       width: 100vw;
-      height: 100vh;
       max-width: 500px;
+      min-height: 100vh;
       background: var(--card-bg);
       border: 2px solid var(--neon-cyan);
       display: flex;
       flex-direction: column;
-      padding: 4px;
+      padding: 6px;
       position: relative;
     }
 
@@ -51,17 +52,17 @@
       font-size: 0.75rem;
       color: var(--neon-yellow);
       font-weight: bold;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
       flex-shrink: 0;
     }
 
-    /* ディスプレイ領域 */
+    /* ディスプレイ領域（高さをコンパクトにしてボタン領域を確保） */
     .display-panel {
       background: #000000;
       border: 2px solid var(--neon-cyan);
       border-radius: 6px;
       padding: 4px 10px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       text-align: right;
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
       position: relative;
@@ -69,7 +70,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      height: 75px; /* 高さを少しコンパクトに調整 */
+      height: 70px;
     }
 
     .memory-indicator {
@@ -81,7 +82,6 @@
       font-weight: bold;
     }
 
-    /* 計算過程表示 */
     .expr-line {
       font-size: 0.85rem;
       color: #94a3b8;
@@ -92,7 +92,6 @@
       font-weight: bold;
     }
 
-    /* メイン数値 */
     #display {
       width: 100%;
       background: transparent;
@@ -100,7 +99,7 @@
       outline: none;
       color: #ffffff;
       font-family: inherit;
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       font-weight: 900;
       text-align: right;
       letter-spacing: 1px;
@@ -111,11 +110,11 @@
     .discount-custom-box {
       display: flex;
       gap: 6px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       align-items: center;
       background: #090d16;
       border: 1px solid var(--neon-pink);
-      padding: 2px 6px;
+      padding: 3px 6px;
       border-radius: 4px;
       flex-shrink: 0;
     }
@@ -127,7 +126,7 @@
     }
     #discount-input {
       width: 45px;
-      height: 26px;
+      height: 28px;
       background: #000;
       border: 1px solid var(--neon-cyan);
       color: var(--neon-yellow);
@@ -140,25 +139,23 @@
     }
     .btn-apply-disc {
       flex: 1;
-      height: 26px;
+      height: 28px;
       background: var(--neon-pink);
       color: #ffffff;
       border: none;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 900;
       cursor: pointer;
       border-radius: 4px;
     }
 
-    /* メインボタンエリア（7段均等配置＋縦幅あふれ防止） */
+    /* メインボタンエリア（固定高さで確実に＝を表示） */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(7, minmax(0, 1fr)); /* 高さ溢れをガード */
-      gap: 3px;
-      flex: 1;
-      min-height: 0;
-      padding-bottom: 2px;
+      gap: 4px;
+      flex-shrink: 0;
+      padding-bottom: 20px; /* ナビゲーションバー対策の余白 */
     }
 
     button {
@@ -166,15 +163,14 @@
       color: #ffffff;
       border: 1.5px solid var(--btn-border);
       font-family: inherit;
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 900;
       cursor: pointer;
       border-radius: 6px;
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: background 0.05s;
-      height: 100%;
+      height: 48px; /* ボタンの高さを固定値に設定して安定化 */
       width: 100%;
     }
 
@@ -184,38 +180,38 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* 演算子（＋−×÷） */
-    .btn-op {
-      color: var(--neon-yellow) !important;
-      border-color: var(--neon-yellow) !important;
-      font-size: 1.4rem !important;
-      background: #171805;
-    }
-
-    /* ＝（イコール） */
+    /* ＝（イコール）専用デザイン */
     .btn-action {
       background: var(--neon-pink) !important;
       color: #ffffff !important;
       border-color: #ff3377 !important;
-      font-size: 1.4rem !important;
-      box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
+      font-size: 1.5rem !important;
+      height: 52px !important; /* ＝ボタンだけ少し太く */
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.5);
     }
 
-    /* メモリ・特殊ボタン */
+    /* 演算子（＋−×÷） */
+    .btn-op {
+      color: var(--neon-yellow) !important;
+      border-color: var(--neon-yellow) !important;
+      font-size: 1.5rem !important;
+      background: #171805;
+    }
+
     .btn-mem {
       color: #c084fc;
       border-color: #7e22ce;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       background: #12091f;
     }
     .btn-clear {
       color: var(--neon-pink);
       border-color: var(--neon-pink);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       background: #1c050e;
     }
 
-    /* スライド式計算履歴ドロワー */
+    /* 履歴スライドパネル */
     .history-drawer {
       position: absolute;
       bottom: 0;
@@ -283,21 +279,18 @@
     <button class="toggle-history-btn" onclick="toggleHistory()">履歴 📂</button>
   </div>
 
-  <!-- ディスプレイ -->
   <div class="display-panel">
     <div class="memory-indicator" id="mem-indicator"></div>
     <div class="expr-line" id="expr">READY</div>
     <input type="text" id="display" readonly value="0">
   </div>
 
-  <!-- 割引入力エリア -->
   <div class="discount-custom-box">
     <label>割引(0-85%):</label>
     <input type="number" id="discount-input" min="0" max="85" value="10">
     <button class="btn-apply-disc" onclick="applyCustomDiscount()">%OFF 実行</button>
   </div>
 
-  <!-- メインボタンエリア -->
   <div class="grid">
     <button class="btn-mem" onclick="memClear()">mc</button>
     <button class="btn-mem" onclick="memPlus()">m+</button>
@@ -332,7 +325,6 @@
     <button onclick="calculate()" class="btn-action" style="grid-column: span 4;">＝ (CALCULATE)</button>
   </div>
 
-  <!-- 計算履歴スライドパネル -->
   <div class="history-drawer" id="historyDrawer">
     <div class="history-header">
       <span>// 計算履歴</span>
@@ -349,7 +341,6 @@
     navigator.serviceWorker.register('./sw.js');
   }
 
-  // 時計・曜日表示
   function updateClock() {
     const now = new Date();
     const y = now.getFullYear();
@@ -398,7 +389,6 @@
     isNew = true;
   }
 
-  // メモリ機能
   function updateMemoryIndicator() {
     document.getElementById('mem-indicator').textContent = memory !== 0 ? '[M]' : '';
   }
@@ -407,7 +397,6 @@
   function memMinus() { memory -= parseFloat(display.value) || 0; updateMemoryIndicator(); isNew = true; }
   function memRecall() { display.value = memory; expr.textContent = `MEM(${memory})`; isNew = true; }
 
-  // 自由入力割引（0〜85%）
   function applyCustomDiscount() {
     let rateInput = parseInt(document.getElementById('discount-input').value);
     if (isNaN(rateInput) || rateInput < 0) rateInput = 0;
@@ -428,7 +417,6 @@
     } catch (e) { display.value = 'ERR'; }
   }
 
-  // 計算実行
   function calculate() {
     try {
       let rawExpr = display.value.replace(/%/g, '/100');
@@ -446,7 +434,6 @@
     }
   }
 
-  // 履歴管理
   function addHistory(text) {
     historyArr.unshift(text);
     if (historyArr.length > 20) historyArr.pop();
