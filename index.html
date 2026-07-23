@@ -31,7 +31,7 @@
       color: var(--neon-cyan);
       font-family: 'Courier New', Consolas, sans-serif;
       overflow-x: hidden;
-      overflow-y: auto; /* 画面からはみ出てもスクロール可能に */
+      overflow-y: auto;
     }
 
     body {
@@ -43,7 +43,7 @@
     .calc-card {
       width: 100%;
       max-width: 500px;
-      height: 100vh; /* 基本は画面いっぱい */
+      height: 100vh;
       height: 100dvh;
       max-height: -webkit-fill-available;
       background: var(--card-bg);
@@ -80,7 +80,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      height: 60px; /* 高さを少しコンパクト化 */
+      height: 60px;
     }
 
     .memory-indicator {
@@ -109,7 +109,7 @@
       outline: none;
       color: #ffffff;
       font-family: inherit;
-      font-size: 1.8rem; /* 表示文字サイズを微調整 */
+      font-size: 1.8rem;
       font-weight: 900;
       text-align: right;
       letter-spacing: 1px;
@@ -346,25 +346,9 @@
 </div>
 
 <script>
-  // オフライン対応：Service Worker自動登録
+  // オフライン化：外部ファイル sw.js を登録
   if ('serviceWorker' in navigator) {
-    const swCode = `
-      const CACHE_NAME = 'calc-v8';
-      self.addEventListener('install', e => {
-        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
-        self.skipWaiting();
-      });
-      self.addEventListener('activate', e => {
-        e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))));
-        self.clients.claim();
-      });
-      self.addEventListener('fetch', e => {
-        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
-      });
-    `;
-    const blob = new Blob([swCode], { type: 'text/javascript' });
-    const blobUrl = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(blobUrl).catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=9').catch(() => {});
   }
 
   function updateClock() {
