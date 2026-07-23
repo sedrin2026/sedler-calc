@@ -11,13 +11,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#000000">
 
+  <!-- デジタル時計風フォント (Orbitron) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #1e293b; 
       --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
       --neon-cyan: #00f3ff;
-      --neon-pink: #ff0055;
+      --neon-pink: #ff0055;  /* ① 選択枠色のレッドサイバーネオン */
       --neon-yellow: #ffe600;
+      --neon-orange: #ff6600;/* ③ 選択背景のオレンジサイバーネオン */
       --btn-bg: #111827;
       --btn-border: #334155;
     }
@@ -54,34 +60,61 @@
       position: relative;
     }
 
-    /* 情報バー */
+    /* ④ 日時・コントロールバー（くっきり見やすいデザイン） */
     .status-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.7rem;
-      color: #0f172a;
-      font-weight: bold;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+      gap: 4px;
       flex-shrink: 0;
     }
 
-    /* ディスプレイ領域（3分割コンテナ） */
+    .clock-badge {
+      background: #000000;
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      font-family: 'Orbitron', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
+    }
+
+    .top-controls {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-control {
+      background: #0f172a;
+      color: var(--neon-yellow);
+      font-size: 0.7rem;
+      border: 1px solid var(--neon-yellow);
+      padding: 2px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    /* ディスプレイ領域 */
     .display-panel-container {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
       margin-bottom: 4px;
       flex: 1;
-      min-height: 120px;
+      min-height: 80px;
     }
 
-    /* 各スロット共通スタイル */
+    /* ⑧ スロットパネル（アニメーション対応） */
     .slot-panel {
       background: #00f3ff;
       border: 2px solid #00c8d7;
-      border-radius: 5px;
-      padding: 2px 6px;
+      border-radius: 6px;
+      padding: 2px 8px;
       text-align: right;
       position: relative;
       display: flex;
@@ -89,58 +122,74 @@
       justify-content: center;
       flex: 1;
       cursor: pointer;
-      transition: all 0.15s ease;
-      opacity: 0.75;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0.85;
+      overflow: hidden;
+      max-height: 200px;
     }
 
-    /* アクティブ（選択中）のスロット：黄色いネオンで強調 */
+    /* 非表示スロット（格納時） */
+    .slot-panel.collapsed {
+      max-height: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin-top: -4px !important;
+      border: none !important;
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    /* ① & ③ 選択中スロット：赤枠＋オレンジ背景 */
     .slot-panel.active {
-      border: 2.5px solid var(--neon-yellow);
-      background: #33f7ff;
-      box-shadow: 0 0 10px rgba(255, 230, 0, 0.7);
+      border: 2.5px solid var(--neon-pink) !important;
+      background: var(--neon-orange) !important;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.8);
       opacity: 1;
     }
 
     .slot-label {
       position: absolute;
       top: 2px;
-      left: 4px;
-      font-size: 0.6rem;
-      color: #0f172a;
-      font-weight: bold;
+      left: 6px;
+      font-size: 0.65rem;
+      color: #000000;
+      font-weight: 900;
+      font-family: 'Orbitron', sans-serif;
     }
 
     .memory-indicator-slot {
       position: absolute;
       top: 2px;
-      right: 6px;
+      right: 8px;
       font-size: 0.65rem;
       color: #7e22ce;
       font-weight: bold;
     }
 
     .expr-line-slot {
-      font-size: 0.75rem;
-      color: #334155;
-      min-height: 12px;
+      font-size: 0.8rem;
+      color: #1e293b;
+      min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       font-weight: bold;
-      margin-top: 6px;
+      margin-top: 10px;
     }
 
+    /* ⑥ & ⑦ デジタル時計風フォント＋枠内最大サイズ */
     .display-slot-value {
       width: 100%;
       background: transparent;
       border: none;
       outline: none;
-      color: #000000;
-      font-family: inherit;
-      font-size: 1.4rem;
+      color: #000000 !important;
+      font-family: 'Orbitron', 'Courier New', monospace;
+      font-size: 2.2rem;
       font-weight: 900;
       text-align: right;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
+      line-height: 1;
     }
 
     /* 割引入力エリア */
@@ -168,7 +217,7 @@
       background: #000;
       border: 1px solid var(--neon-cyan);
       color: var(--neon-yellow);
-      font-family: inherit;
+      font-family: 'Orbitron', monospace;
       font-size: 0.95rem;
       text-align: center;
       outline: none;
@@ -201,7 +250,7 @@
       background: var(--btn-bg);
       color: #ffffff;
       border: 1.5px solid var(--btn-border);
-      font-family: inherit;
+      font-family: 'Orbitron', sans-serif, monospace;
       font-size: 1.2rem;
       font-weight: 900;
       cursor: pointer;
@@ -220,12 +269,14 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
+    /* ② 「÷」「×」「＋」「－」を等しく大きく極太に */
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
-      font-size: 1.4rem !important;
+      font-size: 1.7rem !important;
       font-weight: 900 !important;
       background: #171805;
+      line-height: 1;
     }
 
     .btn-action {
@@ -298,28 +349,22 @@
       border-bottom: 1px dashed #334155;
       padding: 6px 0;
     }
-
-    .toggle-history-btn {
-      background: #0f172a;
-      color: var(--neon-cyan);
-      font-size: 0.7rem;
-      border: 1px solid var(--neon-cyan);
-      padding: 2px 6px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-weight: bold;
-    }
   </style>
 </head>
 <body>
 
 <div class="calc-card">
+  <!-- ④ くっきり見やすい日時＆コントロールエリア -->
   <div class="status-bar">
-    <span id="clock" style="font-size: 0.7rem; color: #0f172a;">0000.00.00 (---) 00:00:00</span>
-    <button class="toggle-history-btn" onclick="toggleHistory()">履歴 📂</button>
+    <div class="clock-badge" id="clock">2026.00.00 (---) 00:00:00</div>
+    <div class="top-controls">
+      <!-- ⑧ 展開 / 格納 ボタン -->
+      <button class="btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</button>
+      <button class="btn-control" onclick="toggleHistory()">履歴 📂</button>
+    </div>
   </div>
 
-  <!-- 3分割ディスプレイ領域 -->
+  <!-- ディスプレイ領域 -->
   <div class="display-panel-container">
     <div class="slot-panel active" id="slot-0" onclick="switchSlot(0)">
       <span class="slot-label">[SLOT 1]</span>
@@ -328,14 +373,15 @@
       <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
     </div>
 
-    <div class="slot-panel" id="slot-1" onclick="switchSlot(1)">
+    <!-- 最初は格納状態（collapsed） -->
+    <div class="slot-panel collapsed" id="slot-1" onclick="switchSlot(1)">
       <span class="slot-label">[SLOT 2]</span>
       <span class="memory-indicator-slot" id="mem-1"></span>
       <div class="expr-line-slot" id="expr-1">READY</div>
       <input type="text" class="display-slot-value" id="disp-1" readonly value="0">
     </div>
 
-    <div class="slot-panel" id="slot-2" onclick="switchSlot(2)">
+    <div class="slot-panel collapsed" id="slot-2" onclick="switchSlot(2)">
       <span class="slot-label">[SLOT 3]</span>
       <span class="memory-indicator-slot" id="mem-2"></span>
       <div class="expr-line-slot" id="expr-2">READY</div>
@@ -349,6 +395,7 @@
     <button class="btn-apply-disc" onclick="applyCustomDiscount()">%OFF 実行</button>
   </div>
 
+  <!-- メイングリッド（⑤ ⌫ と . の位置を入れ替え） -->
   <div class="grid">
     <button class="btn-mem" onclick="memClear()">mc</button>
     <button class="btn-mem" onclick="memPlus()">m+</button>
@@ -357,7 +404,7 @@
 
     <button class="btn-clear" onclick="clearDisplay()">C</button>
     <button class="btn-op" onclick="append('%')">％</button>
-    <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
+    <button class="btn-op" onclick="append('.')">.</button> <!-- ⑤ ここに . を配置 -->
     <button class="btn-op" onclick="append('/')">÷</button>
 
     <button onclick="append('7')">7</button>
@@ -378,7 +425,7 @@
     <button onclick="append('0')">0</button>
     <button onclick="append('00')">00</button>
     <button onclick="append('000')">000</button>
-    <button onclick="append('.')">.</button>
+    <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button> <!-- ⑤ ここに ⌫ を配置 -->
 
     <button onclick="calculate()" class="btn-action" style="grid-column: span 4;">＝</button>
   </div>
@@ -395,9 +442,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン番号 v=12 */
+  /* おまじない：バージョン v=13 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=12').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=13').catch(() => {});
   }
 
   function updateClock() {
@@ -415,14 +462,47 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // 3スロットの状態管理
   let activeSlot = 0;
+  let expandedCount = 1; // 1: SLOT1のみ, 2: SLOT2まで, 3: 全表示
   let slots = [
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 }
   ];
   let historyArr = [];
+
+  /* ⑧ スロットの展開・格納切り替え */
+  function toggleSlots() {
+    if (expandedCount === 1) {
+      expandedCount = 2;
+    } else if (expandedCount === 2) {
+      expandedCount = 3;
+    } else {
+      expandedCount = 1;
+      if (activeSlot > 0) switchSlot(0); // 格納時はSLOT1を選択状態に戻す
+    }
+    applySlotVisibility();
+  }
+
+  function applySlotVisibility() {
+    const btn = document.getElementById('btn-toggle-slots');
+    for (let i = 0; i < 3; i++) {
+      const panel = document.getElementById(`slot-${i}`);
+      if (i < expandedCount) {
+        panel.classList.remove('collapsed');
+      } else {
+        panel.classList.add('collapsed');
+      }
+    }
+
+    if (expandedCount === 1) {
+      btn.textContent = '展開 🔽';
+    } else if (expandedCount === 2) {
+      btn.textContent = '展開 🔽';
+    } else {
+      btn.textContent = '格納 🔼';
+    }
+  }
 
   function switchSlot(index) {
     activeSlot = index;
