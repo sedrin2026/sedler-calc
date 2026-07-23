@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CYBER_CALC // ULTIMATE FIT</title>
+  <title>CYBER_CALC // PERFECT FULLSCREEN</title>
   <link rel="manifest" href="manifest.json">
   <style>
     :root {
@@ -19,23 +19,22 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
-    /* 全体のスクロールを許可してはみ出しを完全回避 */
     body {
       background: var(--bg);
       color: var(--neon-cyan);
       font-family: 'Courier New', Consolas, sans-serif;
       width: 100vw;
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      overflow-y: auto; /* 万が一の時もスクロールで＝を押せるように */
+      align-items: center;
+      overflow: hidden;
     }
 
     .calc-card {
       width: 100vw;
+      height: 100vh;
       max-width: 500px;
-      min-height: 100vh;
       background: var(--card-bg);
       border: 2px solid var(--neon-cyan);
       display: flex;
@@ -52,17 +51,17 @@
       font-size: 0.75rem;
       color: var(--neon-yellow);
       font-weight: bold;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       flex-shrink: 0;
     }
 
-    /* ディスプレイ領域（高さをコンパクトにしてボタン領域を確保） */
+    /* ディスプレイ領域（高さをしっかりキープ） */
     .display-panel {
       background: #000000;
       border: 2px solid var(--neon-cyan);
       border-radius: 6px;
-      padding: 4px 10px;
-      margin-bottom: 6px;
+      padding: 6px 12px;
+      margin-bottom: 4px;
       text-align: right;
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
       position: relative;
@@ -70,7 +69,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      height: 70px;
+      height: 80px;
     }
 
     .memory-indicator {
@@ -83,9 +82,9 @@
     }
 
     .expr-line {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #94a3b8;
-      min-height: 16px;
+      min-height: 18px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -99,7 +98,7 @@
       outline: none;
       color: #ffffff;
       font-family: inherit;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       font-weight: 900;
       text-align: right;
       letter-spacing: 1px;
@@ -110,11 +109,11 @@
     .discount-custom-box {
       display: flex;
       gap: 6px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       align-items: center;
       background: #090d16;
       border: 1px solid var(--neon-pink);
-      padding: 3px 6px;
+      padding: 2px 6px;
       border-radius: 4px;
       flex-shrink: 0;
     }
@@ -125,13 +124,13 @@
       white-space: nowrap;
     }
     #discount-input {
-      width: 45px;
+      width: 50px;
       height: 28px;
       background: #000;
       border: 1px solid var(--neon-cyan);
       color: var(--neon-yellow);
       font-family: inherit;
-      font-size: 1rem;
+      font-size: 1.1rem;
       text-align: center;
       outline: none;
       font-weight: bold;
@@ -149,13 +148,14 @@
       border-radius: 4px;
     }
 
-    /* メインボタンエリア（固定高さで確実に＝を表示） */
+    /* 🔥 メインボタンエリア（下の空きスペースまでピッタリ拡張！） */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(7, 1fr); /* 7段均等で隙間を全埋め */
       gap: 4px;
-      flex-shrink: 0;
-      padding-bottom: 20px; /* ナビゲーションバー対策の余白 */
+      flex: 1; /* 残りの縦幅を限界まで使う */
+      min-height: 0;
     }
 
     button {
@@ -163,14 +163,15 @@
       color: #ffffff;
       border: 1.5px solid var(--btn-border);
       font-family: inherit;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 900;
       cursor: pointer;
       border-radius: 6px;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 48px; /* ボタンの高さを固定値に設定して安定化 */
+      transition: background 0.05s;
+      height: 100%;
       width: 100%;
     }
 
@@ -180,28 +181,27 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* ＝（イコール）専用デザイン */
-    .btn-action {
-      background: var(--neon-pink) !important;
-      color: #ffffff !important;
-      border-color: #ff3377 !important;
-      font-size: 1.5rem !important;
-      height: 52px !important; /* ＝ボタンだけ少し太く */
-      box-shadow: 0 0 12px rgba(255, 0, 85, 0.5);
-    }
-
     /* 演算子（＋−×÷） */
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
-      font-size: 1.5rem !important;
+      font-size: 1.6rem !important;
       background: #171805;
+    }
+
+    /* ＝（イコール） */
+    .btn-action {
+      background: var(--neon-pink) !important;
+      color: #ffffff !important;
+      border-color: #ff3377 !important;
+      font-size: 1.6rem !important;
+      box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
     }
 
     .btn-mem {
       color: #c084fc;
       border-color: #7e22ce;
-      font-size: 0.95rem;
+      font-size: 1rem;
       background: #12091f;
     }
     .btn-clear {
@@ -299,7 +299,7 @@
 
     <button class="btn-clear" onclick="clearDisplay()">C</button>
     <button class="btn-op" onclick="append('%')">％</button>
-    <button class="btn-op" onclick="deleteChar()" title="1文字削除">⌫</button>
+    <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
     <button class="btn-op" onclick="append('/')">÷</button>
 
     <button onclick="append('7')">7</button>
@@ -363,6 +363,10 @@
   let historyArr = [];
 
   function append(val) {
+    if (val === 'del') {
+      deleteChar();
+      return;
+    }
     if (display.value === '0' || isNew) {
       if (['+', '*', '/', '%'].includes(val)) return;
       display.value = val;
