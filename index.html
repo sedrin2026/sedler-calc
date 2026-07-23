@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER_CALC // SEDLER ZERO</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #0b0f19;
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff0055;
+      --neon-yellow: #ffe600;
+      --text: #00f3ff;
+      --btn-bg: #111827;
+      --btn-border: #1e293b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', Consolas, monospace;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      background-image: linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .calc-card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--card-bg);
+      border: 2px solid var(--neon-cyan);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.1);
+      padding: 20px;
+      position: relative;
+      clip-path: polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--neon-yellow);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .title-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--neon-pink);
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+    .title-box h1 {
+      font-size: 1.1rem;
+      color: var(--neon-cyan);
+      letter-spacing: 3px;
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+    }
+    .tag {
+      background: var(--neon-pink);
+      color: #fff;
+      font-size: 0.6rem;
+      padding: 2px 6px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .clock-box {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+    .clock-val { color: var(--neon-cyan); }
+
+    .display-panel {
+      background: #000;
+      border: 1px solid var(--neon-pink);
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      text-align: right;
+      box-shadow: 0 0 10px rgba(255, 0, 85, 0.2);
+    }
+    .expr-line {
+      font-size: 0.75rem;
+      color: #475569;
+      height: 16px;
+    }
+    #display {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--neon-cyan);
+      font-family: inherit;
+      font-size: 2.2rem;
+      font-weight: bold;
+      text-align: right;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    button {
+      height: 50px;
+      background: var(--btn-bg);
+      color: var(--text);
+      border: 1px solid var(--btn-border);
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+    }
+
+    button:active {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 15px var(--neon-cyan);
+    }
+
+    .btn-op {
+      color: var(--neon-yellow);
+      border-color: rgba(255, 230, 0, 0.3);
+    }
+
+    .btn-action {
+      background: var(--neon-pink);
+      color: #fff;
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+    }
+
+    .btn-clear {
+      color: var(--neon-pink);
+      border-color: rgba(255, 0, 85, 0.4);
+    }
+
+    .sub-section {
+      margin-top: 12px;
+      display: flex;
+      gap: 6px;
+    }
+    .sub-btn {
+      flex: 1;
+      height: 36px;
+      font-size: 0.75rem;
+      color: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+    }
+  </style>
+</head>
+<body>
+
+<div class="calc-card">
+  <div class="status-bar">
+    <span>[SYS_EXEC: LOCAL]</span>
+    <span>OFFLINE_READY</span>
+  </div>
+
+  <div class="title-box">
+    <h1>SEDLER_ZERO</h1>
+    <span class="tag">PROT_00</span>
+  </div>
+
+  <div class="clock-box">
+    TIME_STAMP: <span class="clock-val" id="clock">0000.00.00 00:00:00</span>
+  </div>
+
+  <div class="display-panel">
+    <div class="expr-line" id="expr">SYS.READY</div>
+    <input type="text" id="display" readonly value="0">
+  </div>
+
+  <div class="grid">
+    <button class="btn-clear" onclick="clearDisplay()">CLR</button>
+    <button class="btn-op" onclick="append('/')">/</button>
+    <button class="btn-op" onclick="append('*')">*</button>
+    <button class="btn-op" onclick="append('-')">-</button>
+
+    <button onclick="append('7')">7</button>
+    <button onclick="append('8')">8</button>
+    <button onclick="append('9')">9</button>
+    <button class="btn-op" onclick="append('+')">+</button>
+
+    <button onclick="append('4')">4</button>
+    <button onclick="append('5')">5</button>
+    <button onclick="append('6')">6</button>
+    <button class="btn-action" onclick="calculate()" style="grid-row: span 2; height: 108px;">=</button>
+
+    <button onclick="append('1')">1</button>
+    <button onclick="append('2')">2</button>
+    <button onclick="append('3')">3</button>
+
+    <button onclick="append('0')" style="grid-column: span 2;">0</button>
+    <button onclick="append('.')">.</button>
+  </div>
+
+  <div class="sub-section">
+    <button class="sub-btn" onclick="applyDiscount(0.9)">-10%</button>
+    <button class="sub-btn" onclick="applyDiscount(0.8)">-20%</button>
+    <button class="sub-btn" onclick="applyDiscount(0.7)">-30%</button>
+  </div>
+</div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+
+  function updateClock() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${y}.${m}.${d} ${hh}:${mm}:${ss}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  const display = document.getElementById('display');
+  const expr = document.getElementById('expr');
+  let isNew = true;
+
+  function append(val) {
+    if (display.value === '0' || isNew) {
+      if (['+','*','/'].includes(val)) return;
+      display.value = val;
+      isNew = false;
+    } else {
+      display.value += val;
+    }
+  }
+
+  function clearDisplay() {
+    display.value = '0';
+    expr.textContent = 'SYS.READY';
+    isNew = true;
+  }
+
+  function calculate() {
+    try {
+      expr.textContent = `CALC(${display.value})`;
+      display.value = Function('"use strict";return (' + display.value + ')')();
+      isNew = true;
+    } catch (e) {
+      display.value = 'ERR';
+      expr.textContent = 'SYS.ERROR';
+      isNew = true;
+    }
+  }
+
+  function applyDiscount(rate) {
+    try {
+      let current = parseFloat(display.value);
+      if (!isNaN(current)) {
+        expr.textContent = `DISCOUNT(${display.value} * ${rate})`;
+        display.value = Math.floor(current * rate);
+        isNew = true;
+      }
+    } catch (e) { display.value = 'ERR'; }
+  }
+</script>
+
+</body>
+</html>
