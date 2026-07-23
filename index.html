@@ -13,8 +13,9 @@
 
   <style>
     :root {
-      --bg: #000000;
-      --card-bg: #050811;
+      /* 全体背景：薄いサイバーシルバー */
+      --bg: #1e293b; 
+      --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
       --neon-cyan: #00f3ff;
       --neon-pink: #ff0055;
       --neon-yellow: #ffe600;
@@ -28,7 +29,7 @@
       width: 100%;
       height: 100%;
       background: var(--bg);
-      color: var(--neon-cyan);
+      color: #0f172a;
       font-family: 'Courier New', Consolas, sans-serif;
       overflow-x: hidden;
       overflow-y: auto;
@@ -60,21 +61,21 @@
       justify-content: space-between;
       align-items: center;
       font-size: 0.7rem;
-      color: var(--neon-yellow);
+      color: #0f172a;
       font-weight: bold;
       margin-bottom: 2px;
       flex-shrink: 0;
     }
 
-    /* ディスプレイ領域 */
+    /* ディスプレイ領域（水色のサイバー蛍光色） */
     .display-panel {
-      background: #000000;
-      border: 2px solid var(--neon-cyan);
+      background: #00f3ff !important;
+      border: 2px solid #00c8d7;
       border-radius: 6px;
       padding: 2px 8px;
       margin-bottom: 4px;
       text-align: right;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.6);
       position: relative;
       flex-shrink: 0;
       display: flex;
@@ -88,13 +89,13 @@
       top: 2px;
       left: 6px;
       font-size: 0.7rem;
-      color: var(--neon-yellow);
+      color: #000000;
       font-weight: bold;
     }
 
     .expr-line {
       font-size: 0.8rem;
-      color: #94a3b8;
+      color: #334155;
       min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
@@ -107,23 +108,23 @@
       background: transparent;
       border: none;
       outline: none;
-      color: #ffffff;
+      color: #000000 !important;
       font-family: inherit;
       font-size: 1.8rem;
       font-weight: 900;
       text-align: right;
       letter-spacing: 1px;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.9);
     }
 
-    /* 割引入力エリア */
+    /* 割引入力エリア（枠線を蛍光色の水色に変更） */
     .discount-custom-box {
       display: flex;
       gap: 4px;
       margin-bottom: 4px;
       align-items: center;
-      background: #090d16;
-      border: 1px solid var(--neon-pink);
+      background: #0f172a;
+      border: 1.5px solid var(--neon-cyan) !important;
+      box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
       padding: 2px 4px;
       border-radius: 4px;
       flex-shrink: 0;
@@ -147,12 +148,13 @@
       font-weight: bold;
       border-radius: 4px;
     }
+    /* %OFF実行ボタン（濃いサイバーグレーに変更） */
     .btn-apply-disc {
       flex: 1;
       height: 24px;
-      background: var(--neon-pink);
-      color: #ffffff;
-      border: none;
+      background: #1a1f2c !important;
+      color: var(--neon-cyan) !important;
+      border: 1px solid var(--neon-cyan) !important;
       font-size: 0.8rem;
       font-weight: 900;
       cursor: pointer;
@@ -192,6 +194,7 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
+    /* 演算子ボタン（÷, ×, ＋, － などを1.4remに統一） */
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
@@ -199,12 +202,13 @@
       background: #171805;
     }
 
+    /* ＝ボタン（濃いサイバーグレー＋文字色蛍光水色） */
     .btn-action {
-      background: var(--neon-pink) !important;
-      color: #ffffff !important;
-      border-color: #ff3377 !important;
-      font-size: 1.3rem !important;
-      box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
+      background: #1a1f2c !important;
+      color: var(--neon-cyan) !important;
+      border: 1.5px solid var(--neon-cyan) !important;
+      font-size: 2rem !important;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
 
     .btn-mem {
@@ -269,7 +273,7 @@
     }
 
     .toggle-history-btn {
-      background: #1e293b;
+      background: #0f172a;
       color: var(--neon-cyan);
       font-size: 0.7rem;
       border: 1px solid var(--neon-cyan);
@@ -284,7 +288,7 @@
 
 <div class="calc-card">
   <div class="status-bar">
-    <span id="clock" style="font-size: 0.7rem; color: var(--neon-cyan);">0000.00.00 (---) 00:00:00</span>
+    <span id="clock" style="font-size: 0.7rem; color: #0f172a;">0000.00.00 (---) 00:00:00</span>
     <button class="toggle-history-btn" onclick="toggleHistory()">履歴 📂</button>
   </div>
 
@@ -331,7 +335,7 @@
     <button onclick="append('000')">000</button>
     <button onclick="append('.')">.</button>
 
-    <button onclick="calculate()" class="btn-action" style="grid-column: span 4;">＝ (CALCULATE)</button>
+    <button onclick="calculate()" class="btn-action" style="grid-column: span 4;">＝</button>
   </div>
 
   <div class="history-drawer" id="historyDrawer">
