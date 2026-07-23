@@ -2,11 +2,15 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CYBER_CALC</title>
+  
+  <link rel="manifest" href='data:application/manifest+json,{"name":"CYBER CALC","short_name":"電卓","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000"}'>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#000000">
+
   <style>
     :root {
       --bg: #000000;
@@ -14,34 +18,39 @@
       --neon-cyan: #00f3ff;
       --neon-pink: #ff0055;
       --neon-yellow: #ffe600;
-      --text-white: #ffffff;
       --btn-bg: #111827;
       --btn-border: #334155;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
       background: var(--bg);
       color: var(--neon-cyan);
       font-family: 'Courier New', Consolas, sans-serif;
-      width: 100vw;
-      height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto; /* 画面からはみ出てもスクロール可能に */
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
     }
 
     .calc-card {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
       max-width: 500px;
+      height: 100vh; /* 基本は画面いっぱい */
+      height: 100dvh;
+      max-height: -webkit-fill-available;
       background: var(--card-bg);
       border: 2px solid var(--neon-cyan);
       display: flex;
       flex-direction: column;
-      padding: 6px;
+      padding: 4px;
       position: relative;
     }
 
@@ -50,7 +59,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--neon-yellow);
       font-weight: bold;
       margin-bottom: 2px;
@@ -62,7 +71,7 @@
       background: #000000;
       border: 2px solid var(--neon-cyan);
       border-radius: 6px;
-      padding: 6px 12px;
+      padding: 2px 8px;
       margin-bottom: 4px;
       text-align: right;
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
@@ -71,22 +80,22 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      height: 80px;
+      height: 60px; /* 高さを少しコンパクト化 */
     }
 
     .memory-indicator {
       position: absolute;
       top: 2px;
       left: 6px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--neon-yellow);
       font-weight: bold;
     }
 
     .expr-line {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       color: #94a3b8;
-      min-height: 18px;
+      min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -100,7 +109,7 @@
       outline: none;
       color: #ffffff;
       font-family: inherit;
-      font-size: 2.5rem;
+      font-size: 1.8rem; /* 表示文字サイズを微調整 */
       font-weight: 900;
       text-align: right;
       letter-spacing: 1px;
@@ -110,29 +119,29 @@
     /* 割引入力エリア */
     .discount-custom-box {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       margin-bottom: 4px;
       align-items: center;
       background: #090d16;
       border: 1px solid var(--neon-pink);
-      padding: 2px 6px;
+      padding: 2px 4px;
       border-radius: 4px;
       flex-shrink: 0;
     }
     .discount-custom-box label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #ffffff;
       font-weight: bold;
       white-space: nowrap;
     }
     #discount-input {
-      width: 50px;
-      height: 28px;
+      width: 45px;
+      height: 24px;
       background: #000;
       border: 1px solid var(--neon-cyan);
       color: var(--neon-yellow);
       font-family: inherit;
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       text-align: center;
       outline: none;
       font-weight: bold;
@@ -140,11 +149,11 @@
     }
     .btn-apply-disc {
       flex: 1;
-      height: 28px;
+      height: 24px;
       background: var(--neon-pink);
       color: #ffffff;
       border: none;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 900;
       cursor: pointer;
       border-radius: 4px;
@@ -155,7 +164,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(7, 1fr);
-      gap: 4px;
+      gap: 3px;
       flex: 1;
       min-height: 0;
     }
@@ -165,7 +174,7 @@
       color: #ffffff;
       border: 1.5px solid var(--btn-border);
       font-family: inherit;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 900;
       cursor: pointer;
       border-radius: 6px;
@@ -186,7 +195,7 @@
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
-      font-size: 1.6rem !important;
+      font-size: 1.4rem !important;
       background: #171805;
     }
 
@@ -194,20 +203,20 @@
       background: var(--neon-pink) !important;
       color: #ffffff !important;
       border-color: #ff3377 !important;
-      font-size: 1.6rem !important;
+      font-size: 1.3rem !important;
       box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
     }
 
     .btn-mem {
       color: #c084fc;
       border-color: #7e22ce;
-      font-size: 1rem;
+      font-size: 0.9rem;
       background: #12091f;
     }
     .btn-clear {
       color: var(--neon-pink);
       border-color: var(--neon-pink);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       background: #1c050e;
     }
 
@@ -262,7 +271,7 @@
     .toggle-history-btn {
       background: #1e293b;
       color: var(--neon-cyan);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       border: 1px solid var(--neon-cyan);
       padding: 2px 6px;
       cursor: pointer;
@@ -275,7 +284,7 @@
 
 <div class="calc-card">
   <div class="status-bar">
-    <span id="clock" style="font-size: 0.75rem; color: var(--neon-cyan);">0000.00.00 (---) 00:00:00</span>
+    <span id="clock" style="font-size: 0.7rem; color: var(--neon-cyan);">0000.00.00 (---) 00:00:00</span>
     <button class="toggle-history-btn" onclick="toggleHistory()">履歴 📂</button>
   </div>
 
@@ -337,8 +346,25 @@
 </div>
 
 <script>
+  // オフライン対応：Service Worker自動登録
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
+    const swCode = `
+      const CACHE_NAME = 'calc-v8';
+      self.addEventListener('install', e => {
+        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+        self.skipWaiting();
+      });
+      self.addEventListener('activate', e => {
+        e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))));
+        self.clients.claim();
+      });
+      self.addEventListener('fetch', e => {
+        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+      });
+    `;
+    const blob = new Blob([swCode], { type: 'text/javascript' });
+    const blobUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(blobUrl).catch(() => {});
   }
 
   function updateClock() {
