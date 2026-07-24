@@ -14,16 +14,16 @@
   <!-- デジタル時計風フォント (Orbitron) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg: #1e293b; 
       --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
       --neon-cyan: #00f3ff;
-      --neon-pink: #ff0055;  /* ① 選択枠色のレッドサイバーネオン */
+      --neon-pink: #ff0055;
       --neon-yellow: #ffe600;
-      --neon-orange: #ff6600;/* ③ 選択背景のオレンジサイバーネオン */
+      --neon-orange: #ff6600;
       --btn-bg: #111827;
       --btn-border: #334155;
     }
@@ -60,7 +60,7 @@
       position: relative;
     }
 
-    /* ④ 日時・コントロールバー（くっきり見やすいデザイン） */
+    /* 情報バー */
     .status-bar {
       display: flex;
       justify-content: space-between;
@@ -75,9 +75,9 @@
       color: var(--neon-cyan);
       border: 1px solid var(--neon-cyan);
       font-family: 'Orbitron', monospace;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 3px 6px;
       border-radius: 4px;
       letter-spacing: 0.5px;
       box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
@@ -85,7 +85,7 @@
 
     .top-controls {
       display: flex;
-      gap: 4px;
+      gap: 3px;
     }
 
     .btn-control {
@@ -99,6 +99,19 @@
       font-weight: bold;
     }
 
+    /* ② AC（オールクリア）ボタン：ピンクのネオン強調 */
+    .btn-ac-all {
+      background: #1c050e !important;
+      color: var(--neon-pink) !important;
+      border: 1px solid var(--neon-pink) !important;
+      font-size: 0.75rem !important;
+      font-weight: 900 !important;
+      padding: 2px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 0 0 6px rgba(255, 0, 85, 0.4);
+    }
+
     /* ディスプレイ領域 */
     .display-panel-container {
       display: flex;
@@ -109,7 +122,6 @@
       min-height: 80px;
     }
 
-    /* ⑧ スロットパネル（アニメーション対応） */
     .slot-panel {
       background: #00f3ff;
       border: 2px solid #00c8d7;
@@ -128,7 +140,6 @@
       max-height: 200px;
     }
 
-    /* 非表示スロット（格納時） */
     .slot-panel.collapsed {
       max-height: 0 !important;
       padding-top: 0 !important;
@@ -139,7 +150,6 @@
       pointer-events: none;
     }
 
-    /* ① & ③ 選択中スロット：赤枠＋オレンジ背景 */
     .slot-panel.active {
       border: 2.5px solid var(--neon-pink) !important;
       background: var(--neon-orange) !important;
@@ -177,19 +187,20 @@
       margin-top: 10px;
     }
 
-    /* ⑥ & ⑦ デジタル時計風フォント＋枠内最大サイズ */
+    /* ① シャープなデジタル文字表示 */
     .display-slot-value {
       width: 100%;
       background: transparent;
       border: none;
       outline: none;
       color: #000000 !important;
-      font-family: 'Orbitron', 'Courier New', monospace;
-      font-size: 2.2rem;
-      font-weight: 900;
+      font-family: 'Orbitron', monospace;
+      font-size: 2.1rem;
+      font-weight: 700; /* シャープに見せるため太さを最適化 */
       text-align: right;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px; /* 文字間を広げてよりくっきり */
       line-height: 1;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* 割引入力エリア */
@@ -269,7 +280,6 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* ② 「÷」「×」「＋」「－」を等しく大きく極太に */
     .btn-op {
       color: var(--neon-yellow) !important;
       border-color: var(--neon-yellow) !important;
@@ -279,12 +289,45 @@
       line-height: 1;
     }
 
+    /* ④ ＝ボタン（半分のサイズ） */
     .btn-action {
       background: #1a1f2c !important;
       color: var(--neon-cyan) !important;
       border: 1.5px solid var(--neon-cyan) !important;
       font-size: 2rem !important;
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+      grid-column: span 2;
+    }
+
+    /* ④ 合計（TOTAL）表示エリア */
+    .total-box {
+      grid-column: span 2;
+      background: #0f172a;
+      border: 1.5px solid var(--neon-yellow);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 0 8px;
+      box-shadow: 0 0 8px rgba(255, 230, 0, 0.3);
+      position: relative;
+    }
+    .total-label {
+      position: absolute;
+      top: 2px;
+      left: 6px;
+      font-size: 0.6rem;
+      color: var(--neon-yellow);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+    }
+    .total-value {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--neon-yellow);
+      letter-spacing: 1px;
     }
 
     .btn-mem {
@@ -354,17 +397,16 @@
 <body>
 
 <div class="calc-card">
-  <!-- ④ くっきり見やすい日時＆コントロールエリア -->
   <div class="status-bar">
     <div class="clock-badge" id="clock">2026.00.00 (---) 00:00:00</div>
     <div class="top-controls">
-      <!-- ⑧ 展開 / 格納 ボタン -->
+      <!-- ② 「AC」ボタンを追加 -->
+      <button class="btn-ac-all" onclick="allClearActive()">AC</button>
       <button class="btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</button>
       <button class="btn-control" onclick="toggleHistory()">履歴 📂</button>
     </div>
   </div>
 
-  <!-- ディスプレイ領域 -->
   <div class="display-panel-container">
     <div class="slot-panel active" id="slot-0" onclick="switchSlot(0)">
       <span class="slot-label">[SLOT 1]</span>
@@ -373,7 +415,6 @@
       <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
     </div>
 
-    <!-- 最初は格納状態（collapsed） -->
     <div class="slot-panel collapsed" id="slot-1" onclick="switchSlot(1)">
       <span class="slot-label">[SLOT 2]</span>
       <span class="memory-indicator-slot" id="mem-1"></span>
@@ -395,7 +436,6 @@
     <button class="btn-apply-disc" onclick="applyCustomDiscount()">%OFF 実行</button>
   </div>
 
-  <!-- メイングリッド（⑤ ⌫ と . の位置を入れ替え） -->
   <div class="grid">
     <button class="btn-mem" onclick="memClear()">mc</button>
     <button class="btn-mem" onclick="memPlus()">m+</button>
@@ -404,7 +444,7 @@
 
     <button class="btn-clear" onclick="clearDisplay()">C</button>
     <button class="btn-op" onclick="append('%')">％</button>
-    <button class="btn-op" onclick="append('.')">.</button> <!-- ⑤ ここに . を配置 -->
+    <button class="btn-op" onclick="append('.')">.</button>
     <button class="btn-op" onclick="append('/')">÷</button>
 
     <button onclick="append('7')">7</button>
@@ -425,9 +465,14 @@
     <button onclick="append('0')">0</button>
     <button onclick="append('00')">00</button>
     <button onclick="append('000')">000</button>
-    <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button> <!-- ⑤ ここに ⌫ を配置 -->
+    <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
 
-    <button onclick="calculate()" class="btn-action" style="grid-column: span 4;">＝</button>
+    <!-- ④ ＝ボタンを半分にし、隣にTOTALを追加 -->
+    <button onclick="calculate()" class="btn-action">＝</button>
+    <div class="total-box">
+      <span class="total-label">TOTAL (表示中)</span>
+      <span class="total-value" id="total-val">0</span>
+    </div>
   </div>
 
   <div class="history-drawer" id="historyDrawer">
@@ -442,9 +487,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=13 */
+  /* おまじない：バージョン v=14 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=13').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=14').catch(() => {});
   }
 
   function updateClock() {
@@ -463,7 +508,7 @@
   updateClock();
 
   let activeSlot = 0;
-  let expandedCount = 1; // 1: SLOT1のみ, 2: SLOT2まで, 3: 全表示
+  let expandedCount = 1; 
   let slots = [
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
@@ -471,7 +516,6 @@
   ];
   let historyArr = [];
 
-  /* ⑧ スロットの展開・格納切り替え */
   function toggleSlots() {
     if (expandedCount === 1) {
       expandedCount = 2;
@@ -479,7 +523,7 @@
       expandedCount = 3;
     } else {
       expandedCount = 1;
-      if (activeSlot > 0) switchSlot(0); // 格納時はSLOT1を選択状態に戻す
+      if (activeSlot > 0) switchSlot(0);
     }
     applySlotVisibility();
   }
@@ -502,6 +546,7 @@
     } else {
       btn.textContent = '格納 🔼';
     }
+    calculateTotal();
   }
 
   function switchSlot(index) {
@@ -516,14 +561,26 @@
     }
   }
 
+  /* ④ 表示中スロットの自動合計計算 */
+  function calculateTotal() {
+    let sum = 0;
+    for (let i = 0; i < expandedCount; i++) {
+      let val = parseFloat(slots[i].value);
+      if (!isNaN(val)) sum += val;
+    }
+    document.getElementById('total-val').textContent = sum.toLocaleString('ja-JP');
+  }
+
   function updateView() {
     for (let i = 0; i < 3; i++) {
       document.getElementById(`disp-${i}`).value = slots[i].value;
       document.getElementById(`expr-${i}`).textContent = slots[i].expr;
       document.getElementById(`mem-${i}`).textContent = slots[i].memory !== 0 ? '[M]' : '';
     }
+    calculateTotal();
   }
 
+  /* ③ 自動で小数点サポートを含める入力ロジック */
   function append(val) {
     let s = slots[activeSlot];
     if (val === 'del') {
@@ -532,9 +589,14 @@
     }
     if (s.value === '0' || s.isNew) {
       if (['+', '*', '/', '%'].includes(val)) return;
-      s.value = val;
+      if (val === '.') {
+        s.value = '0.';
+      } else {
+        s.value = val;
+      }
       s.isNew = false;
     } else {
+      if (val === '.' && s.value.includes('.')) return; // 小数点の重複防止
       s.value += val;
     }
     s.expr = s.value;
@@ -558,6 +620,16 @@
     s.value = '0';
     s.expr = 'READY';
     s.isNew = true;
+    updateView();
+  }
+
+  /* ② AC（表示中の全スロットリセット） */
+  function allClearActive() {
+    for (let i = 0; i < expandedCount; i++) {
+      slots[i].value = '0';
+      slots[i].expr = 'READY';
+      slots[i].isNew = true;
+    }
     updateView();
   }
 
