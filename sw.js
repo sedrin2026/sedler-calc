@@ -1,10 +1,10 @@
-const CACHE_NAME = 'cyber-calc-v10';
+const CACHE_NAME = 'cyber-calc-v22';
 const ASSETS = [
   './',
-  './index.html',
-  './manifest.json'
+  './index.html'
 ];
 
+// インストール時にキャッシュを保存
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -14,6 +14,7 @@ self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
+// 古いキャッシュを削除
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -29,13 +30,21 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
+// フェッチ：ネットワーク優先（オフライン時はキャッシュを使用）
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(e.request);
-    })
+    fetch(e.request)
+      .then((response) => {
+        // ネットにつながる場合はそのまま返しつつ、キャッシュも更新
+        let responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(e.request, responseClone);
+        });
+        return response;
+      })
+      .catch(() => {
+        // オフラインの時はキャッシュから返す
+        return caches.match(e.request);
+      })
   );
 });
