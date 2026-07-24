@@ -20,7 +20,7 @@
     :root {
       --bg: #1e293b; 
       --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-      --neon-cyan: #00f3ff; /* 「＝」と同じ鮮やかなサイバーシアンに統一 */
+      --neon-cyan: #00f3ff;
       --neon-pink: #ff0055;
       --neon-yellow: #ffe600;
       --neon-orange: #ff6600;
@@ -106,7 +106,6 @@
       line-height: 1.1;
     }
 
-    /* ① 指定箇所を「＝」と同じシアン色・発光に統一 */
     .btn-control {
       background: #06152d;
       color: var(--neon-cyan) !important;
@@ -211,7 +210,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 割引入力エリア */
+    /* 割引入力エリア（初期値0に修正） */
     .discount-custom-box {
       display: flex;
       gap: 4px;
@@ -288,7 +287,6 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* ① 演算子ボタンも「＝」と同じシアン色に統一 */
     .btn-op {
       color: var(--neon-cyan) !important;
       border-color: var(--neon-cyan) !important;
@@ -308,7 +306,6 @@
       grid-column: span 2;
     }
 
-    /* ① TOTALボックスも「＝」と同じシアン色に統一 */
     .total-box {
       grid-column: span 2;
       background: #06152d;
@@ -374,7 +371,6 @@
       padding: 14px;
     }
     
-    /* ② 履歴ヘッダーのレイアウト最適化（文字とボタンの被り防止） */
     .history-header {
       display: flex;
       justify-content: space-between;
@@ -474,9 +470,10 @@
     </div>
   </div>
 
+  <!-- 割引入力エリア（初期値 0 に変更） -->
   <div class="discount-custom-box">
     <label>割引：</label>
-    <input type="number" id="discount-input" min="0" max="85" value="10">
+    <input type="number" id="discount-input" min="0" max="85" value="0">
     <button class="btn-apply-disc" onclick="applyCustomDiscount()">%OFF 実行</button>
   </div>
 
@@ -530,9 +527,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=17 */
+  /* おまじない：バージョン v=18 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=17').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=18').catch(() => {});
   }
 
   function updateClock() {
@@ -627,6 +624,15 @@
       deleteChar();
       return;
     }
+    
+    // 四則演算子ボタンが押された場合、isNewをfalseにして式を繋げられるようにする
+    if (['+', '-', '*', '/', '%'].includes(val)) {
+      if (s.isNew) {
+        // すでに数字が確定している状態からの演算子なのでそのまま繋げる
+        s.isNew = false;
+      }
+    }
+
     if (s.value === '0' || s.isNew) {
       if (['+', '*', '/', '%'].includes(val)) return;
       if (val === '.') {
@@ -709,10 +715,13 @@
         let multiplier = (100 - rateInput) / 100;
         let result = Math.floor(current * multiplier);
         let formula = `[S${activeSlot+1}] ${current} × ${100 - rateInput}%`;
+        
         s.expr = `${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
         s.value = result;
         addHistory(formula, result);
-        s.isNew = true;
+        
+        // 割引直後の計算結果を起点として、続けて四則演算子（+ など）を押せるようにする
+        s.isNew = false; 
         updateView();
       }
     } catch (e) { s.value = 'ERR'; updateView(); }
