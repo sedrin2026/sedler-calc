@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CYBER_CALC</title>
   
-  <link rel="manifest" href='data:application/manifest+json,{"name":"CYBER CALC","short_name":"電卓","start_url":"./","display":"standalone","background_color":"#cccccc","theme_color":"#cccccc"}'>
+  <!-- 外部マニフェストファイルとサービスワーカーの読み込み（アプリ化・アドレスバー消去用） -->
+  <link rel="manifest" href="./manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js?v=22').catch(() => {});
+    }
+  </script>
+
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#cccccc">
+  <meta name="theme-color" content="#000000">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -544,11 +551,6 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=21 */
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=21').catch(() => {});
-  }
-
   function updateClock() {
     const now = new Date();
     const y = now.getFullYear();
@@ -614,11 +616,9 @@
     }
   }
 
-  // カンマと記号（✕、÷）を綺麗に整えて表示する関数
   function formatNumberDisplay(strVal) {
     if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) return strVal;
 
-    // 演算子（+, -, ✕, ÷, %, などの数式）が含まれる場合のフォーマット
     let parts = String(strVal).split(/([+\-✕÷/%])/);
     if (parts.length > 1) {
       return parts.map(part => {
@@ -632,7 +632,6 @@
       }).join('');
     }
 
-    // 単体の数値の場合
     let singleParts = String(strVal).split('.');
     let intPart = singleParts[0].replace(/,/g, '');
     if (!isNaN(intPart) && intPart !== '') {
@@ -669,7 +668,6 @@
       return;
     }
     
-    // 入力記号を画面表示用に変換（* -> ✕, / -> ÷）
     let displayVal = val;
     if (val === '*') displayVal = '✕';
     if (val === '/') displayVal = '÷';
@@ -776,7 +774,6 @@
     let s = slots[activeSlot];
     try {
       let cleanExpr = s.value.replace(/,/g, '');
-      // 計算のために ✕ を * に、 ÷ を / に置換する
       let mathExpr = cleanExpr.replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
       let fullExpr = formatNumberDisplay(cleanExpr);
       let res = Function('"use strict";return (' + mathExpr + ')')();
