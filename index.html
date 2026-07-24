@@ -5,27 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>CYBER_CALC</title>
   
-  <link rel="manifest" href='data:application/manifest+json,{"name":"CYBER CALC","short_name":"電卓","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000"}'>
+  <link rel="manifest" href='data:application/manifest+json,{"name":"CYBER CALC","short_name":"電卓","start_url":"./","display":"standalone","background_color":"#cccccc","theme_color":"#cccccc"}'>
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#cccccc">
 
-  <!-- デジタル時計風フォント (Orbitron) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #1e293b; 
-      --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+      /* 「計算機プラス」風のメタリック・ヘアライン調配色 */
+      --bg: #a0a0a0;
+      /* ヘアライン風のストライプ柄をCSSグラデーションで再現 */
+      --card-bg: repeating-linear-gradient(
+        0deg,
+        #cfcfcf,
+        #cfcfcf 1px,
+        #b8b8b8 1px,
+        #b8b8b8 2px
+      );
       --neon-cyan: #00f3ff;
-      --neon-pink: #ff0055;
-      --neon-yellow: #ffe600;
-      --neon-orange: #ff6600;
-      --btn-bg: #111827;
-      --btn-border: #334155;
+      --neon-pink: #d9534f;
+      --btn-bg: linear-gradient(180deg, #e4e4e4 0%, #adadad 100%);
+      --btn-border: #8c8c8c;
+      --btn-border-bottom: #5e5e5e;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -33,9 +39,9 @@
     html, body {
       width: 100%;
       height: 100%;
-      background: var(--bg);
-      color: #0f172a;
-      font-family: 'Courier New', Consolas, sans-serif;
+      background: #7a7a7a;
+      color: #111111;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
       overflow-x: hidden;
       overflow-y: auto;
     }
@@ -53,11 +59,12 @@
       height: 100dvh;
       max-height: -webkit-fill-available;
       background: var(--card-bg);
-      border: 2px solid var(--neon-cyan);
+      border: 1px solid #777;
       display: flex;
       flex-direction: column;
-      padding: 4px;
+      padding: 6px;
       position: relative;
+      box-shadow: inset 0 0 15px rgba(255,255,255,0.4), 0 10px 25px rgba(0,0,0,0.5);
     }
 
     /* 情報バー */
@@ -65,22 +72,20 @@
       display: flex;
       justify-content: space-between;
       align-items: stretch;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       gap: 4px;
       flex-shrink: 0;
     }
 
     .clock-badge {
-      background: #000000;
-      color: var(--neon-cyan);
-      border: 1px solid var(--neon-cyan);
+      background: #222222;
+      color: #00ffcc;
+      border: 1px solid #444;
       font-family: 'Orbitron', monospace;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 4px;
-      letter-spacing: 0.5px;
-      box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
       display: flex;
       align-items: center;
     }
@@ -95,44 +100,45 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Orbitron', sans-serif;
+      font-family: sans-serif;
       font-size: 0.75rem;
-      font-weight: 900;
-      padding: 4px 8px;
+      font-weight: bold;
+      padding: 4px 10px;
       cursor: pointer;
       border-radius: 4px;
-      min-width: 48px;
+      min-width: 50px;
       text-align: center;
-      line-height: 1.1;
+      background: linear-gradient(180deg, #f0f0f0 0%, #cccccc 100%);
+      color: #333;
+      border: 1px solid #999;
+      box-shadow: 0 2px 3px rgba(0,0,0,0.15);
     }
 
     .btn-control {
-      background: #06152d;
-      color: var(--neon-cyan) !important;
-      border: 1.5px solid var(--neon-cyan) !important;
-      box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
+      background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important;
+      color: #112233 !important;
+      border: 1px solid #7892ad !important;
     }
 
     .btn-ac-all {
-      background: #1c050e !important;
-      color: var(--neon-pink) !important;
-      border: 1.5px solid var(--neon-pink) !important;
-      box-shadow: 0 0 6px rgba(255, 0, 85, 0.4);
+      background: linear-gradient(180deg, #f2a6a6 0%, #d9534f 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid #b52b27 !important;
     }
 
-    /* ディスプレイ領域 */
+    /* ディスプレイ領域（計算機プラス風の水色液晶） */
     .display-panel-container {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       flex: 1;
       min-height: 80px;
     }
 
     .slot-panel {
-      background: #00f3ff;
-      border: 2px solid #00c8d7;
+      background: linear-gradient(180deg, #b8d6de 0%, #8fb9c6 100%);
+      border: 2px solid #5d8390;
       border-radius: 6px;
       padding: 2px 8px;
       text-align: right;
@@ -142,8 +148,8 @@
       justify-content: center;
       flex: 1;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      opacity: 0.85;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.25);
       overflow: hidden;
       max-height: 200px;
     }
@@ -152,16 +158,16 @@
       max-height: 0 !important;
       padding-top: 0 !important;
       padding-bottom: 0 !important;
-      margin-top: -4px !important;
+      margin-top: -6px !important;
       border: none !important;
       opacity: 0 !important;
       pointer-events: none;
     }
 
     .slot-panel.active {
-      border: 2.5px solid var(--neon-pink) !important;
-      background: var(--neon-orange) !important;
-      box-shadow: 0 0 12px rgba(255, 0, 85, 0.8);
+      border: 2.5px solid #d9534f !important;
+      background: linear-gradient(180deg, #fce8c8 0%, #f3b562 100%) !important;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.15), 0 0 10px rgba(217, 83, 79, 0.6);
       opacity: 1;
     }
 
@@ -170,9 +176,8 @@
       top: 2px;
       left: 6px;
       font-size: 0.65rem;
-      color: #000000;
+      color: #2c4a54;
       font-weight: 900;
-      font-family: 'Orbitron', sans-serif;
     }
 
     .memory-indicator-slot {
@@ -180,13 +185,13 @@
       top: 2px;
       right: 8px;
       font-size: 0.65rem;
-      color: #7e22ce;
+      color: #5a2e88;
       font-weight: bold;
     }
 
     .expr-line-slot {
       font-size: 0.8rem;
-      color: #1e293b;
+      color: #4a6772;
       min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
@@ -200,58 +205,58 @@
       background: transparent;
       border: none;
       outline: none;
-      color: #000000 !important;
+      color: #11222c !important;
       font-family: 'Orbitron', monospace;
       font-size: 2.1rem;
       font-weight: 700;
       text-align: right;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       line-height: 1;
-      -webkit-font-smoothing: antialiased;
     }
 
-    /* 割引入力エリア（初期値0に修正） */
+    /* 割引入力エリア */
     .discount-custom-box {
       display: flex;
       gap: 4px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       align-items: center;
-      background: #0f172a;
-      border: 1.5px solid var(--neon-cyan);
-      box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
-      padding: 2px 4px;
+      background: linear-gradient(180deg, #dcdcdc 0%, #bcbcbc 100%);
+      border: 1px solid #999;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      padding: 3px 6px;
       border-radius: 4px;
       flex-shrink: 0;
     }
     .discount-custom-box label {
       font-size: 0.75rem;
-      color: #ffffff;
+      color: #222;
       font-weight: bold;
       white-space: nowrap;
     }
     #discount-input {
       width: 45px;
       height: 24px;
-      background: #000;
-      border: 1px solid var(--neon-cyan);
-      color: var(--neon-yellow);
+      background: #ffffff;
+      border: 1px solid #888;
+      color: #d9534f;
       font-family: 'Orbitron', monospace;
       font-size: 0.95rem;
       text-align: center;
       outline: none;
       font-weight: bold;
-      border-radius: 4px;
+      border-radius: 3px;
     }
     .btn-apply-disc {
       flex: 1;
       height: 24px;
-      background: #1a1f2c;
-      color: var(--neon-cyan);
-      border: 1px solid var(--neon-cyan);
-      font-size: 0.8rem;
-      font-weight: 900;
+      background: linear-gradient(180deg, #e6e6e6 0%, #cccccc 100%);
+      color: #222;
+      border: 1px solid #999;
+      font-size: 0.75rem;
+      font-weight: bold;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 3px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
     /* メインボタンエリア */
@@ -259,96 +264,104 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: 0.5fr repeat(6, 1fr);
-      gap: 3px;
+      gap: 4px;
       flex: 2;
       min-height: 0;
     }
 
     button {
       background: var(--btn-bg);
-      color: #ffffff;
-      border: 1.5px solid var(--btn-border);
-      font-family: 'Orbitron', sans-serif, monospace;
-      font-size: 1.2rem;
-      font-weight: 900;
+      color: #222222;
+      border: 1px solid var(--btn-border);
+      border-bottom: 2px solid var(--btn-border-bottom);
+      font-family: sans-serif;
+      font-size: 1.25rem;
+      font-weight: bold;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 5px;
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: background 0.05s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
       height: 100%;
       width: 100%;
+      transition: filter 0.05s;
     }
 
     button:active {
-      background: var(--neon-cyan);
-      color: #000000;
-      box-shadow: 0 0 15px var(--neon-cyan);
+      background: linear-gradient(180deg, #adadad 0%, #e4e4e4 100%);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.3);
+      transform: translateY(1px);
     }
 
+    /* 演算子・記号ボタン */
     .btn-op {
-      color: var(--neon-cyan) !important;
-      border-color: var(--neon-cyan) !important;
-      font-size: 1.7rem !important;
-      font-weight: 900 !important;
-      background: #06152d !important;
-      line-height: 1;
-      box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
+      background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important;
+      color: #112233 !important;
+      border: 1px solid #7892ad !important;
+      border-bottom: 2px solid #566c82 !important;
+      font-size: 1.5rem !important;
     }
 
+    /* ＝ボタン（スクショ通りの鮮やかオレンジ） */
     .btn-action {
-      background: #1a1f2c !important;
-      color: var(--neon-cyan) !important;
-      border: 1.5px solid var(--neon-cyan) !important;
-      font-size: 2rem !important;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+      background: linear-gradient(180deg, #ffab40 0%, #f57c00 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid #e65100 !important;
+      border-bottom: 2px solid #b23c00 !important;
+      font-size: 1.8rem !important;
+      box-shadow: 0 3px 6px rgba(245, 124, 0, 0.4);
       grid-column: span 2;
     }
+    .btn-action:active {
+      background: linear-gradient(180deg, #f57c00 0%, #ffab40 100%) !important;
+    }
 
+    /* TOTALボックス */
     .total-box {
       grid-column: span 2;
-      background: #06152d;
-      border: 1.5px solid var(--neon-cyan);
-      border-radius: 6px;
+      background: linear-gradient(180deg, #d8e2ec 0%, #a4bce0 100%);
+      border: 1px solid #7892ad;
+      border-bottom: 2px solid #566c82;
+      border-radius: 5px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-end;
       padding: 0 8px;
-      box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
       position: relative;
     }
     .total-label {
       position: absolute;
       top: 2px;
       left: 6px;
-      font-size: 0.6rem;
-      color: var(--neon-cyan);
-      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      color: #2c4a54;
       font-weight: bold;
     }
     .total-value {
       font-family: 'Orbitron', monospace;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 900;
-      color: var(--neon-cyan);
-      letter-spacing: 1px;
+      color: #112233;
+      letter-spacing: 0.5px;
     }
 
     .btn-mem {
-      color: #c084fc;
-      border-color: #7e22ce;
+      color: #4a237a;
+      border: 1px solid #b39ddb;
+      border-bottom: 2px solid #7e57c2;
       font-size: 0.85rem;
-      background: #12091f;
+      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9 100%);
       font-weight: bold;
     }
 
     .btn-clear {
-      color: var(--neon-pink);
-      border-color: var(--neon-pink);
-      font-size: 1.1rem;
-      background: #1c050e;
+      color: #ffffff;
+      border: 1px solid #e57373;
+      border-bottom: 2px solid #c62828;
+      background: linear-gradient(180deg, #ef9a9a 0%, #e53935 100%);
     }
 
     /* 履歴スライドパネル */
@@ -358,13 +371,13 @@
       left: 0;
       width: 100%;
       height: 0;
-      background: #090d16;
-      border-top: 3px solid var(--neon-cyan);
+      background: #f0f0f0;
+      border-top: 3px solid #7892ad;
       transition: height 0.25s ease;
       overflow-y: auto;
       z-index: 10;
       padding: 0 12px;
-      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
     }
     .history-drawer.open {
       height: 70%;
@@ -375,38 +388,30 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1.5px solid var(--neon-cyan);
+      border-bottom: 2px solid #ccc;
       padding-bottom: 8px;
       margin-bottom: 12px;
-      font-family: 'Orbitron', sans-serif;
       gap: 8px;
     }
     .history-title {
       font-size: 0.95rem;
-      color: var(--neon-yellow);
+      color: #333;
       font-weight: 900;
-      letter-spacing: 0.5px;
       white-space: nowrap;
       display: flex;
       align-items: center;
       gap: 4px;
     }
     .history-close {
-      background: transparent;
-      border: 1px solid var(--neon-pink);
-      color: var(--neon-pink);
-      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(180deg, #f2a6a6 0%, #d9534f 100%);
+      border: 1px solid #b52b27;
+      color: #fff;
       font-size: 0.7rem;
       padding: 4px 8px;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
       white-space: nowrap;
-      transition: all 0.1s;
-    }
-    .history-close:active {
-      background: var(--neon-pink);
-      color: #000;
     }
     
     .history-list {
@@ -415,9 +420,9 @@
       gap: 6px;
     }
     .history-item {
-      background: #111827;
-      border: 1px solid #1e293b;
-      border-left: 3px solid var(--neon-cyan);
+      background: #ffffff;
+      border: 1px solid #dcdcdc;
+      border-left: 4px solid #7892ad;
       border-radius: 4px;
       padding: 8px 10px;
       display: flex;
@@ -425,10 +430,11 @@
       align-items: center;
       font-family: 'Orbitron', monospace;
       font-size: 0.9rem;
-      color: #ffffff;
+      color: #333;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     .history-item-empty {
-      color: #64748b;
+      color: #888;
       text-align: center;
       padding: 20px 0;
       font-size: 0.85rem;
@@ -470,7 +476,6 @@
     </div>
   </div>
 
-  <!-- 割引入力エリア（初期値 0 に変更） -->
   <div class="discount-custom-box">
     <label>割引：</label>
     <input type="number" id="discount-input" min="0" max="85" value="0">
@@ -483,7 +488,7 @@
     <button class="btn-mem" onclick="memMinus()">m-</button>
     <button class="btn-mem" onclick="memRecall()">mr</button>
 
-    <button class="btn-clear" onclick="clearDisplay()">C</button>
+    <button class="btn-clear" onclick="clearDisplay()">AC</button>
     <button class="btn-op" onclick="append('%')">％</button>
     <button class="btn-op" onclick="append('.')">.</button>
     <button class="btn-op" onclick="append('/')">÷</button>
@@ -527,9 +532,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=18 */
+  /* おまじない：バージョン v=19 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=18').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=19').catch(() => {});
   }
 
   function updateClock() {
@@ -625,10 +630,8 @@
       return;
     }
     
-    // 四則演算子ボタンが押された場合、isNewをfalseにして式を繋げられるようにする
     if (['+', '-', '*', '/', '%'].includes(val)) {
       if (s.isNew) {
-        // すでに数字が確定している状態からの演算子なのでそのまま繋げる
         s.isNew = false;
       }
     }
@@ -719,8 +722,6 @@
         s.expr = `${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
         s.value = result;
         addHistory(formula, result);
-        
-        // 割引直後の計算結果を起点として、続けて四則演算子（+ など）を押せるようにする
         s.isNew = false; 
         updateView();
       }
@@ -753,8 +754,8 @@
     
     let listHtml = historyArr.map(item => `
       <div class="history-item">
-        <span style="color:#94a3b8; font-size:0.8rem;">${item.expr}</span>
-        <span style="color:var(--neon-cyan); font-weight:bold;">= ${item.result.toLocaleString('ja-JP')}</span>
+        <span style="color:#666; font-size:0.8rem;">${item.expr}</span>
+        <span style="color:#003366; font-weight:bold;">= ${item.result.toLocaleString('ja-JP')}</span>
       </div>
     `).join('');
     document.getElementById('historyList').innerHTML = listHtml;
