@@ -2,75 +2,41 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>アイコン切り出しツール</title>
+    <title>アイコン自動ジェネレーター</title>
     <style>
         body { background: #111; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px; }
-        input, button { background: #4f46e5; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; margin: 10px; }
-        input { background: #333; cursor: text; }
-        #canvas1, #canvas2 { border: 1px solid #444; margin: 10px; display: block; margin-left: auto; margin-right: auto;}
-        .hidden { display: none !important; }
+        button { background: #4f46e5; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; margin: 10px; }
+        button:hover { background: #4338ca; }
+        canvas { border: 1px solid #444; margin: 20px; display: none; }
     </style>
 </head>
 <body>
-    <h1>アイコン切り出し</h1>
-    <p>チャッピーが作った画像（1枚のやつ）をアップロードしてね</p>
+    <h1>電卓アプリ用アイコン生成</h1>
+    <p>下のボタンを押すと、アイコンが自動でダウンロードされます！</p>
     
-    <input type="file" id="upload" accept="image/png">
-    
-    <div id="resultArea" class="hidden">
-        <p>左側を 192x192 として保存↓</p>
-        <canvas id="canvas1" width="192" height="192"></canvas>
-        <button onclick="downloadCanvas('canvas1', 'icon-192.png')">icon-192.png を保存</button>
+    <button onclick="downloadIcon(192, 'icon-192.png')">192x192の画像をダウンロード</button>
+    <button onclick="downloadIcon(512, 'icon-512.png')">512x512の画像をダウンロード</button>
 
-        <p>右側を 512x512 として保存↓</p>
-        <canvas id="canvas2" width="512" height="512"></canvas>
-        <button onclick="downloadCanvas('canvas2', 'icon-512.png')">icon-512.png を保存</button>
-    </div>
+    <canvas id="canvas"></canvas>
 
     <script>
-        const upload = document.getElementById('upload');
-        const resultArea = document.getElementById('resultArea');
-        const canvas1 = document.getElementById('canvas1');
-        const canvas2 = document.getElementById('canvas2');
-        const ctx1 = canvas1.getContext('2d');
-        const ctx2 = canvas2.getContext('2d');
+        function downloadIcon(size, filename) {
+            const canvas = document.getElementById('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
 
-        upload.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            // 黒背景
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, size, size);
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    // 画像のロードが完了したら切り出す
-                    // 元画像は 192 + 512 = 704x512 のサイズと仮定して計算します
-                    // もし違う場合は適宜調整が必要です
-                    const sourceWidth = 704; 
-                    const sourceHeight = 512;
-                    
-                    // 縦横比が合っているかチェック
-                    if (img.width !== sourceWidth || img.height !== sourceHeight) {
-                        alert(`画像のサイズが違います。元画像は ${sourceWidth}x${sourceHeight} ピクセルで作成してください。`);
-                        // 今回の画像は縦横比が合っている前提でそのまま進めますが、
-                        // 厳密にはリサイズが必要です。
-                    }
+            // 絵文字（そろばん）を描画
+            ctx.font = `${size * 0.55}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🧮', size / 2, size / 2);
 
-                    // 左側（192x192）を切り出し
-                    ctx1.drawImage(img, 0, 0, 192, 512, 0, 0, 192, 192);
-                    
-                    // 右側（512x512）を切り出し
-                    ctx2.drawImage(img, 192, 0, 512, 512, 0, 0, 512, 512);
-
-                    resultArea.classList.remove('hidden');
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        function downloadCanvas(canvasId, filename) {
-            const canvas = document.getElementById(canvasId);
+            // ダウンロードリンクを自動生成してクリック
             const link = document.createElement('a');
             link.download = filename;
             link.href = canvas.toDataURL('image/png');
