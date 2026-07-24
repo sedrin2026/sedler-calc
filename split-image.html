@@ -2,41 +2,38 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>アイコン自動ジェネレーター</title>
+    <title>PWAアイコン生成ツール</title>
     <style>
         body { background: #111; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px; }
-        button { background: #4f46e5; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; margin: 10px; }
+        button { background: #4f46e5; color: white; border: none; padding: 14px 28px; font-size: 16px; border-radius: 8px; cursor: pointer; margin: 15px; }
         button:hover { background: #4338ca; }
-        canvas { border: 1px solid #444; margin: 20px; display: none; }
     </style>
 </head>
 <body>
-    <h1>電卓アプリ用アイコン生成</h1>
-    <p>下のボタンを押すと、アイコンが自動でダウンロードされます！</p>
+    <h1>PWA用 PNGアイコン生成</h1>
+    <p>下のボタンを押すと、正しいサイズのPNGアイコンが直接ダウンロードされます！</p>
     
-    <button onclick="downloadIcon(192, 'icon-192.png')">192x192の画像をダウンロード</button>
-    <button onclick="downloadIcon(512, 'icon-512.png')">512x512の画像をダウンロード</button>
-
-    <canvas id="canvas"></canvas>
+    <button onclick="generateIcon(192, 'icon-192.png')">icon-192.png を生成・ダウンロード</button><br>
+    <button onclick="generateIcon(512, 'icon-512.png')">icon-512.png を生成・ダウンロード</button>
 
     <script>
-        function downloadIcon(size, filename) {
-            const canvas = document.getElementById('canvas');
+        function generateIcon(size, filename) {
+            const canvas = document.createElement('canvas');
             canvas.width = size;
             canvas.height = size;
             const ctx = canvas.getContext('2d');
 
-            // 黒背景
+            // 背景（黒）
             ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, size, size);
 
-            // 絵文字（そろばん）を描画
-            ctx.font = `${size * 0.55}px sans-serif`;
+            // アイコンのデザイン（電卓をイメージした文字や絵文字）
+            ctx.font = `${size * 0.5}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('🧮', size / 2, size / 2);
 
-            // ダウンロードリンクを自動生成してクリック
+            // PNGファイルとしてダウンロード
             const link = document.createElement('a');
             link.download = filename;
             link.href = canvas.toDataURL('image/png');
