@@ -21,6 +21,7 @@
       --bg: #1e293b; 
       --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
       --neon-cyan: #00f3ff;
+      --neon-deep-blue: #00a2ff; /* ④ 濃いサイバーブルー */
       --neon-pink: #ff0055;
       --neon-yellow: #ffe600;
       --neon-orange: #ff6600;
@@ -75,9 +76,9 @@
       color: var(--neon-cyan);
       border: 1px solid var(--neon-cyan);
       font-family: 'Orbitron', monospace;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      padding: 3px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
       letter-spacing: 0.5px;
       box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
@@ -85,30 +86,36 @@
 
     .top-controls {
       display: flex;
-      gap: 3px;
+      gap: 4px;
     }
 
+    /* ④ 「展開/格納」「履歴」コントロールボタン：濃いサイバーブルー統一 */
     .btn-control {
-      background: #0f172a;
-      color: var(--neon-yellow);
+      background: #06152d;
+      color: var(--neon-deep-blue) !important;
       font-size: 0.7rem;
-      border: 1px solid var(--neon-yellow);
-      padding: 2px 6px;
+      border: 1.5px solid var(--neon-deep-blue) !important;
+      padding: 3px 8px;
       cursor: pointer;
       border-radius: 4px;
       font-weight: bold;
+      min-width: 48px;
+      text-align: center;
+      box-shadow: 0 0 6px rgba(0, 162, 255, 0.3);
     }
 
-    /* ② AC（オールクリア）ボタン：ピンクのネオン強調 */
+    /* ① 「AC」ボタン：右の「展開」ボタンと完全同サイズ */
     .btn-ac-all {
       background: #1c050e !important;
       color: var(--neon-pink) !important;
-      border: 1px solid var(--neon-pink) !important;
+      border: 1.5px solid var(--neon-pink) !important;
       font-size: 0.75rem !important;
       font-weight: 900 !important;
-      padding: 2px 8px;
+      padding: 3px 8px;
       cursor: pointer;
       border-radius: 4px;
+      min-width: 48px;
+      text-align: center;
       box-shadow: 0 0 6px rgba(255, 0, 85, 0.4);
     }
 
@@ -187,7 +194,6 @@
       margin-top: 10px;
     }
 
-    /* ① シャープなデジタル文字表示 */
     .display-slot-value {
       width: 100%;
       background: transparent;
@@ -196,9 +202,9 @@
       color: #000000 !important;
       font-family: 'Orbitron', monospace;
       font-size: 2.1rem;
-      font-weight: 700; /* シャープに見せるため太さを最適化 */
+      font-weight: 700;
       text-align: right;
-      letter-spacing: 2px; /* 文字間を広げてよりくっきり */
+      letter-spacing: 2px;
       line-height: 1;
       -webkit-font-smoothing: antialiased;
     }
@@ -217,7 +223,7 @@
       flex-shrink: 0;
     }
     .discount-custom-box label {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: #ffffff;
       font-weight: bold;
       white-space: nowrap;
@@ -280,16 +286,17 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
+    /* ④ ％, ., ÷, ×, －, ＋, ⌫ の濃いサイバーブルー化 */
     .btn-op {
-      color: var(--neon-yellow) !important;
-      border-color: var(--neon-yellow) !important;
+      color: var(--neon-deep-blue) !important;
+      border-color: var(--neon-deep-blue) !important;
       font-size: 1.7rem !important;
       font-weight: 900 !important;
-      background: #171805;
+      background: #06152d !important;
       line-height: 1;
+      box-shadow: 0 0 6px rgba(0, 162, 255, 0.2);
     }
 
-    /* ④ ＝ボタン（半分のサイズ） */
     .btn-action {
       background: #1a1f2c !important;
       color: var(--neon-cyan) !important;
@@ -299,18 +306,18 @@
       grid-column: span 2;
     }
 
-    /* ④ 合計（TOTAL）表示エリア */
+    /* ④ TOTALエリアの濃いサイバーブルー化 */
     .total-box {
       grid-column: span 2;
-      background: #0f172a;
-      border: 1.5px solid var(--neon-yellow);
+      background: #06152d;
+      border: 1.5px solid var(--neon-deep-blue);
       border-radius: 6px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-end;
       padding: 0 8px;
-      box-shadow: 0 0 8px rgba(255, 230, 0, 0.3);
+      box-shadow: 0 0 8px rgba(0, 162, 255, 0.3);
       position: relative;
     }
     .total-label {
@@ -318,7 +325,7 @@
       top: 2px;
       left: 6px;
       font-size: 0.6rem;
-      color: var(--neon-yellow);
+      color: var(--neon-deep-blue);
       font-family: 'Orbitron', sans-serif;
       font-weight: bold;
     }
@@ -326,7 +333,7 @@
       font-family: 'Orbitron', monospace;
       font-size: 1.3rem;
       font-weight: 900;
-      color: var(--neon-yellow);
+      color: var(--neon-deep-blue);
       letter-spacing: 1px;
     }
 
@@ -398,10 +405,12 @@
 
 <div class="calc-card">
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.00.00 (---) 00:00:00</div>
+    <!-- ② 秒数を省いた時刻表示 -->
+    <div class="clock-badge" id="clock">2026.00.00 (---) 00:00</div>
     <div class="top-controls">
-      <!-- ② 「AC」ボタンを追加 -->
+      <!-- ① ACボタン（右と完全同サイズ） -->
       <button class="btn-ac-all" onclick="allClearActive()">AC</button>
+      <!-- ④ 濃いサイバーブルー化ボタン -->
       <button class="btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</button>
       <button class="btn-control" onclick="toggleHistory()">履歴 📂</button>
     </div>
@@ -431,7 +440,8 @@
   </div>
 
   <div class="discount-custom-box">
-    <label>割引(0-85%):</label>
+    <!-- ③ 「割引：」に表示を簡略化 -->
+    <label>割引：</label>
     <input type="number" id="discount-input" min="0" max="85" value="10">
     <button class="btn-apply-disc" onclick="applyCustomDiscount()">%OFF 実行</button>
   </div>
@@ -443,6 +453,7 @@
     <button class="btn-mem" onclick="memRecall()">mr</button>
 
     <button class="btn-clear" onclick="clearDisplay()">C</button>
+    <!-- ④ 濃いサイバーブルー化（btn-op） -->
     <button class="btn-op" onclick="append('%')">％</button>
     <button class="btn-op" onclick="append('.')">.</button>
     <button class="btn-op" onclick="append('/')">÷</button>
@@ -467,8 +478,8 @@
     <button onclick="append('000')">000</button>
     <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
 
-    <!-- ④ ＝ボタンを半分にし、隣にTOTALを追加 -->
     <button onclick="calculate()" class="btn-action">＝</button>
+    <!-- ④ 濃いサイバーブルー化（TOTAL） -->
     <div class="total-box">
       <span class="total-label">TOTAL (表示中)</span>
       <span class="total-value" id="total-val">0</span>
@@ -487,11 +498,12 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=14 */
+  /* おまじない：バージョン v=15 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=14').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=15').catch(() => {});
   }
 
+  /* ② 秒数を抜いた時計処理 */
   function updateClock() {
     const now = new Date();
     const y = now.getFullYear();
@@ -501,8 +513,7 @@
     const dayName = days[now.getDay()];
     const hh = String(now.getHours()).padStart(2, '0');
     const mm = String(now.getMinutes()).padStart(2, '0');
-    const ss = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${y}.${m}.${d} (${dayName}) ${hh}:${mm}:${ss}`;
+    document.getElementById('clock').textContent = `${y}.${m}.${d} (${dayName}) ${hh}:${mm}`;
   }
   setInterval(updateClock, 1000);
   updateClock();
@@ -561,7 +572,6 @@
     }
   }
 
-  /* ④ 表示中スロットの自動合計計算 */
   function calculateTotal() {
     let sum = 0;
     for (let i = 0; i < expandedCount; i++) {
@@ -580,7 +590,6 @@
     calculateTotal();
   }
 
-  /* ③ 自動で小数点サポートを含める入力ロジック */
   function append(val) {
     let s = slots[activeSlot];
     if (val === 'del') {
@@ -596,7 +605,7 @@
       }
       s.isNew = false;
     } else {
-      if (val === '.' && s.value.includes('.')) return; // 小数点の重複防止
+      if (val === '.' && s.value.includes('.')) return;
       s.value += val;
     }
     s.expr = s.value;
@@ -623,7 +632,6 @@
     updateView();
   }
 
-  /* ② AC（表示中の全スロットリセット） */
   function allClearActive() {
     for (let i = 0; i < expandedCount; i++) {
       slots[i].value = '0';
