@@ -17,9 +17,7 @@
 
   <style>
     :root {
-      /* 「計算機プラス」風のメタリック・ヘアライン調配色 */
       --bg: #a0a0a0;
-      /* ヘアライン風のストライプ柄をCSSグラデーションで再現 */
       --card-bg: repeating-linear-gradient(
         0deg,
         #cfcfcf,
@@ -27,8 +25,6 @@
         #b8b8b8 1px,
         #b8b8b8 2px
       );
-      --neon-cyan: #00f3ff;
-      --neon-pink: #d9534f;
       --btn-bg: linear-gradient(180deg, #e4e4e4 0%, #adadad 100%);
       --btn-border: #8c8c8c;
       --btn-border-bottom: #5e5e5e;
@@ -126,7 +122,7 @@
       border: 1px solid #b52b27 !important;
     }
 
-    /* ディスプレイ領域（計算機プラス風の水色液晶） */
+    /* ディスプレイ領域 */
     .display-panel-container {
       display: flex;
       flex-direction: column;
@@ -214,49 +210,54 @@
       line-height: 1;
     }
 
-    /* 割引入力エリア */
-    .discount-custom-box {
+    /* 割引スライド（横スクロール）バー */
+    .discount-scroll-bar {
       display: flex;
       gap: 4px;
       margin-bottom: 6px;
-      align-items: center;
+      overflow-x: auto;
+      white-space: nowrap;
       background: linear-gradient(180deg, #dcdcdc 0%, #bcbcbc 100%);
       border: 1px solid #999;
       box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-      padding: 3px 6px;
+      padding: 3px 4px;
       border-radius: 4px;
       flex-shrink: 0;
+      scrollbar-width: thin;
     }
-    .discount-custom-box label {
-      font-size: 0.75rem;
+    .discount-scroll-bar::-webkit-scrollbar {
+      height: 4px;
+    }
+    .discount-scroll-bar::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 2px;
+    }
+    .disc-label-tag {
+      font-size: 0.7rem;
       color: #222;
       font-weight: bold;
-      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      flex-shrink: 0;
     }
-    #discount-input {
-      width: 45px;
+    .btn-disc-chip {
       height: 24px;
-      background: #ffffff;
-      border: 1px solid #888;
-      color: #d9534f;
-      font-family: 'Orbitron', monospace;
-      font-size: 0.95rem;
-      text-align: center;
-      outline: none;
-      font-weight: bold;
-      border-radius: 3px;
-    }
-    .btn-apply-disc {
-      flex: 1;
-      height: 24px;
-      background: linear-gradient(180deg, #e6e6e6 0%, #cccccc 100%);
-      color: #222;
-      border: 1px solid #999;
+      padding: 0 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+      color: #b52b27;
+      border: 1px solid #adadad;
+      font-family: 'Orbitron', sans-serif;
       font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
       border-radius: 3px;
+      flex-shrink: 0;
       box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .btn-disc-chip:active {
+      background: #d9534f;
+      color: #fff;
     }
 
     /* メインボタンエリア */
@@ -294,7 +295,6 @@
       transform: translateY(1px);
     }
 
-    /* 演算子・記号ボタン */
     .btn-op {
       background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important;
       color: #112233 !important;
@@ -303,7 +303,6 @@
       font-size: 1.5rem !important;
     }
 
-    /* ＝ボタン（スクショ通りの鮮やかオレンジ） */
     .btn-action {
       background: linear-gradient(180deg, #ffab40 0%, #f57c00 100%) !important;
       color: #ffffff !important;
@@ -317,7 +316,6 @@
       background: linear-gradient(180deg, #f57c00 0%, #ffab40 100%) !important;
     }
 
-    /* TOTALボックス */
     .total-box {
       grid-column: span 2;
       background: linear-gradient(180deg, #d8e2ec 0%, #a4bce0 100%);
@@ -476,10 +474,24 @@
     </div>
   </div>
 
-  <div class="discount-custom-box">
-    <label>割引：</label>
-    <input type="number" id="discount-input" min="0" max="85" value="0">
-    <button class="btn-apply-disc" onclick="applyCustomDiscount()">%OFF 実行</button>
+  <!-- 割引スライド選択バー（10%〜80%を横スクロールでタップ選択） -->
+  <div class="discount-scroll-bar">
+    <span class="disc-label-tag">割引：</span>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(10)">10%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(15)">15%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(20)">20%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(25)">25%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(30)">30%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(35)">35%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(40)">40%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(45)">45%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(50)">50%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(55)">55%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(60)">60%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(65)">65%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(70)">70%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(75)">75%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(80)">80%</button>
   </div>
 
   <div class="grid">
@@ -532,9 +544,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=19 */
+  /* おまじない：バージョン v=20 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=19').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=20').catch(() => {});
   }
 
   function updateClock() {
@@ -582,10 +594,7 @@
         panel.classList.add('collapsed');
       }
     }
-
-    if (expandedCount === 1) {
-      btn.textContent = '展開 🔽';
-    } else if (expandedCount === 2) {
+    if (expandedCount === 1 || expandedCount === 2) {
       btn.textContent = '展開 🔽';
     } else {
       btn.textContent = '格納 🔼';
@@ -605,10 +614,30 @@
     }
   }
 
+  // 数値（整数＋端数・カンマ）を綺麗にフォーマットする関数
+  function formatNumberDisplay(strVal) {
+    if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) return strVal;
+    // 演算子や途中式が含まれている場合はそのまま返す
+    if (/[+\-*/%]/.test(strVal) && !/^\d+(\.\d+)?([+\-*/%]\d+(\.\d+)?)*$/.test(strVal)) {
+      return strVal;
+    }
+
+    // 小数点で分割して整数部分にカンマを付与
+    const parts = String(strVal).split('.');
+    let intPart = parts[0].replace(/,/g, '');
+    if (!isNaN(intPart) && intPart !== '') {
+      intPart = Number(intPart).toLocaleString('ja-JP');
+    }
+    if (parts.length > 1) {
+      return intPart + '.' + parts[1];
+    }
+    return intPart;
+  }
+
   function calculateTotal() {
     let sum = 0;
     for (let i = 0; i < expandedCount; i++) {
-      let val = parseFloat(slots[i].value);
+      let val = parseFloat(slots[i].value.replace(/,/g, ''));
       if (!isNaN(val)) sum += val;
     }
     document.getElementById('total-val').textContent = sum.toLocaleString('ja-JP');
@@ -616,7 +645,7 @@
 
   function updateView() {
     for (let i = 0; i < 3; i++) {
-      document.getElementById(`disp-${i}`).value = slots[i].value;
+      document.getElementById(`disp-${i}`).value = formatNumberDisplay(slots[i].value);
       document.getElementById(`expr-${i}`).textContent = slots[i].expr;
       document.getElementById(`mem-${i}`).textContent = slots[i].memory !== 0 ? '[M]' : '';
     }
@@ -630,37 +659,42 @@
       return;
     }
     
+    let rawVal = s.value.replace(/,/g, '');
+
     if (['+', '-', '*', '/', '%'].includes(val)) {
       if (s.isNew) {
         s.isNew = false;
       }
     }
 
-    if (s.value === '0' || s.isNew) {
+    if (rawVal === '0' || s.isNew) {
       if (['+', '*', '/', '%'].includes(val)) return;
       if (val === '.') {
-        s.value = '0.';
+        rawVal = '0.';
       } else {
-        s.value = val;
+        rawVal = val;
       }
       s.isNew = false;
     } else {
-      if (val === '.' && s.value.includes('.')) return;
-      s.value += val;
+      if (val === '.' && rawVal.includes('.')) return;
+      rawVal += val;
     }
-    s.expr = s.value;
+    s.value = rawVal;
+    s.expr = formatNumberDisplay(rawVal);
     updateView();
   }
 
   function deleteChar() {
     let s = slots[activeSlot];
-    if (s.value.length > 1) {
-      s.value = s.value.slice(0, -1);
+    let rawVal = s.value.replace(/,/g, '');
+    if (rawVal.length > 1) {
+      rawVal = rawVal.slice(0, -1);
     } else {
-      s.value = '0';
+      rawVal = '0';
       s.isNew = true;
     }
-    s.expr = s.value;
+    s.value = rawVal;
+    s.expr = formatNumberDisplay(rawVal);
     updateView();
   }
 
@@ -687,40 +721,36 @@
   }
   function memPlus() {
     let s = slots[activeSlot];
-    s.memory += parseFloat(s.value) || 0;
+    s.memory += parseFloat(s.value.replace(/,/g, '')) || 0;
     s.isNew = true;
     updateView();
   }
   function memMinus() {
     let s = slots[activeSlot];
-    s.memory -= parseFloat(s.value) || 0;
+    s.memory -= parseFloat(s.value.replace(/,/g, '')) || 0;
     s.isNew = true;
     updateView();
   }
   function memRecall() {
     let s = slots[activeSlot];
-    s.value = s.memory;
+    s.value = String(s.memory);
     s.expr = `MEM(${s.memory})`;
     s.isNew = true;
     updateView();
   }
 
-  function applyCustomDiscount() {
+  // タップした割引率（10%〜80%）を即座に適用する
+  function applyQuickDiscount(rateInput) {
     let s = slots[activeSlot];
-    let rateInput = parseInt(document.getElementById('discount-input').value);
-    if (isNaN(rateInput) || rateInput < 0) rateInput = 0;
-    if (rateInput > 85) rateInput = 85;
-    document.getElementById('discount-input').value = rateInput;
-
     try {
-      let current = parseFloat(s.value);
+      let current = parseFloat(s.value.replace(/,/g, ''));
       if (!isNaN(current)) {
         let multiplier = (100 - rateInput) / 100;
-        let result = Math.floor(current * multiplier);
-        let formula = `[S${activeSlot+1}] ${current} × ${100 - rateInput}%`;
+        let result = current * multiplier; // 端数が小数で出るようにそのまま計算
+        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} × ${100 - rateInput}%`;
         
-        s.expr = `${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
-        s.value = result;
+        s.expr = `${current.toLocaleString('ja-JP')} × ${100 - rateInput}% (${rateInput}%OFF)`;
+        s.value = String(result);
         addHistory(formula, result);
         s.isNew = false; 
         updateView();
@@ -731,12 +761,13 @@
   function calculate() {
     let s = slots[activeSlot];
     try {
-      let rawExpr = s.value.replace(/%/g, '/100');
-      let fullExpr = s.value;
+      let cleanExpr = s.value.replace(/,/g, '');
+      let rawExpr = cleanExpr.replace(/%/g, '/100');
+      let fullExpr = formatNumberDisplay(cleanExpr);
       let res = Function('"use strict";return (' + rawExpr + ')')();
       
       s.expr = fullExpr + ' =';
-      s.value = res;
+      s.value = String(res);
       addHistory(`[S${activeSlot+1}] ${fullExpr}`, res);
       s.isNew = true;
       updateView();
@@ -749,13 +780,13 @@
   }
 
   function addHistory(exprText, resVal) {
-    historyArr.unshift({ expr: exprText, result: resVal });
+    historyArr.unshift({ expr: exprText, result: formatNumberDisplay(resVal) });
     if (historyArr.length > 20) historyArr.pop();
     
     let listHtml = historyArr.map(item => `
       <div class="history-item">
         <span style="color:#666; font-size:0.8rem;">${item.expr}</span>
-        <span style="color:#003366; font-weight:bold;">= ${item.result.toLocaleString('ja-JP')}</span>
+        <span style="color:#003366; font-weight:bold;">= ${item.result}</span>
       </div>
     `).join('');
     document.getElementById('historyList').innerHTML = listHtml;
