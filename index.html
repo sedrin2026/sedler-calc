@@ -8,9 +8,10 @@
   <!-- 外部マニフェストファイルとサービスワーカーの読み込み（アプリ化・アドレスバー消去用） -->
   <link rel="manifest" href="./manifest.json">
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js?v=22').catch(() => {});
-    }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker 登録成功！'));
+  }
   </script>
 
   <meta name="mobile-web-app-capable" content="yes">
