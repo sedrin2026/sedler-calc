@@ -21,7 +21,7 @@
       --bg: #1e293b; 
       --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
       --neon-cyan: #00f3ff;
-      --neon-deep-blue: #00a2ff; /* ④ 濃いサイバーブルー */
+      --neon-deep-blue: #00a2ff;
       --neon-pink: #ff0055;
       --neon-yellow: #ffe600;
       --neon-orange: #ff6600;
@@ -65,7 +65,7 @@
     .status-bar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: stretch; /* ① ボタンの縦幅を完全に揃える */
       margin-bottom: 4px;
       gap: 4px;
       flex-shrink: 0;
@@ -82,40 +82,44 @@
       border-radius: 4px;
       letter-spacing: 0.5px;
       box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
+      display: flex;
+      align-items: center;
     }
 
     .top-controls {
       display: flex;
       gap: 4px;
+      align-items: stretch;
     }
 
-    /* ④ 「展開/格納」「履歴」コントロールボタン：濃いサイバーブルー統一 */
+    /* コントロールボタン共通設計 */
+    .btn-top-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 900;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      min-width: 48px;
+      text-align: center;
+      line-height: 1.1;
+    }
+
     .btn-control {
       background: #06152d;
       color: var(--neon-deep-blue) !important;
-      font-size: 0.7rem;
       border: 1.5px solid var(--neon-deep-blue) !important;
-      padding: 3px 8px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-weight: bold;
-      min-width: 48px;
-      text-align: center;
       box-shadow: 0 0 6px rgba(0, 162, 255, 0.3);
     }
 
-    /* ① 「AC」ボタン：右の「展開」ボタンと完全同サイズ */
+    /* ① 「AC」ボタンの縦横完全同期 */
     .btn-ac-all {
       background: #1c050e !important;
       color: var(--neon-pink) !important;
       border: 1.5px solid var(--neon-pink) !important;
-      font-size: 0.75rem !important;
-      font-weight: 900 !important;
-      padding: 3px 8px;
-      cursor: pointer;
-      border-radius: 4px;
-      min-width: 48px;
-      text-align: center;
       box-shadow: 0 0 6px rgba(255, 0, 85, 0.4);
     }
 
@@ -286,7 +290,6 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* ④ ％, ., ÷, ×, －, ＋, ⌫ の濃いサイバーブルー化 */
     .btn-op {
       color: var(--neon-deep-blue) !important;
       border-color: var(--neon-deep-blue) !important;
@@ -306,7 +309,6 @@
       grid-column: span 2;
     }
 
-    /* ④ TOTALエリアの濃いサイバーブルー化 */
     .total-box {
       grid-column: span 2;
       background: #06152d;
@@ -352,52 +354,84 @@
       background: #1c050e;
     }
 
-    /* 履歴スライドパネル */
+    /* ② 履歴スライドパネル（レイアウト最適化） */
     .history-drawer {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 0;
-      background: #000000;
+      background: #090d16;
       border-top: 3px solid var(--neon-cyan);
       transition: height 0.25s ease;
       overflow-y: auto;
       z-index: 10;
       padding: 0 12px;
+      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.8);
     }
     .history-drawer.open {
       height: 70%;
-      padding: 16px;
+      padding: 14px;
     }
     .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #334155;
+      border-bottom: 1.5px solid var(--neon-deep-blue);
       padding-bottom: 8px;
       margin-bottom: 12px;
-      font-size: 1.1rem;
+      font-family: 'Orbitron', sans-serif;
+      white-space: nowrap; /* 改行防止 */
+    }
+    .history-title {
+      font-size: 1rem;
       color: var(--neon-yellow);
-      font-weight: bold;
+      font-weight: 900;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .history-close {
       background: transparent;
-      border: none;
+      border: 1px solid var(--neon-pink);
       color: var(--neon-pink);
-      font-size: 1.4rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
+      transition: all 0.1s;
     }
+    .history-close:active {
+      background: var(--neon-pink);
+      color: #000;
+    }
+    
     .history-list {
-      font-size: 1.1rem;
-      color: #ffffff;
-      line-height: 1.8;
-      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .history-item {
-      border-bottom: 1px dashed #334155;
-      padding: 6px 0;
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-left: 3px solid var(--neon-cyan);
+      border-radius: 4px;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.9rem;
+      color: #ffffff;
+    }
+    .history-item-empty {
+      color: #64748b;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 0.85rem;
     }
   </style>
 </head>
@@ -405,14 +439,12 @@
 
 <div class="calc-card">
   <div class="status-bar">
-    <!-- ② 秒数を省いた時刻表示 -->
     <div class="clock-badge" id="clock">2026.00.00 (---) 00:00</div>
     <div class="top-controls">
-      <!-- ① ACボタン（右と完全同サイズ） -->
-      <button class="btn-ac-all" onclick="allClearActive()">AC</button>
-      <!-- ④ 濃いサイバーブルー化ボタン -->
-      <button class="btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</button>
-      <button class="btn-control" onclick="toggleHistory()">履歴 📂</button>
+      <!-- ① 高さ・幅を完全同一化 -->
+      <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
+      <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</div>
+      <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
     </div>
   </div>
 
@@ -440,7 +472,6 @@
   </div>
 
   <div class="discount-custom-box">
-    <!-- ③ 「割引：」に表示を簡略化 -->
     <label>割引：</label>
     <input type="number" id="discount-input" min="0" max="85" value="10">
     <button class="btn-apply-disc" onclick="applyCustomDiscount()">%OFF 実行</button>
@@ -453,7 +484,6 @@
     <button class="btn-mem" onclick="memRecall()">mr</button>
 
     <button class="btn-clear" onclick="clearDisplay()">C</button>
-    <!-- ④ 濃いサイバーブルー化（btn-op） -->
     <button class="btn-op" onclick="append('%')">％</button>
     <button class="btn-op" onclick="append('.')">.</button>
     <button class="btn-op" onclick="append('/')">÷</button>
@@ -479,31 +509,30 @@
     <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
 
     <button onclick="calculate()" class="btn-action">＝</button>
-    <!-- ④ 濃いサイバーブルー化（TOTAL） -->
     <div class="total-box">
       <span class="total-label">TOTAL (表示中)</span>
       <span class="total-value" id="total-val">0</span>
     </div>
   </div>
 
+  <!-- ② スマートに改良した履歴ドロワー -->
   <div class="history-drawer" id="historyDrawer">
     <div class="history-header">
-      <span>// 計算履歴</span>
+      <span class="history-title"><span>//</span> 計算履歴</span>
       <button class="history-close" onclick="toggleHistory()">✖ 閉じる</button>
     </div>
     <div class="history-list" id="historyList">
-      <div class="history-item">履歴はありません</div>
+      <div class="history-item-empty">履歴はありません</div>
     </div>
   </div>
 </div>
 
 <script>
-  /* おまじない：バージョン v=15 */
+  /* おまじない：バージョン v=16 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=15').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=16').catch(() => {});
   }
 
-  /* ② 秒数を抜いた時計処理 */
   function updateClock() {
     const now = new Date();
     const y = now.getFullYear();
@@ -677,10 +706,10 @@
       if (!isNaN(current)) {
         let multiplier = (100 - rateInput) / 100;
         let result = Math.floor(current * multiplier);
-        let formula = `[S${activeSlot+1}] ${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
+        let formula = `[S${activeSlot+1}] ${current} × ${100 - rateInput}%`;
         s.expr = `${current} × ${100 - rateInput}% (${rateInput}%OFF)`;
         s.value = result;
-        addHistory(formula + ` = ${result}`);
+        addHistory(formula, result);
         s.isNew = true;
         updateView();
       }
@@ -696,7 +725,7 @@
       
       s.expr = fullExpr + ' =';
       s.value = res;
-      addHistory(`[S${activeSlot+1}] ${fullExpr} = ${res}`);
+      addHistory(`[S${activeSlot+1}] ${fullExpr}`, res);
       s.isNew = true;
       updateView();
     } catch (e) {
@@ -707,10 +736,17 @@
     }
   }
 
-  function addHistory(text) {
-    historyArr.unshift(text);
+  /* ② 履歴リストのスタイリッシュ生成 */
+  function addHistory(exprText, resVal) {
+    historyArr.unshift({ expr: exprText, result: resVal });
     if (historyArr.length > 20) historyArr.pop();
-    let listHtml = historyArr.map(item => `<div class="history-item">${item}</div>`).join('');
+    
+    let listHtml = historyArr.map(item => `
+      <div class="history-item">
+        <span style="color:#94a3b8; font-size:0.8rem;">${item.expr}</span>
+        <span style="color:var(--neon-yellow); font-weight:bold;">= ${item.result.toLocaleString('ja-JP')}</span>
+      </div>
+    `).join('');
     document.getElementById('historyList').innerHTML = listHtml;
   }
 
