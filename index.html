@@ -474,7 +474,7 @@
     </div>
   </div>
 
-  <!-- 割引スライド選択バー（10%〜80%を横スクロールでタップ選択） -->
+  <!-- 割引スライド選択バー（10%〜80%） -->
   <div class="discount-scroll-bar">
     <span class="disc-label-tag">割引：</span>
     <button class="btn-disc-chip" onclick="applyQuickDiscount(10)">10%</button>
@@ -544,9 +544,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=20 */
+  /* おまじない：バージョン v=21 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=20').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=21').catch(() => {});
   }
 
   function updateClock() {
@@ -614,22 +614,32 @@
     }
   }
 
-  // 数値（整数＋端数・カンマ）を綺麗にフォーマットする関数
+  // カンマと記号（✕、÷）を綺麗に整えて表示する関数
   function formatNumberDisplay(strVal) {
     if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) return strVal;
-    // 演算子や途中式が含まれている場合はそのまま返す
-    if (/[+\-*/%]/.test(strVal) && !/^\d+(\.\d+)?([+\-*/%]\d+(\.\d+)?)*$/.test(strVal)) {
-      return strVal;
+
+    // 演算子（+, -, ✕, ÷, %, などの数式）が含まれる場合のフォーマット
+    let parts = String(strVal).split(/([+\-✕÷/%])/);
+    if (parts.length > 1) {
+      return parts.map(part => {
+        if (/^[+\-✕÷/%]$/.test(part)) return part;
+        let subParts = part.split('.');
+        let intPart = subParts[0].replace(/,/g, '');
+        if (!isNaN(intPart) && intPart !== '') {
+          intPart = Number(intPart).toLocaleString('ja-JP');
+        }
+        return subParts.length > 1 ? intPart + '.' + subParts[1] : intPart;
+      }).join('');
     }
 
-    // 小数点で分割して整数部分にカンマを付与
-    const parts = String(strVal).split('.');
-    let intPart = parts[0].replace(/,/g, '');
+    // 単体の数値の場合
+    let singleParts = String(strVal).split('.');
+    let intPart = singleParts[0].replace(/,/g, '');
     if (!isNaN(intPart) && intPart !== '') {
       intPart = Number(intPart).toLocaleString('ja-JP');
     }
-    if (parts.length > 1) {
-      return intPart + '.' + parts[1];
+    if (singleParts.length > 1) {
+      return intPart + '.' + singleParts[1];
     }
     return intPart;
   }
@@ -637,7 +647,7 @@
   function calculateTotal() {
     let sum = 0;
     for (let i = 0; i < expandedCount; i++) {
-      let val = parseFloat(slots[i].value.replace(/,/g, ''));
+      let val = parseFloat(slots[i].value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(val)) sum += val;
     }
     document.getElementById('total-val').textContent = sum.toLocaleString('ja-JP');
@@ -659,25 +669,30 @@
       return;
     }
     
+    // 入力記号を画面表示用に変換（* -> ✕, / -> ÷）
+    let displayVal = val;
+    if (val === '*') displayVal = '✕';
+    if (val === '/') displayVal = '÷';
+
     let rawVal = s.value.replace(/,/g, '');
 
-    if (['+', '-', '*', '/', '%'].includes(val)) {
+    if (['+', '-', '*', '/', '%', '✕', '÷'].includes(val)) {
       if (s.isNew) {
         s.isNew = false;
       }
     }
 
     if (rawVal === '0' || s.isNew) {
-      if (['+', '*', '/', '%'].includes(val)) return;
+      if (['+', '*', '/', '%', '✕', '÷'].includes(val)) return;
       if (val === '.') {
         rawVal = '0.';
       } else {
-        rawVal = val;
+        rawVal = displayVal;
       }
       s.isNew = false;
     } else {
       if (val === '.' && rawVal.includes('.')) return;
-      rawVal += val;
+      rawVal += displayVal;
     }
     s.value = rawVal;
     s.expr = formatNumberDisplay(rawVal);
@@ -721,13 +736,13 @@
   }
   function memPlus() {
     let s = slots[activeSlot];
-    s.memory += parseFloat(s.value.replace(/,/g, '')) || 0;
+    s.memory += parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
     s.isNew = true;
     updateView();
   }
   function memMinus() {
     let s = slots[activeSlot];
-    s.memory -= parseFloat(s.value.replace(/,/g, '')) || 0;
+    s.memory -= parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
     s.isNew = true;
     updateView();
   }
@@ -739,17 +754,16 @@
     updateView();
   }
 
-  // タップした割引率（10%〜80%）を即座に適用する
   function applyQuickDiscount(rateInput) {
     let s = slots[activeSlot];
     try {
-      let current = parseFloat(s.value.replace(/,/g, ''));
+      let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(current)) {
         let multiplier = (100 - rateInput) / 100;
-        let result = current * multiplier; // 端数が小数で出るようにそのまま計算
-        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} × ${100 - rateInput}%`;
+        let result = current * multiplier;
+        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}%`;
         
-        s.expr = `${current.toLocaleString('ja-JP')} × ${100 - rateInput}% (${rateInput}%OFF)`;
+        s.expr = `${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}% (${rateInput}%OFF)`;
         s.value = String(result);
         addHistory(formula, result);
         s.isNew = false; 
@@ -762,9 +776,10 @@
     let s = slots[activeSlot];
     try {
       let cleanExpr = s.value.replace(/,/g, '');
-      let rawExpr = cleanExpr.replace(/%/g, '/100');
+      // 計算のために ✕ を * に、 ÷ を / に置換する
+      let mathExpr = cleanExpr.replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
       let fullExpr = formatNumberDisplay(cleanExpr);
-      let res = Function('"use strict";return (' + rawExpr + ')')();
+      let res = Function('"use strict";return (' + mathExpr + ')')();
       
       s.expr = fullExpr + ' =';
       s.value = String(res);
