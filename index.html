@@ -20,8 +20,7 @@
     :root {
       --bg: #1e293b; 
       --card-bg: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-      --neon-cyan: #00f3ff;
-      --neon-deep-blue: #00a2ff;
+      --neon-cyan: #00f3ff; /* 「＝」と同じ鮮やかなサイバーシアンに統一 */
       --neon-pink: #ff0055;
       --neon-yellow: #ffe600;
       --neon-orange: #ff6600;
@@ -65,7 +64,7 @@
     .status-bar {
       display: flex;
       justify-content: space-between;
-      align-items: stretch; /* ① ボタンの縦幅を完全に揃える */
+      align-items: stretch;
       margin-bottom: 4px;
       gap: 4px;
       flex-shrink: 0;
@@ -92,7 +91,6 @@
       align-items: stretch;
     }
 
-    /* コントロールボタン共通設計 */
     .btn-top-item {
       display: flex;
       align-items: center;
@@ -108,14 +106,14 @@
       line-height: 1.1;
     }
 
+    /* ① 指定箇所を「＝」と同じシアン色・発光に統一 */
     .btn-control {
       background: #06152d;
-      color: var(--neon-deep-blue) !important;
-      border: 1.5px solid var(--neon-deep-blue) !important;
-      box-shadow: 0 0 6px rgba(0, 162, 255, 0.3);
+      color: var(--neon-cyan) !important;
+      border: 1.5px solid var(--neon-cyan) !important;
+      box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
     }
 
-    /* ① 「AC」ボタンの縦横完全同期 */
     .btn-ac-all {
       background: #1c050e !important;
       color: var(--neon-pink) !important;
@@ -290,14 +288,15 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
+    /* ① 演算子ボタンも「＝」と同じシアン色に統一 */
     .btn-op {
-      color: var(--neon-deep-blue) !important;
-      border-color: var(--neon-deep-blue) !important;
+      color: var(--neon-cyan) !important;
+      border-color: var(--neon-cyan) !important;
       font-size: 1.7rem !important;
       font-weight: 900 !important;
       background: #06152d !important;
       line-height: 1;
-      box-shadow: 0 0 6px rgba(0, 162, 255, 0.2);
+      box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
     }
 
     .btn-action {
@@ -309,17 +308,18 @@
       grid-column: span 2;
     }
 
+    /* ① TOTALボックスも「＝」と同じシアン色に統一 */
     .total-box {
       grid-column: span 2;
       background: #06152d;
-      border: 1.5px solid var(--neon-deep-blue);
+      border: 1.5px solid var(--neon-cyan);
       border-radius: 6px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-end;
       padding: 0 8px;
-      box-shadow: 0 0 8px rgba(0, 162, 255, 0.3);
+      box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
       position: relative;
     }
     .total-label {
@@ -327,7 +327,7 @@
       top: 2px;
       left: 6px;
       font-size: 0.6rem;
-      color: var(--neon-deep-blue);
+      color: var(--neon-cyan);
       font-family: 'Orbitron', sans-serif;
       font-weight: bold;
     }
@@ -335,7 +335,7 @@
       font-family: 'Orbitron', monospace;
       font-size: 1.3rem;
       font-weight: 900;
-      color: var(--neon-deep-blue);
+      color: var(--neon-cyan);
       letter-spacing: 1px;
     }
 
@@ -354,7 +354,7 @@
       background: #1c050e;
     }
 
-    /* ② 履歴スライドパネル（レイアウト最適化） */
+    /* 履歴スライドパネル */
     .history-drawer {
       position: absolute;
       bottom: 0;
@@ -373,35 +373,39 @@
       height: 70%;
       padding: 14px;
     }
+    
+    /* ② 履歴ヘッダーのレイアウト最適化（文字とボタンの被り防止） */
     .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1.5px solid var(--neon-deep-blue);
+      border-bottom: 1.5px solid var(--neon-cyan);
       padding-bottom: 8px;
       margin-bottom: 12px;
       font-family: 'Orbitron', sans-serif;
-      white-space: nowrap; /* 改行防止 */
+      gap: 8px;
     }
     .history-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--neon-yellow);
       font-weight: 900;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
     .history-close {
       background: transparent;
       border: 1px solid var(--neon-pink);
       color: var(--neon-pink);
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.75rem;
-      padding: 3px 10px;
+      font-size: 0.7rem;
+      padding: 4px 8px;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
+      white-space: nowrap;
       transition: all 0.1s;
     }
     .history-close:active {
@@ -441,7 +445,6 @@
   <div class="status-bar">
     <div class="clock-badge" id="clock">2026.00.00 (---) 00:00</div>
     <div class="top-controls">
-      <!-- ① 高さ・幅を完全同一化 -->
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
@@ -515,7 +518,6 @@
     </div>
   </div>
 
-  <!-- ② スマートに改良した履歴ドロワー -->
   <div class="history-drawer" id="historyDrawer">
     <div class="history-header">
       <span class="history-title"><span>//</span> 計算履歴</span>
@@ -528,9 +530,9 @@
 </div>
 
 <script>
-  /* おまじない：バージョン v=16 */
+  /* おまじない：バージョン v=17 */
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=16').catch(() => {});
+    navigator.serviceWorker.register('./sw.js?v=17').catch(() => {});
   }
 
   function updateClock() {
@@ -736,7 +738,6 @@
     }
   }
 
-  /* ② 履歴リストのスタイリッシュ生成 */
   function addHistory(exprText, resVal) {
     historyArr.unshift({ expr: exprText, result: resVal });
     if (historyArr.length > 20) historyArr.pop();
@@ -744,7 +745,7 @@
     let listHtml = historyArr.map(item => `
       <div class="history-item">
         <span style="color:#94a3b8; font-size:0.8rem;">${item.expr}</span>
-        <span style="color:var(--neon-yellow); font-weight:bold;">= ${item.result.toLocaleString('ja-JP')}</span>
+        <span style="color:var(--neon-cyan); font-weight:bold;">= ${item.result.toLocaleString('ja-JP')}</span>
       </div>
     `).join('');
     document.getElementById('historyList').innerHTML = listHtml;
