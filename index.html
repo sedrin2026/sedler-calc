@@ -215,9 +215,10 @@
       line-height: 1;
     }
 
-    /* 展開前（スロット1単独）専用の特大フォント・ガイド表示 */
+    /* 展開前（スロット1単独）専用：サイズそのままで太さを少し細く(400) */
     .slot-panel.single-large .display-slot-value {
       font-size: 4.4rem !important;
+      font-weight: 400 !important;
     }
 
     .single-guide-area {
@@ -242,9 +243,10 @@
       font-size: 0.75rem;
       color: #4a6772;
       font-weight: bold;
-      text-align: center;
+      text-align: left; /* 左端寄せに変更 */
       letter-spacing: -0.5px;
       padding-bottom: 2px;
+      padding-left: 2px;
     }
 
     /* 独立した3つのボタンバー */
@@ -543,7 +545,6 @@
   </div>
 
   <div class="display-panel-container">
-    <!-- スロット1 (初期状態で single-largeクラス持ち) -->
     <div class="slot-panel active single-large" id="slot-0" onclick="switchSlot(0)">
       <span class="slot-label">[SLOT 1]</span>
       <span class="memory-indicator-slot" id="mem-0"></span>
