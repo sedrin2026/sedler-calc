@@ -18,10 +18,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#000000">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --bg: #a0a0a0;
@@ -35,6 +31,8 @@
       --btn-bg: linear-gradient(180deg, #e4e4e4 0%, #adadad 100%);
       --btn-border: #8c8c8c;
       --btn-border-bottom: #5e5e5e;
+      /* スクショのような王道電卓フォントを最優先指定 */
+      --calc-font: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -44,7 +42,7 @@
       height: 100%;
       background: #7a7a7a;
       color: #111111;
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-family: var(--calc-font);
       overflow-x: hidden;
       overflow-y: auto;
     }
@@ -84,9 +82,9 @@
       background: #222222;
       color: #00ffcc;
       border: 1px solid #444;
-      font-family: 'Orbitron', monospace;
+      font-family: var(--calc-font);
       font-size: 0.7rem;
-      font-weight: 700;
+      font-weight: 600;
       padding: 3px 8px;
       border-radius: 4px;
       display: flex;
@@ -103,7 +101,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: sans-serif;
+      font-family: var(--calc-font);
       font-size: 0.75rem;
       font-weight: bold;
       padding: 4px 10px;
@@ -193,13 +191,14 @@
     }
 
     .expr-line-slot {
+      font-family: var(--calc-font);
       font-size: 0.8rem;
       color: #4a6772;
       min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      font-weight: bold;
+      font-weight: 600;
       margin-top: 10px;
     }
 
@@ -209,11 +208,11 @@
       border: none;
       outline: none;
       color: #11222c !important;
-      font-family: 'Orbitron', monospace;
-      font-size: 2.1rem;
-      font-weight: 700;
+      font-family: var(--calc-font);
+      font-size: 2.2rem;
+      font-weight: 600;
       text-align: right;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       line-height: 1;
     }
 
@@ -234,7 +233,7 @@
       padding: 0 4px;
       background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
       border: 1px solid #adadad;
-      font-family: sans-serif;
+      font-family: var(--calc-font);
       font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
@@ -253,7 +252,7 @@
       background: #ccc;
     }
 
-    /* 各ボタンの真下に展開する「完全な縦型スクロールプルダウンメニュー」 */
+    /* 各ボタンの真下に展開するメニュー */
     .dropdown-popup {
       display: none;
       position: absolute;
@@ -281,9 +280,9 @@
       width: 100%;
       background: linear-gradient(180deg, #ffffff 0%, #eaeaea 100%);
       border: 1px solid #b5b5b5;
-      font-family: 'Orbitron', sans-serif;
+      font-family: var(--calc-font);
       font-size: 0.8rem;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
       border-radius: 3px;
       text-align: center;
@@ -312,7 +311,7 @@
       color: #222222;
       border: 1px solid var(--btn-border);
       border-bottom: 2px solid var(--btn-border-bottom);
-      font-family: sans-serif;
+      font-family: var(--calc-font);
       font-size: 1.25rem;
       font-weight: bold;
       cursor: pointer;
@@ -376,9 +375,9 @@
       font-weight: bold;
     }
     .total-value {
-      font-family: 'Orbitron', monospace;
+      font-family: var(--calc-font);
       font-size: 1.25rem;
-      font-weight: 900;
+      font-weight: 700;
       color: #112233;
       letter-spacing: 0.5px;
     }
@@ -463,7 +462,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: 'Orbitron', monospace;
+      font-family: var(--calc-font);
       font-size: 0.9rem;
       color: #333;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -535,9 +534,8 @@
     </div>
   </div>
 
-  <!-- 独立した3つのボタンバー（真下に縦型スクロールプルダウンを展開） -->
+  <!-- 独立した3つのボタンバー -->
   <div class="feature-action-bar">
-    <!-- 1. 税込ボタンと縦型メニュー -->
     <div style="position: relative; width: 100%;">
       <button class="btn-feature-main tax-in" onclick="togglePopup('taxIn')">税込 ▼</button>
       <div class="dropdown-popup" id="taxInDropdown">
@@ -554,7 +552,6 @@
       </div>
     </div>
 
-    <!-- 2. 税抜ボタンと縦型メニュー -->
     <div style="position: relative; width: 100%;">
       <button class="btn-feature-main tax-ex" onclick="togglePopup('taxEx')">税抜 ▼</button>
       <div class="dropdown-popup" id="taxExDropdown">
@@ -571,7 +568,6 @@
       </div>
     </div>
 
-    <!-- 3. 割引ボタンと縦型メニュー -->
     <div style="position: relative; width: 100%;">
       <button class="btn-feature-main discount" onclick="togglePopup('disc')">割引 ▼</button>
       <div class="dropdown-popup" id="discDropdown">
@@ -848,7 +844,6 @@
     updateView();
   }
 
-  /* 縦型プルダウンメニューの開閉制御 */
   function togglePopup(target) {
     const inDropdown = document.getElementById('taxInDropdown');
     const exDropdown = document.getElementById('taxExDropdown');
