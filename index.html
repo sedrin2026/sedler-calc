@@ -558,11 +558,12 @@
     <button onclick="append('000')">000</button>
     <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
 
-    <button onclick="calculate()" class="btn-action">＝</button>
+    <!-- 🔻 ここで「TOTAL（表示中）」と「＝」の左右の配置を入れ替えました -->
     <div class="total-box">
       <span class="total-label">TOTAL (表示中)</span>
       <span class="total-value" id="total-val">0</span>
     </div>
+    <button onclick="calculate()" class="btn-action">＝</button>
   </div>
 
   <div class="history-drawer" id="historyDrawer">
@@ -838,17 +839,14 @@
   }
 
   /* ========================================================== */
-  /* PWA インストールプロンプト制御スクリプト                         */
+  /* PWA インストールプロンプト制御スクリプト                    */
   /* ========================================================== */
   let deferredPrompt = null;
   const installBtn = document.getElementById('pwa-install-btn');
 
   window.addEventListener('beforeinstallprompt', (e) => {
-    // ブラウザのデフォルトの自動インジケータを抑制
     e.preventDefault();
-    // 後から呼び出せるようにイベントを保持
     deferredPrompt = e;
-    // 画面内に手動インストールボタンを表示
     if (installBtn) {
       installBtn.style.display = 'block';
     }
@@ -857,12 +855,9 @@
   if (installBtn) {
     installBtn.addEventListener('click', async () => {
       if (!deferredPrompt) return;
-      // インストール確認ダイアログを表示
       deferredPrompt.prompt();
-      // ユーザーの選択結果（インストール or キャンセル）を待機
       const { outcome } = await deferredPrompt.userChoice;
       console.log(`ユーザーの選択: ${outcome}`);
-      // プロンプトは一度きりなので破棄してボタンを隠す
       deferredPrompt = null;
       installBtn.style.display = 'none';
     });
