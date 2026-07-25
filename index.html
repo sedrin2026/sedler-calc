@@ -136,10 +136,10 @@
       min-height: 80px;
     }
 
-    /* 待機中（非選択）をオレンジ・黄土色系に変更 */
+    /* 共通スロットベース（デフォルトは既存のオレンジ系待機状態） */
     .slot-panel {
-      background: linear-gradient(180deg, #fce8c8 0%, #f3b562 100%);
-      border: 2px solid #b37424;
+      background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
+      border: 2px solid #ffa726;
       border-radius: 6px;
       padding: 2px 8px;
       text-align: right;
@@ -150,9 +150,15 @@
       flex: 1;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: inset 0 3px 6px rgba(0,0,0,0.15);
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
       overflow: hidden;
       max-height: 200px;
+    }
+
+    /* スロット3専用：待機中の背景色を「mc」ボタンと同じ紫系に指定 */
+    #slot-2 {
+      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9);
+      border: 2px solid #b39ddb;
     }
 
     .slot-panel.collapsed {
@@ -178,8 +184,11 @@
       top: 2px;
       left: 6px;
       font-size: 0.65rem;
-      color: #5a3a18;
+      color: #6d4c41;
       font-weight: 900;
+    }
+    #slot-2 .slot-label {
+      color: #4a237a;
     }
     .slot-panel.active .slot-label {
       color: #2c4a54;
@@ -190,20 +199,26 @@
       top: 2px;
       right: 8px;
       font-size: 0.65rem;
-      color: #5a2e88;
+      color: #6d4c41;
       font-weight: bold;
+    }
+    #slot-2 .memory-indicator-slot {
+      color: #4a237a;
     }
 
     .expr-line-slot {
       font-family: var(--calc-font);
       font-size: 0.8rem;
-      color: #7a5228;
+      color: #8d6e63;
       min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       font-weight: 600;
       margin-top: 10px;
+    }
+    #slot-2 .expr-line-slot {
+      color: #674ea7;
     }
     .slot-panel.active .expr-line-slot {
       color: #4a6772;
@@ -214,13 +229,16 @@
       background: transparent;
       border: none;
       outline: none;
-      color: #3b230e !important;
+      color: #5d4037 !important;
       font-family: var(--calc-font);
       font-size: 2.2rem;
       font-weight: 600;
       text-align: right;
       letter-spacing: 0.5px;
       line-height: 1;
+    }
+    #slot-2 .display-slot-value {
+      color: #3b1c64 !important;
     }
     .slot-panel.active .display-slot-value {
       color: #11222c !important;
@@ -567,14 +585,14 @@
       </div>
     </div>
 
-    <div class="slot-panel" id="slot-1" onclick="switchSlot(1)">
+    <div class="slot-panel collapsed" id="slot-1" onclick="switchSlot(1)">
       <span class="slot-label">[SLOT 2]</span>
       <span class="memory-indicator-slot" id="mem-1"></span>
       <div class="expr-line-slot" id="expr-1">READY</div>
       <input type="text" class="display-slot-value" id="disp-1" readonly value="0">
     </div>
 
-    <div class="slot-panel" id="slot-2" onclick="switchSlot(2)">
+    <div class="slot-panel collapsed" id="slot-2" onclick="switchSlot(2)">
       <span class="slot-label">[SLOT 3]</span>
       <span class="memory-indicator-slot" id="mem-2"></span>
       <div class="expr-line-slot" id="expr-2">READY</div>
@@ -706,7 +724,7 @@
   updateClock();
 
   let activeSlot = 0;
-  let expandedCount = 1; 
+  let expandedCount = 1; // 起動時はスロット1のみ
   let slots = [
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
