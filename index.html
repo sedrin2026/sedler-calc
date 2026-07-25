@@ -218,78 +218,72 @@
       line-height: 1;
     }
 
-    /* 独立した機能ボタンバー（税込・税抜・割引を常に同時表示） */
-    .feature-action-bar {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1.2fr;
+    /* 割引スライド（横スクロール）バー */
+    .discount-scroll-bar {
+      display: flex;
       gap: 4px;
       margin-bottom: 6px;
-      flex-shrink: 0;
-      position: relative;
-    }
-
-    .btn-feature-main {
-      height: 28px;
-      padding: 0 4px;
-      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
-      border: 1px solid #adadad;
-      font-family: sans-serif;
-      font-size: 0.75rem;
-      font-weight: bold;
-      cursor: pointer;
+      overflow-x: auto;
+      white-space: nowrap;
+      background: linear-gradient(180deg, #dcdcdc 0%, #bcbcbc 100%);
+      border: 1px solid #999;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      padding: 3px 4px;
       border-radius: 4px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+      scrollbar-width: thin;
+      align-items: center;
+    }
+    .discount-scroll-bar::-webkit-scrollbar {
+      height: 4px;
+    }
+    .discount-scroll-bar::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 2px;
+    }
+    .disc-label-tag {
+      font-size: 0.7rem;
+      color: #222;
+      font-weight: bold;
       display: flex;
       align-items: center;
-      justify-content: center;
-      white-space: nowrap;
+      padding: 0 4px;
+      flex-shrink: 0;
     }
-    .btn-feature-main.tax-in { color: #0044aa; }
-    .btn-feature-main.tax-ex { color: #0044aa; }
-    .btn-feature-main.discount { color: #b52b27; }
-
-    .btn-feature-main:active {
-      background: #ccc;
-    }
-
-    /* 各ボタンの真下に展開するプルダウンメニュー */
-    .dropdown-popup {
-      display: none;
-      position: absolute;
-      top: 32px;
-      left: 0;
-      right: 0;
-      background: rgba(235, 235, 235, 0.98);
-      border: 1px solid #888;
-      padding: 6px;
-      border-radius: 4px;
-      gap: 3px;
-      overflow-x: auto;
-      z-index: 25;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      white-space: nowrap;
-    }
-    .dropdown-popup.open {
-      display: flex;
-    }
-
-    .btn-dropdown-chip {
+    .btn-disc-chip {
       height: 24px;
-      padding: 0 6px;
+      padding: 0 8px;
       background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+      color: #b52b27;
       border: 1px solid #adadad;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
       border-radius: 3px;
       flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
-    .tax-dropdown-chip { color: #0044aa; }
-    .disc-dropdown-chip { color: #b52b27; }
-
-    .btn-dropdown-chip:active {
+    .btn-disc-chip:active {
       background: #d9534f;
+      color: #fff;
+    }
+    .btn-tax-chip {
+      height: 24px;
+      padding: 0 8px;
+      background: linear-gradient(180deg, #e6f2ff 0%, #b8d1ed 100%);
+      color: #112233;
+      border: 1px solid #7892ad;
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .btn-tax-chip:active {
+      background: #7892ad;
       color: #fff;
     }
 
@@ -406,7 +400,7 @@
       border-top: 3px solid #7892ad;
       transition: height 0.25s ease;
       overflow-y: auto;
-      z-index: 30;
+      z-index: 10;
       padding: 0 12px;
       box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
     }
@@ -471,6 +465,7 @@
       font-size: 0.85rem;
     }
 
+    /* PWAインストールボタン用スタイル（初期は非表示） */
     #pwa-install-btn {
       display: none;
       position: fixed;
@@ -531,64 +526,26 @@
     </div>
   </div>
 
-  <!-- 独立した3つのボタンバー（税込・税抜・割引を常時同時表示し、それぞれの真下にメニューが開く） -->
-  <div class="feature-action-bar">
-    <!-- 1. 税込ボタンとポップアップ -->
-    <div style="position: relative;">
-      <button class="btn-feature-main tax-in" onclick="togglePopup('taxIn')">税込 ▼</button>
-      <div class="dropdown-popup" id="taxInDropdown">
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 10)">10%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 9)">9%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 8)">8%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 7)">7%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 6)">6%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 5)">5%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 4)">4%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 3)">3%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 2)">2%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 1)">1%</button>
-      </div>
-    </div>
-
-    <!-- 2. 税抜ボタンとポップアップ -->
-    <div style="position: relative;">
-      <button class="btn-feature-main tax-ex" onclick="togglePopup('taxEx')">税抜 ▼</button>
-      <div class="dropdown-popup" id="taxExDropdown">
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 10)">10%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 9)">9%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 8)">8%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 7)">7%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 6)">6%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 5)">5%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 4)">4%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 3)">3%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 2)">2%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 1)">1%</button>
-      </div>
-    </div>
-
-    <!-- 3. 割引ボタンとポップアップ -->
-    <div style="position: relative;">
-      <button class="btn-feature-main discount" onclick="togglePopup('disc')">割引 ▼</button>
-      <div class="dropdown-popup" id="discDropdown">
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(10)">10%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(15)">15%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(20)">20%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(25)">25%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(30)">30%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(35)">35%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(40)">40%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(45)">45%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(50)">50%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(55)">55%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(60)">60%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(65)">65%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(70)">70%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(75)">75%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(80)">80%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(85)">85%</button>
-      </div>
-    </div>
+  <!-- 割引・税金スライド選択バー -->
+  <div class="discount-scroll-bar">
+    <button class="btn-tax-chip" onclick="applyTax(true)">税込</button>
+    <button class="btn-tax-chip" onclick="applyTax(false)">税抜</button>
+    <span class="disc-label-tag">割引：</span>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(10)">10%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(15)">15%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(20)">20%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(25)">25%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(30)">30%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(35)">35%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(40)">40%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(45)">45%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(50)">50%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(55)">55%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(60)">60%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(65)">65%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(70)">70%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(75)">75%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(80)">80%</button>
   </div>
 
   <div class="grid">
@@ -844,25 +801,6 @@
     updateView();
   }
 
-  /* 各ボタンごとの独立したプルダウン開閉制御（他のポップアップは閉じる） */
-  function togglePopup(target) {
-    const inDropdown = document.getElementById('taxInDropdown');
-    const exDropdown = document.getElementById('taxExDropdown');
-    const discDropdown = document.getElementById('discDropdown');
-
-    inDropdown.classList.remove('open');
-    exDropdown.classList.remove('open');
-    discDropdown.classList.remove('open');
-
-    if (target === 'taxIn') {
-      inDropdown.classList.toggle('open');
-    } else if (target === 'taxEx') {
-      exDropdown.classList.toggle('open');
-    } else if (target === 'disc') {
-      discDropdown.classList.toggle('open');
-    }
-  }
-
   function applyQuickDiscount(rateInput) {
     let s = slots[activeSlot];
     try {
@@ -879,33 +817,24 @@
         updateView();
       }
     } catch (e) { s.value = 'ERR'; updateView(); }
-    document.getElementById('discDropdown').classList.remove('open');
   }
 
-  function applyTax(type, rateInput) {
+  function applyTax(isIncl) {
     let s = slots[activeSlot];
     try {
       let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(current)) {
-        let result;
-        let formula;
-        if (type === 'in') {
-          result = current * (1 + rateInput / 100);
-          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ＋ 税込${rateInput}%`;
-          s.expr = `${current.toLocaleString('ja-JP')} (税込${rateInput}%)`;
-        } else {
-          result = current / (1 + rateInput / 100);
-          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} － 税抜${rateInput}%`;
-          s.expr = `${current.toLocaleString('ja-JP')} (税抜${rateInput}%)`;
-        }
+        let result = isIncl ? current * 1.10 : current / 1.10;
+        let taxLabel = isIncl ? '税込' : '税抜';
+        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} (${taxLabel})`;
+        
+        s.expr = `${current.toLocaleString('ja-JP')} (${taxLabel})`;
         s.value = String(result);
         addHistory(formula, result);
         s.isNew = false;
         updateView();
       }
     } catch (e) { s.value = 'ERR'; updateView(); }
-    document.getElementById('taxInDropdown').classList.remove('open');
-    document.getElementById('taxExDropdown').classList.remove('open');
   }
 
   function calculate() {
