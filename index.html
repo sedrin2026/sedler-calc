@@ -31,7 +31,6 @@
       --btn-bg: linear-gradient(180deg, #e4e4e4 0%, #adadad 100%);
       --btn-border: #8c8c8c;
       --btn-border-bottom: #5e5e5e;
-      /* スクショのような王道電卓フォントを最優先指定 */
       --calc-font: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
@@ -214,6 +213,38 @@
       text-align: right;
       letter-spacing: 0.5px;
       line-height: 1;
+    }
+
+    /* 展開前（スロット1単独）専用の特大フォント・ガイド表示 */
+    .slot-panel.single-large .display-slot-value {
+      font-size: 4.4rem !important;
+    }
+
+    .single-guide-area {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .slot-panel.single-large .single-guide-area {
+      display: flex;
+    }
+
+    .single-divider {
+      width: 100%;
+      border: none;
+      border-top: 1.5px solid #4a6772;
+      margin-bottom: 3px;
+    }
+
+    .single-guide-text {
+      font-family: var(--calc-font);
+      font-size: 0.75rem;
+      color: #4a6772;
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: -0.5px;
+      padding-bottom: 2px;
     }
 
     /* 独立した3つのボタンバー */
@@ -512,11 +543,16 @@
   </div>
 
   <div class="display-panel-container">
-    <div class="slot-panel active" id="slot-0" onclick="switchSlot(0)">
+    <!-- スロット1 (初期状態で single-largeクラス持ち) -->
+    <div class="slot-panel active single-large" id="slot-0" onclick="switchSlot(0)">
       <span class="slot-label">[SLOT 1]</span>
       <span class="memory-indicator-slot" id="mem-0"></span>
       <div class="expr-line-slot" id="expr-0">READY</div>
       <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
+      <div class="single-guide-area">
+        <hr class="single-divider">
+        <div class="single-guide-text">〔展開をタップでスロットを三段階表示〕</div>
+      </div>
     </div>
 
     <div class="slot-panel collapsed" id="slot-1" onclick="switchSlot(1)">
@@ -688,10 +724,18 @@
         panel.classList.add('collapsed');
       }
     }
-    if (expandedCount === 1 || expandedCount === 2) {
+
+    const slot0 = document.getElementById('slot-0');
+    if (expandedCount === 1) {
+      slot0.classList.add('single-large');
       btn.textContent = '展開 🔽';
     } else {
-      btn.textContent = '格納 🔼';
+      slot0.classList.remove('single-large');
+      if (expandedCount === 2) {
+        btn.textContent = '展開 🔽';
+      } else {
+        btn.textContent = '格納 🔼';
+      }
     }
     calculateTotal();
   }
