@@ -232,7 +232,6 @@
       border-radius: 4px;
       flex-shrink: 0;
       scrollbar-width: thin;
-      align-items: center;
     }
     .discount-scroll-bar::-webkit-scrollbar {
       height: 4px;
@@ -266,24 +265,6 @@
     }
     .btn-disc-chip:active {
       background: #d9534f;
-      color: #fff;
-    }
-    .btn-tax-chip {
-      height: 24px;
-      padding: 0 8px;
-      background: linear-gradient(180deg, #e6f2ff 0%, #b8d1ed 100%);
-      color: #112233;
-      border: 1px solid #7892ad;
-      font-family: sans-serif;
-      font-size: 0.75rem;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 3px;
-      flex-shrink: 0;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-    .btn-tax-chip:active {
-      background: #7892ad;
       color: #fff;
     }
 
@@ -340,7 +321,7 @@
       grid-column: span 2;
     }
     .btn-action:active {
-      background: linear-gradient(180deg, #f57c00 100%, #ffab40 100%) !important;
+      background: linear-gradient(180deg, #f57c00 0%, #ffab40 100%) !important;
     }
 
     .total-box {
@@ -526,10 +507,8 @@
     </div>
   </div>
 
-  <!-- 割引・税金スライド選択バー -->
+  <!-- 割引スライド選択バー（10%〜80%） -->
   <div class="discount-scroll-bar">
-    <button class="btn-tax-chip" onclick="applyTax(true)">税込</button>
-    <button class="btn-tax-chip" onclick="applyTax(false)">税抜</button>
     <span class="disc-label-tag">割引：</span>
     <button class="btn-disc-chip" onclick="applyQuickDiscount(10)">10%</button>
     <button class="btn-disc-chip" onclick="applyQuickDiscount(15)">15%</button>
@@ -579,6 +558,7 @@
     <button onclick="append('000')">000</button>
     <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
 
+    <!-- 🔻 ここで「TOTAL（表示中）」と「＝」の左右の配置を入れ替えました -->
     <div class="total-box">
       <span class="total-label">TOTAL (表示中)</span>
       <span class="total-value" id="total-val">0</span>
@@ -597,6 +577,7 @@
   </div>
 </div>
 
+<!-- 📲 追加されたPWA手動インストールボタン -->
 <button id="pwa-install-btn">📲 アプリをインストール</button>
 
 <script>
@@ -819,24 +800,6 @@
     } catch (e) { s.value = 'ERR'; updateView(); }
   }
 
-  function applyTax(isIncl) {
-    let s = slots[activeSlot];
-    try {
-      let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
-      if (!isNaN(current)) {
-        let result = isIncl ? current * 1.10 : current / 1.10;
-        let taxLabel = isIncl ? '税込' : '税抜';
-        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} (${taxLabel})`;
-        
-        s.expr = `${current.toLocaleString('ja-JP')} (${taxLabel})`;
-        s.value = String(result);
-        addHistory(formula, result);
-        s.isNew = false;
-        updateView();
-      }
-    } catch (e) { s.value = 'ERR'; updateView(); }
-  }
-
   function calculate() {
     let s = slots[activeSlot];
     try {
@@ -875,6 +838,9 @@
     document.getElementById('historyDrawer').classList.toggle('open');
   }
 
+  /* ========================================================== */
+  /* PWA インストールプロンプト制御スクリプト                    */
+  /* ========================================================== */
   let deferredPrompt = null;
   const installBtn = document.getElementById('pwa-install-btn');
 
