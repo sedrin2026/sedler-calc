@@ -136,10 +136,69 @@
       min-height: 80px;
     }
 
-    /* 共通スロットベース（デフォルトは既存のオレンジ系待機状態） */
-    .slot-panel {
+    /* スロット1のデフォルト（オレンジ系） */
+    #slot-0 {
       background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
       border: 2px solid #ffa726;
+    }
+    #slot-0 .slot-label, #slot-0 .memory-indicator-slot, #slot-0 .expr-line-slot {
+      color: #6d4c41;
+    }
+    #slot-0 .display-slot-value {
+      color: #5d4037 !important;
+    }
+
+    /* スロット1：3つ展開時の薄いグリーン用クラス */
+    #slot-0.triple-green {
+      background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9) !important;
+      border: 2px solid #a5d6a7 !important;
+    }
+    #slot-0.triple-green .slot-label, 
+    #slot-0.triple-green .memory-indicator-slot, 
+    #slot-0.triple-green .expr-line-slot {
+      color: #2e7d32 !important;
+    }
+    #slot-0.triple-green .display-slot-value {
+      color: #1b5e20 !important;
+    }
+    #slot-0.triple-green.active {
+      border: 2.5px solid #285d73 !important;
+      background: linear-gradient(180deg, #d0e8f2 0%, #8fb9c6 100%) !important;
+    }
+    #slot-0.triple-green.active .slot-label,
+    #slot-0.triple-green.active .expr-line-slot {
+      color: #2c4a54 !important;
+    }
+    #slot-0.triple-green.active .display-slot-value {
+      color: #11222c !important;
+    }
+
+    /* スロット2（デフォルト：オレンジ系） */
+    #slot-1 {
+      background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
+      border: 2px solid #ffa726;
+    }
+    #slot-1 .slot-label, #slot-1 .memory-indicator-slot, #slot-1 .expr-line-slot {
+      color: #6d4c41;
+    }
+    #slot-1 .display-slot-value {
+      color: #5d4037 !important;
+    }
+
+    /* スロット3専用：待機中の背景色をパープル系に指定 */
+    #slot-2 {
+      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9);
+      border: 2px solid #b39ddb;
+    }
+    #slot-2 .slot-label, #slot-2 .memory-indicator-slot, #slot-2 .expr-line-slot {
+      color: #4a237a;
+    }
+    #slot-2 .display-slot-value {
+      color: #3b1c64 !important;
+    }
+
+    /* 共通スロットベース */
+    .slot-panel {
       border-radius: 6px;
       padding: 2px 8px;
       text-align: right;
@@ -153,12 +212,6 @@
       box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
       overflow: hidden;
       max-height: 200px;
-    }
-
-    /* スロット3専用：待機中の背景色を「mc」ボタンと同じ紫系に指定 */
-    #slot-2 {
-      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9);
-      border: 2px solid #b39ddb;
     }
 
     .slot-panel.collapsed {
@@ -178,20 +231,22 @@
       box-shadow: inset 0 3px 6px rgba(0,0,0,0.2), 0 0 10px rgba(41, 128, 185, 0.4);
       opacity: 1;
     }
+    .slot-panel.active .slot-label {
+      color: #2c4a54 !important;
+    }
+    .slot-panel.active .expr-line-slot {
+      color: #4a6772 !important;
+    }
+    .slot-panel.active .display-slot-value {
+      color: #11222c !important;
+    }
 
     .slot-label {
       position: absolute;
       top: 2px;
       left: 6px;
       font-size: 0.65rem;
-      color: #6d4c41;
       font-weight: 900;
-    }
-    #slot-2 .slot-label {
-      color: #4a237a;
-    }
-    .slot-panel.active .slot-label {
-      color: #2c4a54;
     }
 
     .memory-indicator-slot {
@@ -199,17 +254,12 @@
       top: 2px;
       right: 8px;
       font-size: 0.65rem;
-      color: #6d4c41;
       font-weight: bold;
-    }
-    #slot-2 .memory-indicator-slot {
-      color: #4a237a;
     }
 
     .expr-line-slot {
       font-family: var(--calc-font);
       font-size: 0.8rem;
-      color: #8d6e63;
       min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
@@ -217,31 +267,18 @@
       font-weight: 600;
       margin-top: 10px;
     }
-    #slot-2 .expr-line-slot {
-      color: #674ea7;
-    }
-    .slot-panel.active .expr-line-slot {
-      color: #4a6772;
-    }
 
     .display-slot-value {
       width: 100%;
       background: transparent;
       border: none;
       outline: none;
-      color: #5d4037 !important;
       font-family: var(--calc-font);
       font-size: 2.2rem;
       font-weight: 600;
       text-align: right;
       letter-spacing: 0.5px;
       line-height: 1;
-    }
-    #slot-2 .display-slot-value {
-      color: #3b1c64 !important;
-    }
-    .slot-panel.active .display-slot-value {
-      color: #11222c !important;
     }
 
     /* 展開前（スロット1単独）専用：サイズそのままで太さを少し細く(400) */
@@ -756,6 +793,12 @@
     }
 
     const slot0 = document.getElementById('slot-0');
+    if (expandedCount === 3) {
+      slot0.classList.add('triple-green');
+    } else {
+      slot0.classList.remove('triple-green');
+    }
+
     if (expandedCount === 1) {
       slot0.classList.add('single-large');
       btn.textContent = '展開 🔽';
@@ -1048,7 +1091,6 @@
     }
   });
 
-  // ★起動時にスロット表示状態を確実に適用
   applySlotVisibility();
 </script>
 
