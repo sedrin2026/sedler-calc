@@ -218,78 +218,93 @@
       line-height: 1;
     }
 
-    /* 新UI: 3分割ボタン＆ドロップダウンメニュー */
-    .calc-mode-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    /* 割引・税金スライド（横スクロール）バー */
+    .discount-scroll-bar {
+      display: flex;
       gap: 4px;
       margin-bottom: 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+      background: linear-gradient(180deg, #dcdcdc 0%, #bcbcbc 100%);
+      border: 1px solid #999;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      padding: 3px 4px;
+      border-radius: 4px;
       flex-shrink: 0;
+      scrollbar-width: thin;
       position: relative;
     }
-
-    .mode-dropdown-container {
-      position: relative;
-      width: 100%;
+    .discount-scroll-bar::-webkit-scrollbar {
+      height: 4px;
     }
-
-    .btn-mode-trigger {
-      width: 100%;
-      height: 30px;
-      background: linear-gradient(180deg, #e6f2ff 0%, #b8d1ed 100%);
-      color: #112233;
-      border: 1px solid #7892ad;
-      border-bottom: 2px solid #566c82;
-      font-family: sans-serif;
-      font-size: 0.8rem;
+    .discount-scroll-bar::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 2px;
+    }
+    .disc-label-tag {
+      font-size: 0.7rem;
+      color: #222;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .btn-disc-chip {
+      height: 24px;
+      padding: 0 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+      color: #b52b27;
+      border: 1px solid #adadad;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
-      border-radius: 4px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
-
-    .btn-mode-trigger:active {
-      background: #7892ad;
+    .btn-disc-chip:active {
+      background: #d9534f;
+      color: #fff;
+    }
+    .btn-tax-chip {
+      height: 24px;
+      padding: 0 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+      color: #0044aa;
+      border: 1px solid #adadad;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .btn-tax-chip:active {
+      background: #0044aa;
       color: #fff;
     }
 
-    .mode-dropdown-menu {
+    /* 税金ドロップダウン用コンテナ */
+    .tax-dropdown-container {
       display: none;
       position: absolute;
-      top: 34px;
-      left: 0;
-      width: 100%;
-      max-height: 160px;
-      overflow-y: auto;
-      background: #ffffff;
-      border: 1px solid #7892ad;
+      bottom: 35px;
+      left: 4px;
+      right: 4px;
+      background: rgba(220, 220, 220, 0.95);
+      border: 1px solid #888;
+      padding: 4px;
       border-radius: 4px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-      z-index: 100;
-      scrollbar-width: thin;
+      gap: 4px;
+      overflow-x: auto;
+      z-index: 20;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-
-    .mode-dropdown-menu.open {
-      display: block;
-    }
-
-    .mode-dropdown-item {
-      padding: 8px 4px;
-      text-align: center;
-      font-size: 0.8rem;
-      font-weight: bold;
-      color: #333;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-      background: #fff;
-    }
-
-    .mode-dropdown-item:hover, .mode-dropdown-item:active {
-      background: #d8e2ec;
-      color: #112233;
+    .tax-dropdown-container.open {
+      display: flex;
     }
 
     /* メインボタンエリア */
@@ -345,7 +360,7 @@
       grid-column: span 2;
     }
     .btn-action:active {
-      background: linear-gradient(180deg, #f57c00 100%, #ffab40 100%) !important;
+      background: linear-gradient(180deg, #f57c00 0%, #ffab40 100%) !important;
     }
 
     .total-box {
@@ -405,7 +420,7 @@
       border-top: 3px solid #7892ad;
       transition: height 0.25s ease;
       overflow-y: auto;
-      z-index: 10;
+      z-index: 30;
       padding: 0 12px;
       box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
     }
@@ -470,7 +485,6 @@
       font-size: 0.85rem;
     }
 
-    /* PWAインストールボタン用スタイル（初期は非表示） */
     #pwa-install-btn {
       display: none;
       position: fixed;
@@ -531,61 +545,56 @@
     </div>
   </div>
 
-  <!-- 新UI: 3分割ボタン＆縦型ドロップダウンメニュー -->
-  <div class="calc-mode-bar">
-    <!-- 税込 -->
-    <div class="mode-dropdown-container">
-      <button class="btn-mode-trigger" id="btn-tax-in-trigger" onclick="toggleDropdown('taxIn')">税込▼10%</button>
-      <div class="mode-dropdown-menu" id="dropdown-tax-in">
-        <div class="mode-dropdown-item" onclick="selectTaxIn(10)">10%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(9)">9%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(8)">8%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(7)">7%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(6)">6%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(5)">5%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(4)">4%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(3)">3%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(2)">2%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxIn(1)">1%</div>
-      </div>
+  <!-- 割引スライド選択バー（10%〜85% ＆ 税込・税抜プルダウン対応） -->
+  <div class="discount-scroll-bar" id="scrollBar">
+    <button class="btn-tax-chip" onclick="toggleTaxDropdown('taxIn')">税込 ▼</button>
+    <button class="btn-tax-chip" onclick="toggleTaxDropdown('taxEx')">税抜 ▼</button>
+    <span class="disc-label-tag">割引：</span>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(10)">10%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(15)">15%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(20)">20%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(25)">25%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(30)">30%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(35)">35%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(40)">40%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(45)">45%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(50)">50%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(55)">55%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(60)">60%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(65)">65%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(70)">70%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(75)">75%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(80)">80%</button>
+    <button class="btn-disc-chip" onclick="applyQuickDiscount(85)">85%</button>
+
+    <!-- 税込プルダウンメニュー（10%〜1%） -->
+    <div class="tax-dropdown-container" id="taxInDropdown">
+      <span class="disc-label-tag">税込:</span>
+      <button class="btn-tax-chip" onclick="applyTax('in', 10)">10%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 9)">9%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 8)">8%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 7)">7%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 6)">6%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 5)">5%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 4)">4%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 3)">3%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 2)">2%</button>
+      <button class="btn-tax-chip" onclick="applyTax('in', 1)">1%</button>
     </div>
-    <!-- 税抜 -->
-    <div class="mode-dropdown-container">
-      <button class="btn-mode-trigger" id="btn-tax-ex-trigger" onclick="toggleDropdown('taxEx')">税抜▼10%</button>
-      <div class="mode-dropdown-menu" id="dropdown-tax-ex">
-        <div class="mode-dropdown-item" onclick="selectTaxEx(10)">10%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(9)">9%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(8)">8%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(7)">7%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(6)">6%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(5)">5%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(4)">4%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(3)">3%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(2)">2%</div>
-        <div class="mode-dropdown-item" onclick="selectTaxEx(1)">1%</div>
-      </div>
-    </div>
-    <!-- 割引 -->
-    <div class="mode-dropdown-container">
-      <button class="btn-mode-trigger" id="btn-disc-trigger" onclick="toggleDropdown('disc')">割引▼10%</button>
-      <div class="mode-dropdown-menu" id="dropdown-disc">
-        <div class="mode-dropdown-item" onclick="selectDisc(10)">10%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(15)">15%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(20)">20%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(25)">25%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(30)">30%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(35)">35%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(40)">40%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(45)">45%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(50)">50%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(55)">55%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(60)">60%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(65)">65%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(70)">70%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(75)">75%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(80)">80%</div>
-        <div class="mode-dropdown-item" onclick="selectDisc(85)">85%</div>
-      </div>
+
+    <!-- 税抜プルダウンメニュー（10%〜1%） -->
+    <div class="tax-dropdown-container" id="taxExDropdown">
+      <span class="disc-label-tag">税抜:</span>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 10)">10%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 9)">9%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 8)">8%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 7)">7%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 6)">6%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 5)">5%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 4)">4%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 3)">3%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 2)">2%</button>
+      <button class="btn-tax-chip" onclick="applyTax('ex', 1)">1%</button>
     </div>
   </div>
 
@@ -663,43 +672,6 @@
     { value: '0', expr: 'READY', isNew: true, memory: 0 }
   ];
   let historyArr = [];
-
-  let currentTaxInRate = 10;
-  let currentTaxExRate = 10;
-  let currentDiscRate = 10;
-
-  function toggleDropdown(type) {
-    const menus = ['dropdown-tax-in', 'dropdown-tax-ex', 'dropdown-disc'];
-    menus.forEach(id => {
-      const el = document.getElementById(id);
-      if (id === `dropdown-${type}`) {
-        el.classList.toggle('open');
-      } else {
-        el.classList.remove('open');
-      }
-    });
-  }
-
-  function selectTaxIn(rate) {
-    currentTaxInRate = rate;
-    document.getElementById('btn-tax-in-trigger').textContent = `税込▼${rate}%`;
-    document.getElementById('dropdown-tax-in').classList.remove('open');
-    applyTax(true, rate);
-  }
-
-  function selectTaxEx(rate) {
-    currentTaxExRate = rate;
-    document.getElementById('btn-tax-ex-trigger').textContent = `税抜▼${rate}%`;
-    document.getElementById('dropdown-tax-ex').classList.remove('open');
-    applyTax(false, rate);
-  }
-
-  function selectDisc(rate) {
-    currentDiscRate = rate;
-    document.getElementById('btn-disc-trigger').textContent = `割引▼${rate}%`;
-    document.getElementById('dropdown-disc').classList.remove('open');
-    applyQuickDiscount(rate);
-  }
 
   function toggleSlots() {
     if (expandedCount === 1) {
@@ -879,6 +851,19 @@
     updateView();
   }
 
+  /* 税込・税抜プルダウンの開閉制御 */
+  function toggleTaxDropdown(type) {
+    const inDropdown = document.getElementById('taxInDropdown');
+    const exDropdown = document.getElementById('taxExDropdown');
+    if (type === 'taxIn') {
+      inDropdown.classList.toggle('open');
+      exDropdown.classList.remove('open');
+    } else {
+      exDropdown.classList.toggle('open');
+      inDropdown.classList.remove('open');
+    }
+  }
+
   function applyQuickDiscount(rateInput) {
     let s = slots[activeSlot];
     try {
@@ -897,23 +882,30 @@
     } catch (e) { s.value = 'ERR'; updateView(); }
   }
 
-  function applyTax(isIncl, rate) {
+  function applyTax(type, rateInput) {
     let s = slots[activeSlot];
     try {
       let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(current)) {
-        let factor = 1 + (rate / 100);
-        let result = isIncl ? current * factor : current / factor;
-        let taxLabel = isIncl ? `税込(${rate}%)` : `税抜(${rate}%)`;
-        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} (${taxLabel})`;
-        
-        s.expr = `${current.toLocaleString('ja-JP')} (${taxLabel})`;
+        let result;
+        let formula;
+        if (type === 'in') {
+          result = current * (1 + rateInput / 100);
+          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ＋ 税込${rateInput}%`;
+          s.expr = `${current.toLocaleString('ja-JP')} (税込${rateInput}%)`;
+        } else {
+          result = current / (1 + rateInput / 100);
+          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} － 税抜${rateInput}%`;
+          s.expr = `${current.toLocaleString('ja-JP')} (税抜${rateInput}%)`;
+        }
         s.value = String(result);
         addHistory(formula, result);
         s.isNew = false;
         updateView();
       }
     } catch (e) { s.value = 'ERR'; updateView(); }
+    document.getElementById('taxInDropdown').classList.remove('open');
+    document.getElementById('taxExDropdown').classList.remove('open');
   }
 
   function calculate() {
