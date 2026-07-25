@@ -136,9 +136,10 @@
       min-height: 80px;
     }
 
+    /* 待機中（非選択）をオレンジ・黄土色系に変更 */
     .slot-panel {
-      background: linear-gradient(180deg, #b8d6de 0%, #8fb9c6 100%);
-      border: 2px solid #5d8390;
+      background: linear-gradient(180deg, #fce8c8 0%, #f3b562 100%);
+      border: 2px solid #b37424;
       border-radius: 6px;
       padding: 2px 8px;
       text-align: right;
@@ -149,7 +150,7 @@
       flex: 1;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: inset 0 3px 6px rgba(0,0,0,0.25);
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.15);
       overflow: hidden;
       max-height: 200px;
     }
@@ -164,10 +165,11 @@
       pointer-events: none;
     }
 
+    /* 選択中（アクティブ）をブルー系に変更 */
     .slot-panel.active {
-      border: 2.5px solid #d9534f !important;
-      background: linear-gradient(180deg, #fce8c8 0%, #f3b562 100%) !important;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.15), 0 0 10px rgba(217, 83, 79, 0.6);
+      border: 2.5px solid #285d73 !important;
+      background: linear-gradient(180deg, #d0e8f2 0%, #8fb9c6 100%) !important;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.2), 0 0 10px rgba(41, 128, 185, 0.4);
       opacity: 1;
     }
 
@@ -176,8 +178,11 @@
       top: 2px;
       left: 6px;
       font-size: 0.65rem;
-      color: #2c4a54;
+      color: #5a3a18;
       font-weight: 900;
+    }
+    .slot-panel.active .slot-label {
+      color: #2c4a54;
     }
 
     .memory-indicator-slot {
@@ -192,7 +197,7 @@
     .expr-line-slot {
       font-family: var(--calc-font);
       font-size: 0.8rem;
-      color: #4a6772;
+      color: #7a5228;
       min-height: 14px;
       overflow: hidden;
       white-space: nowrap;
@@ -200,19 +205,25 @@
       font-weight: 600;
       margin-top: 10px;
     }
+    .slot-panel.active .expr-line-slot {
+      color: #4a6772;
+    }
 
     .display-slot-value {
       width: 100%;
       background: transparent;
       border: none;
       outline: none;
-      color: #11222c !important;
+      color: #3b230e !important;
       font-family: var(--calc-font);
       font-size: 2.2rem;
       font-weight: 600;
       text-align: right;
       letter-spacing: 0.5px;
       line-height: 1;
+    }
+    .slot-panel.active .display-slot-value {
+      color: #11222c !important;
     }
 
     /* 展開前（スロット1単独）専用：サイズそのままで太さを少し細く(400) */
@@ -234,7 +245,7 @@
     .single-divider {
       width: 100%;
       border: none;
-      border-top: 1.5px solid #4a6772;
+      border-top: 1.5px solid #285d73;
       margin-bottom: 3px;
     }
 
@@ -243,7 +254,7 @@
       font-size: 0.75rem;
       color: #4a6772;
       font-weight: bold;
-      text-align: left; /* 左端寄せに変更 */
+      text-align: left;
       letter-spacing: -0.5px;
       padding-bottom: 2px;
       padding-left: 2px;
@@ -556,14 +567,14 @@
       </div>
     </div>
 
-    <div class="slot-panel collapsed" id="slot-1" onclick="switchSlot(1)">
+    <div class="slot-panel" id="slot-1" onclick="switchSlot(1)">
       <span class="slot-label">[SLOT 2]</span>
       <span class="memory-indicator-slot" id="mem-1"></span>
       <div class="expr-line-slot" id="expr-1">READY</div>
       <input type="text" class="display-slot-value" id="disp-1" readonly value="0">
     </div>
 
-    <div class="slot-panel collapsed" id="slot-2" onclick="switchSlot(2)">
+    <div class="slot-panel" id="slot-2" onclick="switchSlot(2)">
       <span class="slot-label">[SLOT 3]</span>
       <span class="memory-indicator-slot" id="mem-2"></span>
       <div class="expr-line-slot" id="expr-2">READY</div>
