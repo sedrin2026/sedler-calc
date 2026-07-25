@@ -217,7 +217,7 @@
       line-height: 1;
     }
 
-    /* 独立した3つのボタンバー（税込・税抜・割引を常に同時表示） */
+    /* 独立した3つのボタンバー */
     .feature-action-bar {
       display: grid;
       grid-template-columns: 1fr 1fr 1.2fr;
@@ -225,11 +225,11 @@
       margin-bottom: 6px;
       flex-shrink: 0;
       position: relative;
-      z-index: 20;
+      z-index: 50;
     }
 
     .btn-feature-main {
-      height: 28px;
+      height: 32px;
       width: 100%;
       padding: 0 4px;
       background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
@@ -253,22 +253,23 @@
       background: #ccc;
     }
 
-    /* 各ボタンの真下に展開するプルダウンメニュー */
+    /* 各ボタンの真下に展開する「完全な縦型スクロールプルダウンメニュー」 */
     .dropdown-popup {
       display: none;
       position: absolute;
-      top: 32px;
+      top: 36px;
       left: 0;
-      right: 0;
-      background: rgba(235, 235, 235, 0.98);
+      width: 100%;
+      background: rgba(245, 245, 245, 0.98);
       border: 1px solid #888;
-      padding: 6px;
+      padding: 4px;
       border-radius: 4px;
+      flex-direction: column;
       gap: 3px;
-      overflow-x: auto;
-      z-index: 25;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      white-space: nowrap;
+      z-index: 100;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      max-height: 220px;
+      overflow-y: auto;
       scrollbar-width: thin;
     }
     .dropdown-popup.open {
@@ -276,15 +277,16 @@
     }
 
     .btn-dropdown-chip {
-      height: 24px;
-      padding: 0 6px;
-      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
-      border: 1px solid #adadad;
+      height: 30px;
+      width: 100%;
+      background: linear-gradient(180deg, #ffffff 0%, #eaeaea 100%);
+      border: 1px solid #b5b5b5;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       font-weight: bold;
       cursor: pointer;
       border-radius: 3px;
+      text-align: center;
       flex-shrink: 0;
     }
     .tax-dropdown-chip { color: #0044aa; }
@@ -408,7 +410,7 @@
       border-top: 3px solid #7892ad;
       transition: height 0.25s ease;
       overflow-y: auto;
-      z-index: 30;
+      z-index: 200;
       padding: 0 12px;
       box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
     }
@@ -533,9 +535,9 @@
     </div>
   </div>
 
-  <!-- 独立した3つのボタンバー（税込・税抜・割引を常時同時表示し、それぞれの真下にメニューが開く） -->
+  <!-- 独立した3つのボタンバー（真下に縦型スクロールプルダウンを展開） -->
   <div class="feature-action-bar">
-    <!-- 1. 税込ボタンとポップアップ -->
+    <!-- 1. 税込ボタンと縦型メニュー -->
     <div style="position: relative; width: 100%;">
       <button class="btn-feature-main tax-in" onclick="togglePopup('taxIn')">税込 ▼</button>
       <div class="dropdown-popup" id="taxInDropdown">
@@ -552,7 +554,7 @@
       </div>
     </div>
 
-    <!-- 2. 税抜ボタンとポップアップ -->
+    <!-- 2. 税抜ボタンと縦型メニュー -->
     <div style="position: relative; width: 100%;">
       <button class="btn-feature-main tax-ex" onclick="togglePopup('taxEx')">税抜 ▼</button>
       <div class="dropdown-popup" id="taxExDropdown">
@@ -569,7 +571,7 @@
       </div>
     </div>
 
-    <!-- 3. 割引ボタンとポップアップ -->
+    <!-- 3. 割引ボタンと縦型メニュー -->
     <div style="position: relative; width: 100%;">
       <button class="btn-feature-main discount" onclick="togglePopup('disc')">割引 ▼</button>
       <div class="dropdown-popup" id="discDropdown">
@@ -846,20 +848,21 @@
     updateView();
   }
 
-  /* 各ボタンごとの独立したポップアップ開閉 */
+  /* 縦型プルダウンメニューの開閉制御 */
   function togglePopup(target) {
     const inDropdown = document.getElementById('taxInDropdown');
     const exDropdown = document.getElementById('taxExDropdown');
     const discDropdown = document.getElementById('discDropdown');
 
-    const isOpen = document.getElementById(target + 'Dropdown').classList.contains('open');
+    const targetEl = document.getElementById(target + 'Dropdown');
+    const isOpen = targetEl.classList.contains('open');
 
     inDropdown.classList.remove('open');
     exDropdown.classList.remove('open');
     discDropdown.classList.remove('open');
 
     if (!isOpen) {
-      document.getElementById(target + 'Dropdown').classList.add('open');
+      targetEl.classList.add('open');
     }
   }
 
