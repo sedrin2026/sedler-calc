@@ -493,7 +493,7 @@
       box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
     }
     .history-drawer.open, .calendar-drawer.open, .ocr-modal.open {
-      height: 75%;
+      height: 80%;
       padding: 14px;
     }
     
@@ -752,13 +752,18 @@
     <div id="calDayDetails"></div>
   </div>
 
-  <!-- レシートOCR確認・編集モーダル -->
+  <!-- レシートOCR確認・編集モーダル（日付遡り対応版） -->
   <div class="ocr-modal" id="ocrModal">
     <div class="drawer-header">
       <span class="drawer-title">📷 レシートOCR確認・編集</span>
       <button class="drawer-close" onclick="closeReceiptScanner()">✖ 取消</button>
     </div>
-    <input type="file" id="receiptFile" accept="image/*" capture="environment" style="margin-bottom:10px; width:100%;" onchange="processReceiptImage(this)">
+    <input type="file" id="receiptFile" accept="image/*" capture="environment" style="margin-bottom:8px; width:100%;" onchange="processReceiptImage(this)">
+    
+    <div class="ocr-form-group">
+      <label>購入日付（過去の日付に遡って変更可能）</label>
+      <input type="date" id="ocrReceiptDate">
+    </div>
     <div class="ocr-form-group">
       <label>商品名（品目）</label>
       <input type="text" id="ocrItemName" value="お買い物一式">
@@ -771,7 +776,7 @@
       <label>合計金額（電卓・カレンダー反映）</label>
       <input type="text" id="ocrTotalAmount" value="0">
     </div>
-    <button class="btn-ocr-action" onclick="confirmReceiptData()">確認してカレンダー＆電卓に反映する</button>
+    <button class="btn-ocr-action" onclick="confirmReceiptData()">指定した日付のカレンダー＆電卓に反映する</button>
   </div>
 </div>
 
@@ -1016,12 +1021,19 @@
     renderHistory();
   }
 
-  // --- 第1段階：レシートOCR ＆ カレンダー連動ロジック ---
+  // --- レシートOCR ＆ 過去遡りカレンダー連動ロジック ---
   function openReceiptScanner() {
     document.getElementById('ocrModal').classList.add('open');
-    // デモ・簡易サンプルとして、直近の電卓の値を合計初期値にセット
+    
+    // デフォルトで今日の日付をセット（過去に遡る場合はここをカレンダーから自由に変更可能）
+    let now = new Date();
+    let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    document.getElementById('ocrReceiptDate').value = todayStr;
+
+    // 電卓の現在値を合計金額の初期候補にセット
     let curVal = document.getElementById('total-val').textContent.replace(/,/g, '');
     document.getElementById('ocrTotalAmount').value = curVal;
+    document.getElementById('ocrItemPrice').value = curVal;
   }
 
   function closeReceiptScanner() {
@@ -1030,26 +1042,31 @@
 
   function processReceiptImage(input) {
     if (input.files && input.files[0]) {
-      // オフラインOCRモック処理（実機ではここで画像解析またはダミー抽出）
-      document.getElementById('ocrItemName').value = 'コンビニ・スーパー買物';
-      document.getElementById('ocrItemPrice').value = document.getElementById('ocrTotalAmount').value;
-      alert('レシート画像を検知しました！オフライン解析により数値を抽出しました。確認画面で編集できます。');
+      // オフラインOCRシミュレーション
+      document.getElementById('ocrItemName').value = 'レシート買物明細';
+      alert('レシート画像を認識しました！必要に応じて「購入日付」を過去の日にちに遡って変更し、登録してください。');
     }
   }
 
   function confirmReceiptData() {
+    let selectedDate = document.getElementById('ocrReceiptDate').value; // 例: "2026-04-15"
+    if (!selectedDate) {
+      alert('購入日付を指定してください。');
+      return;
+    }
+
     let itemName = document.getElementById('ocrItemName').value;
     let itemPrice = document.getElementById('ocrItemPrice').value;
     let totalAmt = parseFloat(document.getElementById('ocrTotalAmount').value.replace(/,/g, '')) || 0;
 
     let now = new Date();
-    let dateKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    if (!calendarRecords[dateKey]) {
-      calendarRecords[dateKey] = [];
+    // 指定された過去の日付（selectedDate）のキーにデータを格納
+    if (!calendarRecords[selectedDate]) {
+      calendarRecords[selectedDate] = [];
     }
-    calendarRecords[dateKey].push({
+    calendarRecords[selectedDate].push({
       time: timeStr,
       name: itemName,
       price: itemPrice,
@@ -1058,14 +1075,14 @@
 
     localStorage.setItem('cyber_calc_calendar', JSON.stringify(calendarRecords));
     
-    // 電卓のスロット1にも合計を反映
+    // 電卓スロット1にも合計金額を反映
     slots[0].value = String(totalAmt);
-    slots[0].expr = `レシート: ${itemName}`;
+    slots[0].expr = `[${selectedDate}] ${itemName}`;
     slots[0].isNew = true;
     updateView();
 
     closeReceiptScanner();
-    alert('レシート情報をカレンダーおよび電卓に正常に反映しました！');
+    alert(`【${selectedDate}】 のカレンダーへ正常に追加記録しました！`);
   }
 
   function toggleCalendar() {
@@ -1119,10 +1136,10 @@
       return;
     }
     let html = `<b style="font-size:0.85rem; color:#0044aa; display:block; margin-bottom:6px;">📍 ${dateKey} の購入履歴</b>`;
-    records.forEach(r => {
+    records.forEach((r, idx) => {
       html += `
         <div class="calendar-day-detail">
-          <div><b>時刻:</b> ${r.time}</div>
+          <div><b>記録 #${idx+1} (${r.time})</b></div>
           <div><b>品目:</b> ${r.name}</div>
           <div><b>価格メモ:</b> ${r.price}</div>
           <div style="color:#b52b27; font-weight:bold;">合計金額: ¥${Number(r.total).toLocaleString()}</div>
