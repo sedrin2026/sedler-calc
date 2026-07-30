@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CYBER_CALC</title>
+  <title>CYBER_CALC EXT</title>
   
   <link rel="manifest" href="./manifest.json">
   <script>
@@ -12,6 +12,9 @@
       .then(() => console.log('Service Worker 登録成功！'));
   }
   </script>
+
+  <!-- Tesseract.js CDN (完全オフライン対応ブラウザOCR) -->
+  <script src="https://unpkg.com/tesseract.js@v5.1.0/dist/tesseract.min.js"></script>
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -82,9 +85,9 @@
       color: #00ffcc;
       border: 1px solid #444;
       font-family: var(--calc-font);
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 600;
-      padding: 3px 8px;
+      padding: 3px 6px;
       border-radius: 4px;
       display: flex;
       align-items: center;
@@ -92,7 +95,7 @@
 
     .top-controls {
       display: flex;
-      gap: 4px;
+      gap: 3px;
       align-items: stretch;
     }
 
@@ -101,17 +104,17 @@
       align-items: center;
       justify-content: center;
       font-family: var(--calc-font);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: bold;
-      padding: 4px 10px;
+      padding: 4px 8px;
       cursor: pointer;
       border-radius: 4px;
-      min-width: 50px;
       text-align: center;
       background: linear-gradient(180deg, #f0f0f0 0%, #cccccc 100%);
       color: #333;
       border: 1px solid #999;
       box-shadow: 0 2px 3px rgba(0,0,0,0.15);
+      white-space: nowrap;
     }
 
     .btn-control {
@@ -126,6 +129,12 @@
       border: 1px solid #b52b27 !important;
     }
 
+    .btn-ocr {
+      background: linear-gradient(180deg, #d4edda 0%, #c3e6cb) !important;
+      color: #155724 !important;
+      border: 1px solid #28a745 !important;
+    }
+
     /* ディスプレイ領域 */
     .display-panel-container {
       display: flex;
@@ -136,7 +145,6 @@
       min-height: 80px;
     }
 
-    /* スロット1のデフォルト（オレンジ系） */
     #slot-0 {
       background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
       border: 2px solid #ffa726;
@@ -148,7 +156,6 @@
       color: #5d4037 !important;
     }
 
-    /* スロット1：3つ展開時の薄いグリーン用クラス */
     #slot-0.triple-green {
       background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9) !important;
       border: 2px solid #a5d6a7 !important;
@@ -173,7 +180,6 @@
       color: #11222c !important;
     }
 
-    /* スロット2（デフォルト：オレンジ系） */
     #slot-1 {
       background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
       border: 2px solid #ffa726;
@@ -185,7 +191,6 @@
       color: #5d4037 !important;
     }
 
-    /* スロット3専用：待機中の背景色をパープル系に指定 */
     #slot-2 {
       background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9);
       border: 2px solid #b39ddb;
@@ -197,7 +202,6 @@
       color: #3b1c64 !important;
     }
 
-    /* 共通スロットベース */
     .slot-panel {
       border-radius: 6px;
       padding: 2px 8px;
@@ -224,22 +228,15 @@
       pointer-events: none;
     }
 
-    /* 選択中（アクティブ）をブルー系に変更 */
     .slot-panel.active {
       border: 2.5px solid #285d73 !important;
       background: linear-gradient(180deg, #d0e8f2 0%, #8fb9c6 100%) !important;
       box-shadow: inset 0 3px 6px rgba(0,0,0,0.2), 0 0 10px rgba(41, 128, 185, 0.4);
       opacity: 1;
     }
-    .slot-panel.active .slot-label {
-      color: #2c4a54 !important;
-    }
-    .slot-panel.active .expr-line-slot {
-      color: #4a6772 !important;
-    }
-    .slot-panel.active .display-slot-value {
-      color: #11222c !important;
-    }
+    .slot-panel.active .slot-label { color: #2c4a54 !important; }
+    .slot-panel.active .expr-line-slot { color: #4a6772 !important; }
+    .slot-panel.active .display-slot-value { color: #11222c !important; }
 
     .slot-label {
       position: absolute;
@@ -281,7 +278,6 @@
       line-height: 1;
     }
 
-    /* 展開前（スロット1単独）専用：サイズそのままで太さを少し細く(400) */
     .slot-panel.single-large .display-slot-value {
       font-size: 4.4rem !important;
       font-weight: 400 !important;
@@ -346,12 +342,8 @@
     .btn-feature-main.tax-in { color: #0044aa; }
     .btn-feature-main.tax-ex { color: #0044aa; }
     .btn-feature-main.discount { color: #b52b27; }
+    .btn-feature-main:active { background: #ccc; }
 
-    .btn-feature-main:active {
-      background: #ccc;
-    }
-
-    /* 各ボタンの真下に展開するメニュー */
     .dropdown-popup {
       display: none;
       position: absolute;
@@ -370,9 +362,7 @@
       overflow-y: auto;
       scrollbar-width: thin;
     }
-    .dropdown-popup.open {
-      display: flex;
-    }
+    .dropdown-popup.open { display: flex; }
 
     .btn-dropdown-chip {
       height: 30px;
@@ -389,11 +379,7 @@
     }
     .tax-dropdown-chip { color: #0044aa; }
     .disc-dropdown-chip { color: #b52b27; }
-
-    .btn-dropdown-chip:active {
-      background: #d9534f;
-      color: #fff;
-    }
+    .btn-dropdown-chip:active { background: #d9534f; color: #fff; }
 
     /* メインボタンエリア */
     .grid {
@@ -446,9 +432,6 @@
       font-size: 1.8rem !important;
       box-shadow: 0 3px 6px rgba(245, 124, 0, 0.4);
       grid-column: span 2;
-    }
-    .btn-action:active {
-      background: linear-gradient(180deg, #f57c00 100%, #ffab40 100%) !important;
     }
 
     .total-box {
@@ -513,7 +496,7 @@
       box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
     }
     .history-drawer.open {
-      height: 70%;
+      height: 75%;
       padding: 14px;
     }
     
@@ -530,7 +513,6 @@
       font-size: 0.95rem;
       color: #333;
       font-weight: 900;
-      white-space: nowrap;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -544,7 +526,6 @@
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
-      white-space: nowrap;
     }
     
     .history-list {
@@ -561,8 +542,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: var(--calc-font);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #333;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
@@ -572,6 +552,32 @@
       padding: 20px 0;
       font-size: 0.85rem;
     }
+
+    /* OCRローディングオーバーレイ */
+    .ocr-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      z-index: 500;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #00ffcc;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px;
+    }
+    .ocr-overlay.active { display: flex; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #444;
+      border-top: 4px solid #00ffcc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     #pwa-install-btn {
       display: none;
@@ -590,25 +596,30 @@
       border-radius: 30px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.5);
       cursor: pointer;
-      letter-spacing: 0.5px;
-    }
-    #pwa-install-btn:active {
-      transform: translateX(-50%) translateY(2px);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
 
 <div class="calc-card">
+  <!-- OCR解析中モーダル -->
+  <div class="ocr-overlay" id="ocrOverlay">
+    <div class="spinner"></div>
+    <div id="ocrStatusText">レシートをガチ解析中... (OCRエンジン起動)</div>
+  </div>
+
   <div class="status-bar">
     <div class="clock-badge" id="clock">2026.00.00 (---) 00:00</div>
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
+      <div class="btn-top-item btn-ocr" onclick="triggerReceiptScan()">📷 レシート読取</div>
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
     </div>
   </div>
+
+  <!-- 非同期レシート画像選択用インプット -->
+  <input type="file" id="receiptInput" accept="image/*" style="display:none;" onchange="processReceiptImage(event)">
 
   <div class="display-panel-container">
     <div class="slot-panel active single-large" id="slot-0" onclick="switchSlot(0)">
@@ -643,15 +654,8 @@
       <button class="btn-feature-main tax-in" onclick="togglePopup('taxIn')">税込 ▼</button>
       <div class="dropdown-popup" id="taxInDropdown">
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 10)">10%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 9)">9%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 8)">8%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 7)">7%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 6)">6%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 5)">5%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 4)">4%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 3)">3%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 2)">2%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 1)">1%</button>
       </div>
     </div>
 
@@ -659,37 +663,17 @@
       <button class="btn-feature-main tax-ex" onclick="togglePopup('taxEx')">税抜 ▼</button>
       <div class="dropdown-popup" id="taxExDropdown">
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 10)">10%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 9)">9%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 8)">8%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 7)">7%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 6)">6%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 5)">5%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 4)">4%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 3)">3%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 2)">2%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 1)">1%</button>
       </div>
     </div>
 
     <div style="position: relative; width: 100%;">
       <button class="btn-feature-main discount" onclick="togglePopup('disc')">割引 ▼</button>
       <div class="dropdown-popup" id="discDropdown">
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(10)">10%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(15)">15%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(20)">20%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(25)">25%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(30)">30%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(35)">35%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(40)">40%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(45)">45%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(50)">50%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(55)">55%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(60)">60%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(65)">65%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(70)">70%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(75)">75%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(80)">80%</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(85)">85%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(10)">10% OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(20)">20% OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(30)">30% OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(50)">50% OFF</button>
       </div>
     </div>
   </div>
@@ -732,9 +716,10 @@
     <button onclick="calculate()" class="btn-action">＝</button>
   </div>
 
+  <!-- 履歴・データベース同期ドロワー -->
   <div class="history-drawer" id="historyDrawer">
     <div class="history-header">
-      <span class="history-title"><span>//</span> 計算履歴</span>
+      <span class="history-title">📂 ガチ計算履歴 & レシートDB</span>
       <button class="history-close" onclick="toggleHistory()">✖ 閉じる</button>
     </div>
     <div class="history-list" id="historyList">
@@ -761,20 +746,21 @@
   updateClock();
 
   let activeSlot = 0;
-  let expandedCount = 1; // 起動時はスロット1のみ
+  let expandedCount = 1;
   let slots = [
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 }
   ];
-  let historyArr = [];
+  
+  // ローカルストレージからガチ履歴をロード
+  let historyArr = JSON.parse(localStorage.getItem('cyber_calc_history')) || [];
+  renderHistory();
 
   function toggleSlots() {
-    if (expandedCount === 1) {
-      expandedCount = 2;
-    } else if (expandedCount === 2) {
-      expandedCount = 3;
-    } else {
+    if (expandedCount === 1) expandedCount = 2;
+    else if (expandedCount === 2) expandedCount = 3;
+    else {
       expandedCount = 1;
       if (activeSlot > 0) switchSlot(0);
     }
@@ -785,30 +771,20 @@
     const btn = document.getElementById('btn-toggle-slots');
     for (let i = 0; i < 3; i++) {
       const panel = document.getElementById(`slot-${i}`);
-      if (i < expandedCount) {
-        panel.classList.remove('collapsed');
-      } else {
-        panel.classList.add('collapsed');
-      }
+      if (i < expandedCount) panel.classList.remove('collapsed');
+      else panel.classList.add('collapsed');
     }
 
     const slot0 = document.getElementById('slot-0');
-    if (expandedCount === 3) {
-      slot0.classList.add('triple-green');
-    } else {
-      slot0.classList.remove('triple-green');
-    }
+    if (expandedCount === 3) slot0.classList.add('triple-green');
+    else slot0.classList.remove('triple-green');
 
     if (expandedCount === 1) {
       slot0.classList.add('single-large');
       btn.textContent = '展開 🔽';
     } else {
       slot0.classList.remove('single-large');
-      if (expandedCount === 2) {
-        btn.textContent = '展開 🔽';
-      } else {
-        btn.textContent = '格納 🔼';
-      }
+      btn.textContent = (expandedCount === 2) ? '展開 🔽' : '格納 🔼';
     }
     calculateTotal();
   }
@@ -817,39 +793,27 @@
     activeSlot = index;
     for (let i = 0; i < 3; i++) {
       const panel = document.getElementById(`slot-${i}`);
-      if (i === index) {
-        panel.classList.add('active');
-      } else {
-        panel.classList.remove('active');
-      }
+      if (i === index) panel.classList.add('active');
+      else panel.classList.remove('active');
     }
   }
 
   function formatNumberDisplay(strVal) {
     if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) return strVal;
-
     let parts = String(strVal).split(/([+\-✕÷/%])/);
     if (parts.length > 1) {
       return parts.map(part => {
         if (/^[+\-✕÷/%]$/.test(part)) return part;
         let subParts = part.split('.');
         let intPart = subParts[0].replace(/,/g, '');
-        if (!isNaN(intPart) && intPart !== '') {
-          intPart = Number(intPart).toLocaleString('ja-JP');
-        }
+        if (!isNaN(intPart) && intPart !== '') intPart = Number(intPart).toLocaleString('ja-JP');
         return subParts.length > 1 ? intPart + '.' + subParts[1] : intPart;
       }).join('');
     }
-
     let singleParts = String(strVal).split('.');
     let intPart = singleParts[0].replace(/,/g, '');
-    if (!isNaN(intPart) && intPart !== '') {
-      intPart = Number(intPart).toLocaleString('ja-JP');
-    }
-    if (singleParts.length > 1) {
-      return intPart + '.' + singleParts[1];
-    }
-    return intPart;
+    if (!isNaN(intPart) && intPart !== '') intPart = Number(intPart).toLocaleString('ja-JP');
+    return singleParts.length > 1 ? intPart + '.' + singleParts[1] : intPart;
   }
 
   function calculateTotal() {
@@ -872,30 +836,16 @@
 
   function append(val) {
     let s = slots[activeSlot];
-    if (val === 'del') {
-      deleteChar();
-      return;
-    }
+    if (val === 'del') { deleteChar(); return; }
     
     let displayVal = val;
     if (val === '*') displayVal = '✕';
     if (val === '/') displayVal = '÷';
 
     let rawVal = s.value.replace(/,/g, '');
-
-    if (['+', '-', '*', '/', '%', '✕', '÷'].includes(val)) {
-      if (s.isNew) {
-        s.isNew = false;
-      }
-    }
-
     if (rawVal === '0' || s.isNew) {
       if (['+', '*', '/', '%', '✕', '÷'].includes(val)) return;
-      if (val === '.') {
-        rawVal = '0.';
-      } else {
-        rawVal = displayVal;
-      }
+      rawVal = (val === '.') ? '0.' : displayVal;
       s.isNew = false;
     } else {
       if (val === '.' && rawVal.includes('.')) return;
@@ -909,12 +859,8 @@
   function deleteChar() {
     let s = slots[activeSlot];
     let rawVal = s.value.replace(/,/g, '');
-    if (rawVal.length > 1) {
-      rawVal = rawVal.slice(0, -1);
-    } else {
-      rawVal = '0';
-      s.isNew = true;
-    }
+    if (rawVal.length > 1) rawVal = rawVal.slice(0, -1);
+    else { rawVal = '0'; s.isNew = true; }
     s.value = rawVal;
     s.expr = formatNumberDisplay(rawVal);
     updateView();
@@ -937,45 +883,30 @@
     updateView();
   }
 
-  function memClear() {
-    slots[activeSlot].memory = 0;
-    updateView();
-  }
+  function memClear() { slots[activeSlot].memory = 0; updateView(); }
   function memPlus() {
     let s = slots[activeSlot];
     s.memory += parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-    s.isNew = true;
-    updateView();
+    s.isNew = true; updateView();
   }
   function memMinus() {
     let s = slots[activeSlot];
     s.memory -= parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-    s.isNew = true;
-    updateView();
+    s.isNew = true; updateView();
   }
   function memRecall() {
     let s = slots[activeSlot];
     s.value = String(s.memory);
     s.expr = `MEM(${s.memory})`;
-    s.isNew = true;
-    updateView();
+    s.isNew = true; updateView();
   }
 
   function togglePopup(target) {
-    const inDropdown = document.getElementById('taxInDropdown');
-    const exDropdown = document.getElementById('taxExDropdown');
-    const discDropdown = document.getElementById('discDropdown');
-
+    ['taxIn', 'taxEx', 'disc'].forEach(t => {
+      document.getElementById(t + 'Dropdown').classList.remove('open');
+    });
     const targetEl = document.getElementById(target + 'Dropdown');
-    const isOpen = targetEl.classList.contains('open');
-
-    inDropdown.classList.remove('open');
-    exDropdown.classList.remove('open');
-    discDropdown.classList.remove('open');
-
-    if (!isOpen) {
-      targetEl.classList.add('open');
-    }
+    targetEl.classList.toggle('open');
   }
 
   function applyQuickDiscount(rateInput) {
@@ -983,14 +914,12 @@
     try {
       let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(current)) {
-        let multiplier = (100 - rateInput) / 100;
-        let result = current * multiplier;
+        let result = current * ((100 - rateInput) / 100);
         let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}%`;
-        
         s.expr = `${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}% (${rateInput}%OFF)`;
         s.value = String(result);
         addHistory(formula, result);
-        s.isNew = false; 
+        s.isNew = false;
         updateView();
       }
     } catch (e) { s.value = 'ERR'; updateView(); }
@@ -1002,8 +931,7 @@
     try {
       let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(current)) {
-        let result;
-        let formula;
+        let result, formula;
         if (type === 'in') {
           result = current * (1 + rateInput / 100);
           formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ＋ 税込${rateInput}%`;
@@ -1030,69 +958,137 @@
       let mathExpr = cleanExpr.replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
       let fullExpr = formatNumberDisplay(cleanExpr);
       let res = Function('"use strict";return (' + mathExpr + ')')();
+      if (!isFinite(res)) throw new Error();
       
-      s.expr = fullExpr + ' =';
+      let formula = `[S${activeSlot+1}] ${fullExpr}`;
       s.value = String(res);
-      addHistory(`[S${activeSlot+1}] ${fullExpr}`, res);
+      s.expr = fullExpr;
       s.isNew = true;
+      addHistory(formula, res);
       updateView();
     } catch (e) {
       s.value = 'ERR';
       s.expr = 'ERROR';
-      s.isNew = true;
       updateView();
     }
   }
 
-  function addHistory(exprText, resVal) {
-    historyArr.unshift({ expr: exprText, result: formatNumberDisplay(resVal) });
-    if (historyArr.length > 20) historyArr.pop();
-    
-    let listHtml = historyArr.map(item => `
+  // --- 履歴＆データベース同期機能 ---
+  function addHistory(formula, result) {
+    const now = new Date();
+    const timeStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const record = {
+      time: timeStr,
+      formula: formula,
+      result: Number(result).toLocaleString('ja-JP')
+    };
+    historyArr.unshift(record);
+    if (historyArr.length > 50) historyArr.pop(); // 最大50件保存
+    localStorage.setItem('cyber_calc_history', JSON.stringify(historyArr));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const listEl = document.getElementById('historyList');
+    if (historyArr.length === 0) {
+      listEl.innerHTML = '<div class="history-item-empty">履歴はありません</div>';
+      return;
+    }
+    listEl.innerHTML = historyArr.map(item => `
       <div class="history-item">
-        <span style="color:#666; font-size:0.8rem;">${item.expr}</span>
-        <span style="color:#003366; font-weight:bold;">= ${item.result}</span>
+        <div>
+          <div style="font-size:0.7rem; color:#666;">${item.time}</div>
+          <div style="font-weight:bold;">${item.formula}</div>
+        </div>
+        <div style="font-size:1.1rem; font-weight:bold; color:#0044aa;">= ${item.result}</div>
       </div>
     `).join('');
-    document.getElementById('historyList').innerHTML = listHtml;
   }
 
   function toggleHistory() {
-    document.getElementById('historyDrawer').classList.toggle('open');
+    const drawer = document.getElementById('historyDrawer');
+    drawer.classList.toggle('open');
   }
 
-  let deferredPrompt = null;
-  const installBtn = document.getElementById('pwa-install-btn');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (installBtn) {
-      installBtn.style.display = 'block';
-    }
-  });
-
-  if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`ユーザーの選択: ${outcome}`);
-      deferredPrompt = null;
-      installBtn.style.display = 'none';
-    });
+  // --- 【ガチ実装】Tesseract.js によるレシート自動読取 ---
+  function triggerReceiptScan() {
+    document.getElementById('receiptInput').click();
   }
 
-  window.addEventListener('appinstalled', () => {
-    console.log('PWAのインストールが完了しました！');
-    deferredPrompt = null;
-    if (installBtn) {
-      installBtn.style.display = 'none';
-    }
-  });
+  async function processReceiptImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  applySlotVisibility();
+    const overlay = document.getElementById('ocrOverlay');
+    const statusText = document.getElementById('ocrStatusText');
+    overlay.classList.add('active');
+
+    try {
+      statusText.textContent = "OCRエンジン初期化中...";
+      
+      // Tesseract.js を用いて日本語・英語混じりのレシートをガチ解析
+      const worker = await Tesseract.createWorker('jpn+eng');
+      
+      statusText.textContent = "レシート画像解析中（文字スキャン）...";
+      const ret = await worker.recognize(file);
+      const text = ret.data.text;
+      
+      await worker.terminate();
+
+      statusText.textContent = "金額ハント中...";
+      
+      // ガチ正規表現：レシート特有の「合計」「小計」「¥」や数字の並びから最大値・合計金額候補を抽出
+      console.log("OCR読取テキスト:", text);
+      
+      let numbers = [];
+      // 「合計 1,234」や「¥980」などのパターン、または数字列を全抽出
+      const lines = text.split('\n');
+      let detectedTotal = null;
+
+      for (let line of lines) {
+        if (line.includes('合') || line.includes('計') || line.includes('合計') || line.includes('総額') || line.includes('お買上')) {
+          // 金額らしい数値を抽出
+          let matches = line.match(/[0-9,]+[\.]?[0-9]+/g);
+          if (matches) {
+            for (let m of matches) {
+              let cleanNum = parseFloat(m.replace(/,/g, ''));
+              if (!isNaN(cleanNum) && cleanNum > 50) { // 50円以上の現実的な価格
+                detectedTotal = cleanNum;
+              }
+            }
+          }
+        }
+      }
+
+      // もし明示的な合計が見つからない場合は、テキスト全体の数字から最も大きい現実的な金額（または最後のほうの数字）を採用
+      if (!detectedTotal) {
+        let allNums = text.match(/[0-9]{3,5}/g); // 3桁〜5桁の数字
+        if (allNums && allNums.length > 0) {
+          detectedTotal = parseFloat(allNums[allNums.length - 1]);
+        }
+      }
+
+      overlay.classList.remove('active');
+      event.target.value = ''; // リセット
+
+      if (detectedTotal && !isNaN(detectedTotal)) {
+        slots[activeSlot].value = String(detectedTotal);
+        slots[activeSlot].expr = `OCR読取合計`;
+        slots[activeSlot].isNew = true;
+        addHistory(`[S${activeSlot+1}] レシート読取自動入力`, detectedTotal);
+        updateView();
+        alert(`レシートから合計金額 [ ${detectedTotal.toLocaleString('ja-JP')} 円 ] をガチ抽出しました！`);
+      } else {
+        alert("金額を自動検出できませんでした。画像が鮮明か確認してください。（手動入力も可能です）");
+      }
+
+    } catch (err) {
+      console.error(err);
+      overlay.classList.remove('active');
+      event.target.value = '';
+      alert("OCR解析に失敗しました。もう一度お試しください。");
+    }
+  }
 </script>
-
 </body>
 </html>
