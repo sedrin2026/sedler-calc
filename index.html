@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>レシート家計簿アプリ（Tesseract.js OCR搭載版）</title>
+    <title>CYBER CALC EXT - 高機能レシート家計簿電卓</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FullCalendar -->
@@ -11,89 +11,277 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <!-- Tesseract.js CDN -->
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <style>
+        body {
+            background-color: #050811;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .cyber-panel {
+            background: rgba(10, 15, 30, 0.9);
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        .cyber-button {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            transition: all 0.2s ease;
+        }
+        .cyber-button:hover {
+            background: rgba(0, 255, 204, 0.25);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+            color: #ffffff;
+        }
+        .cyber-display {
+            background: #020408;
+            border: 1px solid rgba(0, 255, 204, 0.6);
+            box-shadow: inset 0 0 15px rgba(0, 255, 204, 0.25);
+        }
+        /* FullCalendarのサイバーダークテーマ調整 */
+        .fc {
+            --fc-page-bg-color: transparent;
+            --fc-neutral-bg-color: #0b1329;
+            --fc-neutral-border-color: #1e293b;
+            --fc-today-bg-color: rgba(0, 255, 204, 0.1);
+            --fc-border-color: #1e293b;
+            --fc-button-bg-color: #0f172a;
+            --fc-button-border-color: #00ffcc;
+            --fc-button-text-color: #00ffcc;
+            --fc-button-hover-bg-color: #00ffcc;
+            --fc-button-hover-text-color: #050811;
+            --fc-event-bg-color: #0369a1;
+            --fc-event-border-color: #00ffcc;
+            color: #94a3b8;
+        }
+        .fc .fc-toolbar-title {
+            font-size: 0.95rem;
+            color: #00ffcc;
+        }
+        .fc .fc-col-header-cell-cushion, .fc .fc-daygrid-day-number {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans text-gray-800">
+<body class="min-h-screen p-3 md:p-6 flex flex-col items-center justify-start">
 
-    <div class="max-w-4xl mx-auto p-4 md:p-6">
-        <header class="bg-white shadow rounded-lg p-4 mb-6 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-indigo-600">レシート家計簿 ＆ OCR</h1>
-            <span id="status-badge" class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-semibold">システム稼働中</span>
+    <!-- メインフレーム -->
+    <div class="w-full max-w-lg cyber-panel rounded-2xl p-5 md:p-7">
+        
+        <!-- ヘッダー ＆ 増築タブメニュー -->
+        <header class="mb-5">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-xl font-bold tracking-widest text-[#00ffcc]">CYBER CALC <span class="text-xs text-cyan-400 font-normal">EXT v2.5</span></h1>
+                    <p class="text-[10px] text-gray-400">NEO-TOKYO FINANCIAL OS // OCR & CALENDAR EXPANSION</p>
+                </div>
+                <span class="text-[10px] bg-cyan-950 text-[#00ffcc] px-2.5 py-1 rounded-full border border-[#00ffcc]/40 animate-pulse">SYSTEM ONLINE</span>
+            </div>
+
+            <!-- タブコントロール -->
+            <div class="grid grid-cols-3 gap-2 bg-gray-950 p-1.5 rounded-xl border border-gray-800">
+                <button onclick="switchTab('calc')" id="tab-calc" class="py-2 text-xs font-bold rounded-lg text-center transition bg-[#00ffcc] text-gray-950 shadow-md">電卓メイン</button>
+                <button onclick="switchTab('ocr')" id="tab-ocr" class="py-2 text-xs font-bold rounded-lg text-center transition text-gray-400 hover:text-[#00ffcc]">レシートOCR</button>
+                <button onclick="switchTab('cal')" id="tab-cal" class="py-2 text-xs font-bold rounded-lg text-center transition text-gray-400 hover:text-[#00ffcc]">カレンダー</button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 左側：入力・OCR読み取りエリア -->
-            <div class="bg-white shadow rounded-lg p-5">
-                <h2 class="text-lg font-semibold mb-4 text-gray-700">レシート撮影・アップロード</h2>
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-600 mb-2">レシート画像を選択</label>
-                    <input type="file" id="receipt-input" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
-                </div>
-
-                <!-- プレースホルダー / Canvas -->
-                <div id="preview-container" class="mb-4 hidden">
-                    <p class="text-xs text-gray-500 mb-1">プレビュー:</p>
-                    <img id="image-preview" class="max-h-48 mx-auto rounded border" alt="プレビュー">
-                </div>
-
-                <button id="process-ocr-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 mb-4 disabled:bg-gray-300" disabled>
-                    本気(ガチ)OCRで解析する
-                </button>
-
-                <div id="loading-area" class="hidden text-center py-4 text-indigo-600 font-semibold animate-pulse">
-                    文字を解析中... (少々お待ちください)
-                </div>
-
-                <hr class="my-4">
-
-                <!-- 手動・編集用フォーム -->
-                <h3 class="text-md font-semibold mb-3 text-gray-700">明細データ（配列管理）</h3>
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-600">日付</label>
-                    <input type="date" id="entry-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2">
-                </div>
-
-                <div id="items-container" class="space-y-2 mb-3">
-                    <!-- 商品ごとの入力欄がここに動的追加されます -->
-                </div>
-
-                <button type="button" id="add-item-row" class="text-sm text-indigo-600 font-semibold hover:underline mb-4 block">+ 商品行を追加</button>
-
-                <div class="mb-4 bg-gray-50 p-3 rounded flex justify-between items-center">
-                    <span class="font-bold text-gray-700">合計金額:</span>
-                    <span id="total-amount-display" class="text-xl font-bold text-indigo-600">¥0</span>
-                </div>
-
-                <button id="save-data-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-700 transition duration-200">
-                    家計簿に保存する
-                </button>
+        <!-- ================= 1. 主役：CYBER CALC 電卓画面 ================= -->
+        <div id="view-calc" class="space-y-4">
+            <!-- 3スロット表示ディスプレイ -->
+            <div class="cyber-display rounded-xl p-4 space-y-1 text-right">
+                <div id="slot-history" class="text-xs text-gray-500 h-4 overflow-hidden font-mono">0</div>
+                <div id="slot-sub" class="text-sm text-cyan-400/70 h-5 font-mono">0</div>
+                <div id="slot-main" class="text-3xl md:text-4xl font-bold tracking-wider text-[#00ffcc] truncate font-mono">0</div>
             </div>
 
-            <!-- 右側：カレンダー表示エリア -->
-            <div class="bg-white shadow rounded-lg p-5">
-                <h2 class="text-lg font-semibold mb-4 text-gray-700">カレンダー・履歴</h2>
-                <div id="calendar" class="mb-6"></div>
-                
-                <h3 class="text-md font-semibold mb-2 text-gray-700">選択日の明細</h3>
-                <div id="day-details" class="bg-gray-50 p-3 rounded min-h-[100px] text-sm text-gray-600">
-                    日付を選択すると明細が表示されます。
-                </div>
+            <!-- 電卓キーパッド (4列×5行) -->
+            <div class="grid grid-cols-4 gap-2.5">
+                <button onclick="clearCalc()" class="cyber-button py-4 rounded-xl text-red-400 font-bold text-sm">AC</button>
+                <button onclick="appendOperator('/')" class="cyber-button py-4 rounded-xl text-cyan-300 font-bold text-sm">÷</button>
+                <button onclick="appendOperator('*')" class="cyber-button py-4 rounded-xl text-cyan-300 font-bold text-sm">×</button>
+                <button onclick="deleteDigit()" class="cyber-button py-4 rounded-xl text-yellow-400 font-bold text-sm">⌫</button>
+
+                <button onclick="appendNumber('7')" class="cyber-button py-4 rounded-xl text-lg font-bold">7</button>
+                <button onclick="appendNumber('8')" class="cyber-button py-4 rounded-xl text-lg font-bold">8</button>
+                <button onclick="appendNumber('9')" class="cyber-button py-4 rounded-xl text-lg font-bold">9</button>
+                <button onclick="appendOperator('-')" class="cyber-button py-4 rounded-xl text-cyan-300 font-bold text-sm">-</button>
+
+                <button onclick="appendNumber('4')" class="cyber-button py-4 rounded-xl text-lg font-bold">4</button>
+                <button onclick="appendNumber('5')" class="cyber-button py-4 rounded-xl text-lg font-bold">5</button>
+                <button onclick="appendNumber('6')" class="cyber-button py-4 rounded-xl text-lg font-bold">6</button>
+                <button onclick="appendOperator('+')" class="cyber-button py-4 rounded-xl text-cyan-300 font-bold text-sm">+</button>
+
+                <button onclick="appendNumber('1')" class="cyber-button py-4 rounded-xl text-lg font-bold">1</button>
+                <button onclick="appendNumber('2')" class="cyber-button py-4 rounded-xl text-lg font-bold">2</button>
+                <button onclick="appendNumber('3')" class="cyber-button py-4 rounded-xl text-lg font-bold">3</button>
+                <button onclick="calculateResult()" class="cyber-button row-span-2 rounded-xl bg-cyan-950 text-[#00ffcc] font-bold text-xl border-[#00ffcc]/60 flex items-center justify-center shadow-lg">=</button>
+
+                <button onclick="appendNumber('0')" class="cyber-button col-span-2 py-4 rounded-xl text-lg font-bold">0</button>
+                <button onclick="appendNumber('.')" class="cyber-button py-4 rounded-xl text-lg font-bold">.</button>
             </div>
         </div>
+
+        <!-- ================= 2. 増築モジュール：レシートOCR読み取り ================= -->
+        <div id="view-ocr" class="hidden space-y-4">
+            <div class="flex justify-between items-center text-xs text-cyan-400 border-b border-gray-800 pb-2">
+                <span>[MODULE: TESSERACT.JS OCR ENGINE]</span>
+                <span class="text-gray-500">OFFLINE READY</span>
+            </div>
+            
+            <div class="cyber-display p-4 rounded-xl space-y-2">
+                <label class="block text-xs font-medium text-gray-300">レシート画像ファイルをロード</label>
+                <input type="file" id="receipt-input" accept="image/*" class="block w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-950 file:text-[#00ffcc] hover:file:bg-cyan-900 cursor-pointer"/>
+            </div>
+
+            <!-- 画像プレビュー -->
+            <div id="preview-container" class="hidden text-center bg-black/40 p-2 rounded-xl border border-cyan-500/20">
+                <p class="text-[10px] text-gray-500 mb-1">IMAGE PREVIEW</p>
+                <img id="image-preview" class="max-h-40 mx-auto rounded border border-cyan-500/30 object-contain" alt="プレビュー">
+            </div>
+
+            <button id="process-ocr-btn" class="w-full bg-cyan-950 text-[#00ffcc] border border-[#00ffcc]/60 py-3 rounded-xl text-sm font-bold hover:bg-cyan-900 transition shadow-md disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                🚀 本気(ガチ)OCR 解析実行
+            </button>
+
+            <!-- ローディングインジケーター -->
+            <div id="loading-area" class="hidden text-center py-3 text-xs text-cyan-300 font-bold bg-cyan-950/40 rounded-xl border border-cyan-500/30 animate-pulse">
+                文字解析エンジン稼働中... (少々お待ちください)
+            </div>
+
+            <hr class="border-gray-800 my-2">
+
+            <!-- 明細データ・配列管理エディタ -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-300 font-bold">抽出・編集明細 (items配列)</span>
+                    <input type="date" id="entry-date" class="bg-gray-950 border border-gray-700 text-xs p-1.5 rounded-lg text-[#00ffcc]">
+                </div>
+
+                <!-- 商品行コンテナ -->
+                <div id="items-container" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    <!-- 動的挿入 -->
+                </div>
+
+                <button type="button" id="add-item-row" class="text-xs text-[#00ffcc] hover:underline font-bold block pt-1">+ 商品行を追加する</button>
+
+                <!-- 合計金額表示 -->
+                <div class="bg-gray-950 p-3 rounded-xl flex justify-between items-center text-sm border border-gray-800 shadow-inner">
+                    <span class="text-gray-400 font-bold">合計金額:</span>
+                    <span id="total-amount-display" class="text-lg font-bold text-[#00ffcc]">¥0</span>
+                </div>
+
+                <button id="save-data-btn" class="w-full bg-emerald-950 text-emerald-300 border border-emerald-500/60 py-3 rounded-xl text-sm font-bold hover:bg-emerald-900 transition shadow-md">
+                    💾 家計簿データベースに保存
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 3. 増築モジュール：カレンダー履歴 ================= -->
+        <div id="view-cal" class="hidden space-y-4">
+            <div class="flex justify-between items-center text-xs text-cyan-400 border-b border-gray-800 pb-2">
+                <span>[MODULE: CALENDAR & HISTORY]</span>
+                <span class="text-gray-500">SYNC ACTIVE</span>
+            </div>
+
+            <!-- カレンダー本体 -->
+            <div id="calendar" class="bg-gray-950 p-3 rounded-xl border border-gray-800"></div>
+            
+            <!-- 選択日の詳細表示 -->
+            <div id="day-details" class="cyber-display p-4 rounded-xl text-xs text-gray-300 min-h-[100px] space-y-2">
+                <p class="text-cyan-400 font-bold">日付を選択してください</p>
+                <p class="text-gray-500">カレンダーの日付をクリックすると、その日の購入明細が表示されます。</p>
+            </div>
+        </div>
+
     </div>
 
+    <!-- アプリケーション・ロジック -->
     <script>
+        // --- タブ切り替え制御 ---
+        function switchTab(tabName) {
+            ['calc', 'ocr', 'cal'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).className = "py-2 text-xs font-bold rounded-lg text-center transition text-gray-400 hover:text-[#00ffcc]";
+            });
+            document.getElementById('view-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).className = "py-2 text-xs font-bold rounded-lg text-center transition bg-[#00ffcc] text-gray-950 shadow-md";
+
+            if (tabName === 'cal' && calendar) {
+                setTimeout(() => calendar.updateSize(), 50);
+            }
+        }
+
+        // --- 主役：CYBER CALC 電卓ロジック ---
+        let mainDisplay = '0';
+        let subDisplay = '';
+        let historyDisplay = '';
+
+        function updateDisplay() {
+            document.getElementById('slot-main').textContent = mainDisplay;
+            document.getElementById('slot-sub').textContent = subDisplay;
+            document.getElementById('slot-history').textContent = historyDisplay;
+        }
+
+        function appendNumber(num) {
+            if (mainDisplay === '0' && num !== '.') {
+                mainDisplay = num;
+            } else {
+                if (num === '.' && mainDisplay.includes('.')) return;
+                mainDisplay += num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            subDisplay = mainDisplay + ' ' + op + ' ';
+            historyDisplay = mainDisplay;
+            mainDisplay = '0';
+            updateDisplay();
+        }
+
+        function clearCalc() {
+            mainDisplay = '0';
+            subDisplay = '';
+            historyDisplay = '';
+            updateDisplay();
+        }
+
+        function deleteDigit() {
+            if (mainDisplay.length > 1) {
+                mainDisplay = mainDisplay.slice(0, -1);
+            } else {
+                mainDisplay = '0';
+            }
+            updateDisplay();
+        }
+
+        function calculateResult() {
+            try {
+                const expr = historyDisplay + ' ' + mainDisplay;
+                const result = eval(expr.replace(/×/g, '*').replace(/÷/g, '/'));
+                subDisplay = expr + ' =';
+                historyDisplay = mainDisplay;
+                mainDisplay = String(result);
+                updateDisplay();
+            } catch (e) {
+                mainDisplay = 'ERROR';
+                updateDisplay();
+            }
+        }
+
+        // --- 増築：OCR ＆ カレンダーロジック ---
         let calendar;
-        let savedData = JSON.parse(localStorage.getItem('kakeibo_data') || '{}');
+        let savedData = JSON.parse(localStorage.getItem('cyber_kakeibo_v2_data') || '{}');
         let selectedImageFile = null;
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 初期日付設定
             document.getElementById('entry-date').valueAsDate = new Date();
             initCalendar();
             addItemRow('', '');
 
-            // 画像選択時の処理
+            // 画像選択ハンドラ
             document.getElementById('receipt-input').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
@@ -114,7 +302,7 @@
                 runTesseractOCR(selectedImageFile);
             });
 
-            // 行追加ボタン
+            // 商品行追加ボタン
             document.getElementById('add-item-row').addEventListener('click', function() {
                 addItemRow('', '');
             });
@@ -131,9 +319,9 @@
             const row = document.createElement('div');
             row.className = "flex gap-2 items-center item-row";
             row.innerHTML = `
-                <input type="text" placeholder="商品名" value="${name}" class="flex-1 rounded-md border-gray-300 border p-2 text-sm item-name">
-                <input type="number" placeholder="金額" value="${price}" class="w-28 rounded-md border-gray-300 border p-2 text-sm item-price" oninput="calculateTotal()">
-                <button type="button" onclick="this.parentElement.remove(); calculateTotal();" class="text-red-500 font-bold px-2 py-1 hover:bg-red-50 rounded">×</button>
+                <input type="text" placeholder="商品名" value="${name}" class="flex-1 bg-gray-950 border border-gray-700 p-2 rounded-lg text-xs text-[#00ffcc] item-name">
+                <input type="number" placeholder="金額" value="${price}" class="w-28 bg-gray-950 border border-gray-700 p-2 rounded-lg text-xs text-[#00ffcc] item-price" oninput="calculateTotal()">
+                <button type="button" onclick="this.parentElement.remove(); calculateTotal();" class="text-red-400 font-bold px-2 py-1 hover:bg-red-950 rounded-lg">×</button>
             `;
             container.appendChild(row);
             calculateTotal();
@@ -158,17 +346,14 @@
             processBtn.disabled = true;
 
             try {
-                //日本語と英語を指定してOCR実行
                 const result = await Tesseract.recognize(file, 'jpn+eng', {
                     logger: m => {
                         if (m.status === 'recognizing text') {
-                            loadingArea.textContent = `文字を解析中... (${Math.round(m.progress * 100)}%)`;
+                            loadingArea.textContent = `文字解析中... (${Math.round(m.progress * 100)}%)`;
                         }
                     }
                 });
-
-                const text = result.data.text;
-                parseReceiptText(text);
+                parseReceiptText(result.data.text);
             } catch (error) {
                 console.error(error);
                 alert('OCR処理中にエラーが発生しました。');
@@ -178,23 +363,18 @@
             }
         }
 
-        // 抽出されたテキストから商品名と価格を簡易パースするロジック
+        // 抽出テキストのパース処理
         function parseReceiptText(text) {
             const lines = text.split('\n');
-            document.getElementById('items-container.innerHTML') = '';
-            document.getElementById('items-container').innerHTML = ''; // クリア
-
+            document.getElementById('items-container').innerHTML = '';
             let foundCount = 0;
+
             lines.forEach(line => {
-                // 数字（価格らしきもの）が含まれている行を抽出のターゲットにする
                 const matchPrice = line.match(/([1-9][0-9,]{1,5})/);
                 if (matchPrice && line.length > 2) {
-                    const priceStr = matchPrice[1].replace(/,/g, '');
-                    const price = parseInt(priceStr);
-                    // 金額らしき部分を除いた残りを商品名とする
+                    const price = parseInt(matchPrice[1].replace(/,/g, ''));
                     const name = line.replace(matchPrice[1], '').trim() || "商品";
-                    
-                    if (price > 20 && price < 50000) { // 常識的な価格範囲
+                    if (price > 20 && price < 50000) {
                         addItemRow(name, price);
                         foundCount++;
                     }
@@ -202,13 +382,12 @@
             });
 
             if (foundCount === 0) {
-                // うまくパースできなかった場合は全テキストを行として追加するか、手動入力を促す
-                addItemRow("読取テキスト行", "");
+                addItemRow("読取テキスト", "");
             }
             calculateTotal();
         }
 
-        // データを保存する（items配列対応）
+        // 家計簿データの保存（items配列対応）
         function saveKakeiboData() {
             const date = document.getElementById('entry-date').value;
             if (!date) {
@@ -230,14 +409,14 @@
             });
 
             if (items.length === 0) {
-                alert('少なくとも1件の商品・価格を入力してください。');
+                alert('明細を1件以上入力してください。');
                 return;
             }
 
             savedData[date] = { items: items, total: total };
-            localStorage.setItem('kakeibo_data', JSON.stringify(savedData));
+            localStorage.setItem('cyber_kakeibo_v2_data', JSON.stringify(savedData));
 
-            alert('家計簿に保存しました！');
+            alert('家計簿データベースへの同期が完了しました！');
             calendar.refetchEvents();
         }
 
@@ -247,16 +426,16 @@
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'ja',
-                height: 380,
-                events: function(fetchInfo, successCallback, failureCallback) {
+                height: 320,
+                events: function(fetchInfo, successCallback) {
                     const events = [];
                     for (const date in savedData) {
                         events.push({
                             title: '¥' + savedData[date].total.toLocaleString(),
                             start: date,
                             allDay: true,
-                            backgroundColor: '#4f46e5',
-                            borderColor: '#4f46e5'
+                            backgroundColor: '#0369a1',
+                            borderColor: '#00ffcc'
                         });
                     }
                     successCallback(events);
@@ -268,21 +447,20 @@
             calendar.render();
         }
 
-        // 選択日の詳細表示
+        // 選択日詳細の表示
         function showDayDetails(dateStr) {
             const detailsEl = document.getElementById('day-details');
             const data = savedData[dateStr];
-            
             document.getElementById('entry-date').value = dateStr;
 
             if (!data || !data.items) {
-                detailsEl.innerHTML = `<p class="font-semibold text-gray-700">${dateStr}</p><p class="text-gray-500 mt-1">データはありません。</p>`;
+                detailsEl.innerHTML = `<p class="text-cyan-400 font-bold">${dateStr}</p><p class="text-gray-500 mt-1">この日のデータはありません。</p>`;
                 return;
             }
 
-            let html = `<p class="font-semibold text-indigo-600 mb-2">${dateStr} の明細 (合計: ¥${data.total.toLocaleString()})</p><ul class="space-y-1">`;
+            let html = `<p class="text-cyan-400 font-bold mb-2 flex justify-between"><span>${dateStr} 明細</span><span>合計: ¥${data.total.toLocaleString()}</span></p><ul class="space-y-1 max-h-32 overflow-y-auto pr-1">`;
             data.items.forEach(item => {
-                html += `<li class="flex justify-between border-b pb-1"><span>${item.name}</span><span class="font-semibold">¥${item.price.toLocaleString()}</span></li>`;
+                html += `<li class="flex justify-between border-b border-gray-800 pb-1 text-xs"><span>${item.name}</span><span class="text-[#00ffcc] font-bold">¥${item.price.toLocaleString()}</span></li>`;
             });
             html += `</ul>`;
             detailsEl.innerHTML = html;
