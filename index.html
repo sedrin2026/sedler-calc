@@ -3,310 +3,747 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CYBER_CALC & CALENDAR (Fixed & Unified)</title>
+  <title>CYBER_CALC</title>
   
+  <link rel="manifest" href="./manifest.json">
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker 登録成功！'));
+  }
+  </script>
+
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#1e1e1e">
+  <meta name="theme-color" content="#000000">
 
   <style>
     :root {
-      --bg-color: #2b2b2b;
-      --card-bg: repeating-linear-gradient(0deg, #383838, #383838 1px, #2b2b2b 1px, #2b2b2b 2px);
+      --bg: #a0a0a0;
+      --card-bg: repeating-linear-gradient(
+        0deg,
+        #cfcfcf,
+        #cfcfcf 1px,
+        #b8b8b8 1px,
+        #b8b8b8 2px
+      );
+      --btn-bg: linear-gradient(180deg, #e4e4e4 0%, #adadad 100%);
+      --btn-border: #8c8c8c;
+      --btn-border-bottom: #5e5e5e;
       --calc-font: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
     html, body {
-      width: 100%; height: 100%;
-      background: #1a1a1a; color: #e0e0e0;
+      width: 100%;
+      height: 100%;
+      background: #7a7a7a;
+      color: #111111;
       font-family: var(--calc-font);
-      overflow: hidden;
-      display: flex; justify-content: center; align-items: center;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .calc-card {
-      width: 100%; max-width: 480px;
-      height: 100vh; height: 100dvh; max-height: -webkit-fill-available;
-      background: var(--card-bg); border: 2px solid #444;
-      display: flex; flex-direction: column; padding: 8px; position: relative;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.6);
+      width: 100%;
+      max-width: 500px;
+      height: 100vh;
+      height: 100dvh;
+      max-height: -webkit-fill-available;
+      background: var(--card-bg);
+      border: 1px solid #777;
+      display: flex;
+      flex-direction: column;
+      padding: 6px;
+      position: relative;
+      box-shadow: inset 0 0 15px rgba(255,255,255,0.4), 0 10px 25px rgba(0,0,0,0.5);
     }
 
-    /* ステータスバー・上部コントロール */
+    /* 情報バー */
     .status-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 6px; gap: 4px; flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      margin-bottom: 6px;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
     .clock-badge {
-      background: #111; color: #00ffcc; border: 1px solid #333;
-      font-size: 0.65rem; font-weight: 600; padding: 4px 6px; border-radius: 4px;
+      background: #222222;
+      color: #00ffcc;
+      border: 1px solid #444;
+      font-family: var(--calc-font);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
     }
 
-    .top-controls { display: flex; gap: 4px; align-items: center; }
+    .top-controls {
+      display: flex;
+      gap: 4px;
+      align-items: stretch;
+    }
 
     .btn-top-item {
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.7rem; font-weight: bold; padding: 5px 8px; cursor: pointer;
-      border-radius: 4px; text-align: center;
-      background: linear-gradient(180deg, #555 0%, #333 100%);
-      color: #fff; border: 1px solid #666; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      white-space: nowrap; text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--calc-font);
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 4px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      min-width: 50px;
+      text-align: center;
+      background: linear-gradient(180deg, #f0f0f0 0%, #cccccc 100%);
+      color: #333;
+      border: 1px solid #999;
+      box-shadow: 0 2px 3px rgba(0,0,0,0.15);
     }
-    .btn-top-item:active { transform: translateY(1px); }
 
-    .btn-ac-all { background: linear-gradient(180deg, #d9534f 0%, #b52b27 100%) !important; border: 1px solid #ff6b6b !important; }
-    .btn-ocr { background: linear-gradient(180deg, #28a745 0%, #1e7e34) !important; border: 1px solid #57iv45 !important; }
-    
-    .mode-tab { background: linear-gradient(180deg, #444 0%, #222) !important; border: 1px solid #555 !important; color: #ccc; }
-    .mode-tab.active-mode { background: linear-gradient(180deg, #ffab40 0%, #e65100) !important; color: #fff !important; font-weight: 900; border: 1px solid #ff9800 !important; }
+    .btn-control {
+      background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important;
+      color: #112233 !important;
+      border: 1px solid #7892ad !important;
+    }
 
-    /* 3段階スロットディスプレイ (元のデザイン完全復活) */
+    .btn-ac-all {
+      background: linear-gradient(180deg, #f2a6a6 0%, #d9534f 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid #b52b27 !important;
+    }
+
+    /* ディスプレイ領域 */
     .display-panel-container {
-      display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;
-      flex-shrink: 0; background: #181818; padding: 4px; border-radius: 6px; border: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 6px;
+      flex: 1;
+      min-height: 80px;
     }
 
+    /* スロット1のデフォルト（オレンジ系） */
+    #slot-0 {
+      background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
+      border: 2px solid #ffa726;
+    }
+    #slot-0 .slot-label, #slot-0 .memory-indicator-slot, #slot-0 .expr-line-slot {
+      color: #6d4c41;
+    }
+    #slot-0 .display-slot-value {
+      color: #5d4037 !important;
+    }
+
+    /* スロット1：3つ展開時の薄いグリーン用クラス */
+    #slot-0.triple-green {
+      background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9) !important;
+      border: 2px solid #a5d6a7 !important;
+    }
+    #slot-0.triple-green .slot-label, 
+    #slot-0.triple-green .memory-indicator-slot, 
+    #slot-0.triple-green .expr-line-slot {
+      color: #2e7d32 !important;
+    }
+    #slot-0.triple-green .display-slot-value {
+      color: #1b5e20 !important;
+    }
+    #slot-0.triple-green.active {
+      border: 2.5px solid #285d73 !important;
+      background: linear-gradient(180deg, #d0e8f2 0%, #8fb9c6 100%) !important;
+    }
+    #slot-0.triple-green.active .slot-label,
+    #slot-0.triple-green.active .expr-line-slot {
+      color: #2c4a54 !important;
+    }
+    #slot-0.triple-green.active .display-slot-value {
+      color: #11222c !important;
+    }
+
+    /* スロット2（デフォルト：オレンジ系） */
+    #slot-1 {
+      background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
+      border: 2px solid #ffa726;
+    }
+    #slot-1 .slot-label, #slot-1 .memory-indicator-slot, #slot-1 .expr-line-slot {
+      color: #6d4c41;
+    }
+    #slot-1 .display-slot-value {
+      color: #5d4037 !important;
+    }
+
+    /* スロット3専用：待機中の背景色をパープル系に指定 */
+    #slot-2 {
+      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9);
+      border: 2px solid #b39ddb;
+    }
+    #slot-2 .slot-label, #slot-2 .memory-indicator-slot, #slot-2 .expr-line-slot {
+      color: #4a237a;
+    }
+    #slot-2 .display-slot-value {
+      color: #3b1c64 !important;
+    }
+
+    /* 共通スロットベース */
     .slot-panel {
-      background: linear-gradient(180deg, #242424 0%, #1c1c1c 100%);
-      border: 1px solid #3a3a3a; border-radius: 4px; padding: 3px 8px; text-align: right; position: relative;
-      display: flex; flex-direction: column; justify-content: center; min-height: 38px;
-      cursor: pointer; transition: all 0.2s;
+      border-radius: 6px;
+      padding: 2px 8px;
+      text-align: right;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      max-height: 200px;
     }
-    .slot-panel:hover { border-color: #666; }
-    #slot-0 { background: linear-gradient(180deg, #2c251e 0%, #1f1914 100%); border: 1px solid #d97706; }
-    #slot-0 .slot-label, #slot-0 .memory-indicator-slot, #slot-0 .expr-line-slot { color: #f59e0b; }
-    #slot-0 .display-slot-value { color: #fbbf24 !important; }
 
-    .slot-label { position: absolute; top: 2px; left: 6px; font-size: 0.55rem; font-weight: bold; color: #888; }
-    .memory-indicator-slot { position: absolute; top: 2px; right: 8px; font-size: 0.55rem; font-weight: bold; color: #a855f7; }
-    .expr-line-slot { font-size: 0.65rem; min-height: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #aaa; margin-top: 8px; text-align: right; }
-    .display-slot-value { width: 100%; background: transparent; border: none; outline: none; font-size: 1.25rem; font-weight: bold; text-align: right; letter-spacing: 0.5px; color: #fff; line-height: 1.1; }
+    .slot-panel.collapsed {
+      max-height: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin-top: -6px !important;
+      border: none !important;
+      opacity: 0 !important;
+      pointer-events: none;
+    }
 
-    /* 機能アクションバー（税・割引など） */
-    .feature-action-bar { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 4px; margin-bottom: 6px; flex-shrink: 0; position: relative; z-index: 50; }
+    /* 選択中（アクティブ）をブルー系に変更 */
+    .slot-panel.active {
+      border: 2.5px solid #285d73 !important;
+      background: linear-gradient(180deg, #d0e8f2 0%, #8fb9c6 100%) !important;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.2), 0 0 10px rgba(41, 128, 185, 0.4);
+      opacity: 1;
+    }
+    .slot-panel.active .slot-label {
+      color: #2c4a54 !important;
+    }
+    .slot-panel.active .expr-line-slot {
+      color: #4a6772 !important;
+    }
+    .slot-panel.active .display-slot-value {
+      color: #11222c !important;
+    }
+
+    .slot-label {
+      position: absolute;
+      top: 2px;
+      left: 6px;
+      font-size: 0.65rem;
+      font-weight: 900;
+    }
+
+    .memory-indicator-slot {
+      position: absolute;
+      top: 2px;
+      right: 8px;
+      font-size: 0.65rem;
+      font-weight: bold;
+    }
+
+    .expr-line-slot {
+      font-family: var(--calc-font);
+      font-size: 0.8rem;
+      min-height: 14px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .display-slot-value {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--calc-font);
+      font-size: 2.2rem;
+      font-weight: 600;
+      text-align: right;
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    /* 展開前（スロット1単独）専用：サイズそのままで太さを少し細く(400) */
+    .slot-panel.single-large .display-slot-value {
+      font-size: 4.4rem !important;
+      font-weight: 400 !important;
+    }
+
+    .single-guide-area {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .slot-panel.single-large .single-guide-area {
+      display: flex;
+    }
+
+    .single-divider {
+      width: 100%;
+      border: none;
+      border-top: 1.5px solid #285d73;
+      margin-bottom: 3px;
+    }
+
+    .single-guide-text {
+      font-family: var(--calc-font);
+      font-size: 0.75rem;
+      color: #4a6772;
+      font-weight: bold;
+      text-align: left;
+      letter-spacing: -0.5px;
+      padding-bottom: 2px;
+      padding-left: 2px;
+    }
+
+    /* 独立した3つのボタンバー */
+    .feature-action-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      gap: 4px;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 50;
+    }
 
     .btn-feature-main {
-      height: 28px; width: 100%; padding: 0 4px;
-      background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
-      border: 1px solid #555; font-size: 0.7rem; font-weight: bold;
-      cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #ddd;
+      height: 32px;
+      width: 100%;
+      padding: 0 4px;
+      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+      border: 1px solid #adadad;
+      font-family: var(--calc-font);
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
     }
+    .btn-feature-main.tax-in { color: #0044aa; }
+    .btn-feature-main.tax-ex { color: #0044aa; }
+    .btn-feature-main.discount { color: #b52b27; }
+
+    .btn-feature-main:active {
+      background: #ccc;
+    }
+
+    /* 各ボタンの真下に展開するメニュー */
     .dropdown-popup {
-      display: none; position: absolute; top: 32px; left: 0; width: 100%;
-      background: #252525; border: 1px solid #555; padding: 4px;
-      border-radius: 4px; flex-direction: column; gap: 3px; z-index: 100;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+      display: none;
+      position: absolute;
+      top: 36px;
+      left: 0;
+      width: 100%;
+      background: rgba(245, 245, 245, 0.98);
+      border: 1px solid #888;
+      padding: 4px;
+      border-radius: 4px;
+      flex-direction: column;
+      gap: 3px;
+      z-index: 100;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      max-height: 220px;
+      overflow-y: auto;
+      scrollbar-width: thin;
     }
-    .dropdown-popup.open { display: flex; }
+    .dropdown-popup.open {
+      display: flex;
+    }
 
     .btn-dropdown-chip {
-      height: 26px; width: 100%; background: linear-gradient(180deg, #333 0%, #222 100%);
-      border: 1px solid #444; font-size: 0.7rem; font-weight: bold; cursor: pointer; border-radius: 3px; color: #fff; text-align: center;
+      height: 30px;
+      width: 100%;
+      background: linear-gradient(180deg, #ffffff 0%, #eaeaea 100%);
+      border: 1px solid #b5b5b5;
+      font-family: var(--calc-font);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 3px;
+      text-align: center;
+      flex-shrink: 0;
     }
-    .btn-dropdown-chip:active { background: #555; }
+    .tax-dropdown-chip { color: #0044aa; }
+    .disc-dropdown-chip { color: #b52b27; }
 
-    /* メインビューコンテナ（電卓 vs カレンダー） */
-    .view-container { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
-    
-    .calc-view { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(6, 1fr); gap: 4px; width: 100%; height: 100%; }
-    .calc-view.hidden { display: none; }
-
-    .calendar-view { display: flex; flex-direction: column; width: 100%; height: 100%; background: #222; border: 1px solid #444; border-radius: 6px; padding: 6px; overflow-y: auto; }
-    .calendar-view.hidden { display: none; }
-
-    /* 電卓ボタンの立体感デザイン（元の完全復元） */
-    button.calc-btn {
-      background: linear-gradient(180deg, #444 0%, #2c2c2c 100%);
-      color: #fff; border: 1px solid #555; border-bottom: 3px solid #1a1a1a;
-      font-size: 1.1rem; font-weight: bold; cursor: pointer; border-radius: 4px;
-      display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    .btn-dropdown-chip:active {
+      background: #d9534f;
+      color: #fff;
     }
-    button.calc-btn:active { background: linear-gradient(180deg, #2c2c2c 0%, #444 100%); transform: translateY(2px); border-bottom-width: 1px; }
 
-    .btn-op { background: linear-gradient(180deg, #1e3a8a 0%, #1e1b4b 100%) !important; border-color: #3b82f6 !important; color: #93c5fd !important; font-size: 1.25rem !important; }
-    .btn-action { background: linear-gradient(180deg, #d97706 0%, #b45309 100%) !important; border-color: #f59e0b !important; color: #fff !important; font-size: 1.4rem !important; grid-column: span 2; }
-    .btn-clear { background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%) !important; border-color: #ef4444 !important; color: #fff !important; }
-    .btn-mem { background: linear-gradient(180deg, #581c87 0%, #3b0764 100%) !important; border-color: #a855f7 !important; color: #d8b4fe !important; font-size: 0.75rem !important; }
+    /* メインボタンエリア */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 0.5fr repeat(6, 1fr);
+      gap: 4px;
+      flex: 2;
+      min-height: 0;
+    }
+
+    button {
+      background: var(--btn-bg);
+      color: #222222;
+      border: 1px solid var(--btn-border);
+      border-bottom: 2px solid var(--btn-border-bottom);
+      font-family: var(--calc-font);
+      font-size: 1.25rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      height: 100%;
+      width: 100%;
+      transition: filter 0.05s;
+    }
+
+    button:active {
+      background: linear-gradient(180deg, #adadad 0%, #e4e4e4 100%);
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.3);
+      transform: translateY(1px);
+    }
+
+    .btn-op {
+      background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important;
+      color: #112233 !important;
+      border: 1px solid #7892ad !important;
+      border-bottom: 2px solid #566c82 !important;
+      font-size: 1.5rem !important;
+    }
+
+    .btn-action {
+      background: linear-gradient(180deg, #ffab40 0%, #f57c00 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid #e65100 !important;
+      border-bottom: 2px solid #b23c00 !important;
+      font-size: 1.8rem !important;
+      box-shadow: 0 3px 6px rgba(245, 124, 0, 0.4);
+      grid-column: span 2;
+    }
+    .btn-action:active {
+      background: linear-gradient(180deg, #f57c00 100%, #ffab40 100%) !important;
+    }
 
     .total-box {
-      grid-column: span 2; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid #334155; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0 8px; position: relative;
+      grid-column: span 2;
+      background: linear-gradient(180deg, #d8e2ec 0%, #a4bce0 100%);
+      border: 1px solid #7892ad;
+      border-bottom: 2px solid #566c82;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 0 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      position: relative;
     }
-    .total-label { position: absolute; top: 2px; left: 6px; font-size: 0.5rem; color: #94a3b8; font-weight: bold; }
-    .total-value { font-size: 1rem; font-weight: bold; color: #38bdf8; }
-
-    /* カレンダー内部パーツ */
-    .cal-nav { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 0.8rem; margin-bottom: 6px; color: #ffab40; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 0.7rem; }
-    .cal-header-day { font-weight: bold; color: #888; padding: 2px 0; }
-    .cal-day { padding: 4px 2px; background: #2a2a2a; border-radius: 3px; cursor: pointer; min-height: 32px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #3a3a3a; color: #ddd; }
-    .cal-day:hover { background: #3a3a3a; }
-    .cal-day.has-data { background: #064e3b; border: 1px solid #059669; font-weight: bold; color: #34d399; }
-    .cal-day.selected-day { border: 2px solid #ffab40 !important; background: #451a03 !important; }
-    .cal-day-sum { font-size: 0.45rem; color: #fca5a5; font-weight: bold; }
-
-    .daily-details { margin-top: 6px; border-top: 1px solid #444; padding-top: 6px; flex: 1; overflow-y: auto; }
-    .history-item { background: #1a1a1a; border: 1px solid #333; border-left: 3px solid #ffab40; border-radius: 3px; padding: 5px 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #ddd; margin-bottom: 4px; }
-    .history-item-empty { color: #777; text-align: center; padding: 8px 0; font-size: 0.7rem; }
-
-    /* オーバーレイモーダル */
-    .overlay {
-      display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85); z-index: 500; flex-direction: column; justify-content: center; align-items: center; color: #00ffcc; font-weight: bold; text-align: center; padding: 20px;
+    .total-label {
+      position: absolute;
+      top: 2px;
+      left: 6px;
+      font-size: 0.58rem;
+      color: #2c4a54;
+      font-weight: bold;
     }
-    .overlay.active { display: flex; }
-    .spinner { width: 32px; height: 32px; border: 3px solid #444; border-top: 3px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 8px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .total-value {
+      font-family: var(--calc-font);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #112233;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-mem {
+      color: #4a237a;
+      border: 1px solid #b39ddb;
+      border-bottom: 2px solid #7e57c2;
+      font-size: 0.85rem;
+      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9 100%);
+      font-weight: bold;
+    }
+
+    .btn-clear {
+      color: #ffffff;
+      border: 1px solid #e57373;
+      border-bottom: 2px solid #c62828;
+      background: linear-gradient(180deg, #ef9a9a 0%, #e53935 100%);
+    }
+
+    /* 履歴スライドパネル */
+    .history-drawer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background: #f0f0f0;
+      border-top: 3px solid #7892ad;
+      transition: height 0.25s ease;
+      overflow-y: auto;
+      z-index: 200;
+      padding: 0 12px;
+      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
+    }
+    .history-drawer.open {
+      height: 70%;
+      padding: 14px;
+    }
+    
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+    .history-title {
+      font-size: 0.95rem;
+      color: #333;
+      font-weight: 900;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .history-close {
+      background: linear-gradient(180deg, #f2a6a6 0%, #d9534f 100%);
+      border: 1px solid #b52b27;
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .history-item {
+      background: #ffffff;
+      border: 1px solid #dcdcdc;
+      border-left: 4px solid #7892ad;
+      border-radius: 4px;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--calc-font);
+      font-size: 0.9rem;
+      color: #333;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .history-item-empty {
+      color: #888;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 0.85rem;
+    }
+
+    #pwa-install-btn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      background: linear-gradient(180deg, #4f46e5 0%, #3730a3 100%);
+      color: #ffffff;
+      border: 2px solid #312e81;
+      border-bottom: 4px solid #1e1b4b;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 30px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+      letter-spacing: 0.5px;
+    }
+    #pwa-install-btn:active {
+      transform: translateX(-50%) translateY(2px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
   </style>
 </head>
 <body>
 
 <div class="calc-card">
-  <!-- ローディングモーダル -->
-  <div class="overlay" id="ocrOverlay">
-    <div class="spinner"></div>
-    <div id="ocrStatusText">画像から金額をスキャン中...</div>
-  </div>
-
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.07.31 (金) 14:21</div>
+    <div class="clock-badge" id="clock">2026.00.00 (---) 00:00</div>
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
-      <div class="btn-top-item btn-ocr" onclick="triggerNativeOCR()">📷 レシート読取</div>
-      <div class="btn-top-item mode-tab active-mode" id="btnModeCalc" onclick="switchMode('calc')">🧮 電卓</div>
-      <div class="btn-top-item mode-tab" id="btnModeCal" onclick="switchMode('calendar')">📅 カレンダー</div>
+      <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</div>
+      <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
     </div>
   </div>
 
-  <!-- ローカルファイル選択用（外部サーバーに頼らず確実に動作する高速スキャン） -->
-  <input type="file" id="receiptInput" accept="image/*" style="display:none;" onchange="processLocalOCR(event)">
-
-  <!-- 3段階スロットディスプレイ (slot-0:アクティブ, slot-1, slot-2:履歴) -->
   <div class="display-panel-container">
-    <div class="slot-panel" id="slot-0" onclick="setActiveSlot(0)">
-      <span class="slot-label">[SLOT 0] <span id="activeDateTag" style="color:#ffab40;">(今日に反映)</span></span>
+    <div class="slot-panel active single-large" id="slot-0" onclick="switchSlot(0)">
+      <span class="slot-label">[SLOT 1]</span>
       <span class="memory-indicator-slot" id="mem-0"></span>
       <div class="expr-line-slot" id="expr-0">READY</div>
       <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
+      <div class="single-guide-area">
+        <hr class="single-divider">
+        <div class="single-guide-text">〔展開をタップでスロットを三段階表示〕</div>
+      </div>
     </div>
-    <div class="slot-panel" id="slot-1" onclick="setActiveSlot(1)">
-      <span class="slot-label">[SLOT 1]</span>
-      <span class="memory-indicator-slot" id="mem-1"></span>
-      <div class="expr-line-slot" id="expr-1">-</div>
-      <input type="text" class="display-slot-value" id="disp-1" readonly value="0" style="font-size: 1rem; color: #aaa;">
-    </div>
-    <div class="slot-panel" id="slot-2" onclick="setActiveSlot(2)">
+
+    <div class="slot-panel collapsed" id="slot-1" onclick="switchSlot(1)">
       <span class="slot-label">[SLOT 2]</span>
+      <span class="memory-indicator-slot" id="mem-1"></span>
+      <div class="expr-line-slot" id="expr-1">READY</div>
+      <input type="text" class="display-slot-value" id="disp-1" readonly value="0">
+    </div>
+
+    <div class="slot-panel collapsed" id="slot-2" onclick="switchSlot(2)">
+      <span class="slot-label">[SLOT 3]</span>
       <span class="memory-indicator-slot" id="mem-2"></span>
-      <div class="expr-line-slot" id="expr-2">-</div>
-      <input type="text" class="display-slot-value" id="disp-2" readonly value="0" style="font-size: 1rem; color: #aaa;">
+      <div class="expr-line-slot" id="expr-2">READY</div>
+      <input type="text" class="display-slot-value" id="disp-2" readonly value="0">
     </div>
   </div>
 
-  <!-- 機能アクションバー -->
+  <!-- 独立した3つのボタンバー -->
   <div class="feature-action-bar">
     <div style="position: relative; width: 100%;">
-      <button class="btn-feature-main" onclick="togglePopup('taxIn')">税込 ▼</button>
+      <button class="btn-feature-main tax-in" onclick="togglePopup('taxIn')">税込 ▼</button>
       <div class="dropdown-popup" id="taxInDropdown">
-        <button class="btn-dropdown-chip" onclick="applyTax('in', 10)">10% 税込</button>
-        <button class="btn-dropdown-chip" onclick="applyTax('in', 8)">8% 税込</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 10)">10%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 9)">9%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 8)">8%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 7)">7%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 6)">6%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 5)">5%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 4)">4%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 3)">3%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 2)">2%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 1)">1%</button>
       </div>
     </div>
 
     <div style="position: relative; width: 100%;">
-      <button class="btn-feature-main" onclick="togglePopup('taxEx')">税抜 ▼</button>
+      <button class="btn-feature-main tax-ex" onclick="togglePopup('taxEx')">税抜 ▼</button>
       <div class="dropdown-popup" id="taxExDropdown">
-        <button class="btn-dropdown-chip" onclick="applyTax('ex', 10)">10% 税抜</button>
-        <button class="btn-dropdown-chip" onclick="applyTax('ex', 8)">8% 税抜</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 10)">10%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 9)">9%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 8)">8%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 7)">7%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 6)">6%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 5)">5%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 4)">4%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 3)">3%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 2)">2%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 1)">1%</button>
       </div>
     </div>
 
     <div style="position: relative; width: 100%;">
-      <button class="btn-feature-main" onclick="togglePopup('disc')">割引 ▼</button>
+      <button class="btn-feature-main discount" onclick="togglePopup('disc')">割引 ▼</button>
       <div class="dropdown-popup" id="discDropdown">
-        <button class="btn-dropdown-chip" onclick="applyQuickDiscount(10)">10% OFF</button>
-        <button class="btn-dropdown-chip" onclick="applyQuickDiscount(20)">20% OFF</button>
-        <button class="btn-dropdown-chip" onclick="applyQuickDiscount(50)">50% OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(10)">10%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(15)">15%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(20)">20%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(25)">25%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(30)">30%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(35)">35%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(40)">40%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(45)">45%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(50)">50%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(55)">55%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(60)">60%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(65)">65%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(70)">70%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(75)">75%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(80)">80%</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(85)">85%</button>
       </div>
     </div>
   </div>
 
-  <!-- メインビューコンテナ -->
-  <div class="view-container">
-    <!-- 電卓キーパッドビュー -->
-    <div class="calc-view" id="calcView">
-      <button class="calc-btn btn-mem" onclick="memClear()">mc</button>
-      <button class="calc-btn btn-mem" onclick="memPlus()">m+</button>
-      <button class="calc-btn btn-mem" onclick="memMinus()">m-</button>
-      <button class="calc-btn btn-mem" onclick="memRecall()">mr</button>
+  <div class="grid">
+    <button class="btn-mem" onclick="memClear()">mc</button>
+    <button class="btn-mem" onclick="memPlus()">m+</button>
+    <button class="btn-mem" onclick="memMinus()">m-</button>
+    <button class="btn-mem" onclick="memRecall()">mr</button>
 
-      <button class="calc-btn btn-clear" onclick="clearDisplay()">C</button>
-      <button class="calc-btn btn-op" onclick="append('%')">％</button>
-      <button class="calc-btn btn-op" onclick="append('.')">.</button>
-      <button class="calc-btn btn-op" onclick="append('/')">÷</button>
+    <button class="btn-clear" onclick="clearDisplay()">AC</button>
+    <button class="btn-op" onclick="append('%')">％</button>
+    <button class="btn-op" onclick="append('.')">.</button>
+    <button class="btn-op" onclick="append('/')">÷</button>
 
-      <button class="calc-btn" onclick="append('7')">7</button>
-      <button class="calc-btn" onclick="append('8')">8</button>
-      <button class="calc-btn" onclick="append('9')">9</button>
-      <button class="calc-btn btn-op" onclick="append('*')">×</button>
+    <button onclick="append('7')">7</button>
+    <button onclick="append('8')">8</button>
+    <button onclick="append('9')">9</button>
+    <button class="btn-op" onclick="append('*')">×</button>
 
-      <button class="calc-btn" onclick="append('4')">4</button>
-      <button class="calc-btn" onclick="append('5')">5</button>
-      <button class="calc-btn" onclick="append('6')">6</button>
-      <button class="calc-btn btn-op" onclick="append('-')">－</button>
+    <button onclick="append('4')">4</button>
+    <button onclick="append('5')">5</button>
+    <button onclick="append('6')">6</button>
+    <button class="btn-op" onclick="append('-')">－</button>
 
-      <button class="calc-btn" onclick="append('1')">1</button>
-      <button class="calc-btn" onclick="append('2')">2</button>
-      <button class="calc-btn" onclick="append('3')">3</button>
-      <button class="calc-btn btn-op" onclick="append('+')">＋</button>
+    <button onclick="append('1')">1</button>
+    <button onclick="append('2')">2</button>
+    <button onclick="append('3')">3</button>
+    <button class="btn-op" onclick="append('+')">＋</button>
 
-      <button class="calc-btn" onclick="append('0')">0</button>
-      <button class="calc-btn" onclick="append('00')">00</button>
-      <button class="calc-btn" onclick="append('000')">000</button>
-      <button class="calc-btn btn-op" onclick="append('del')" title="1文字削除">⌫</button>
+    <button onclick="append('0')">0</button>
+    <button onclick="append('00')">00</button>
+    <button onclick="append('000')">000</button>
+    <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
 
-      <div class="total-box">
-        <span class="total-label">TOTAL (SLOT 0-2)</span>
-        <span class="total-value" id="total-val">0</span>
-      </div>
-      <button onclick="calculate()" class="calc-btn btn-action">＝</button>
+    <div class="total-box">
+      <span class="total-label">TOTAL (表示中)</span>
+      <span class="total-value" id="total-val">0</span>
     </div>
+    <button onclick="calculate()" class="btn-action">＝</button>
+  </div>
 
-    <!-- カレンダー一体型ビュー -->
-    <div class="calendar-view hidden" id="calendarView">
-      <div class="cal-nav">
-        <button style="width:26px; height:20px; font-size:0.6rem; background:#333; color:#fff; border:1px solid #555;" onclick="changeMonth(-1)">◀</button>
-        <span id="calMonthTitle">2026年7月</span>
-        <button style="width:26px; height:20px; font-size:0.6rem; background:#333; color:#fff; border:1px solid #555;" onclick="changeMonth(1)">▶</button>
-      </div>
-      <div class="cal-grid" id="calGridHeader">
-        <div class="cal-header-day" style="color:#f87171">日</div>
-        <div class="cal-header-day">月</div>
-        <div class="cal-header-day">火</div>
-        <div class="cal-header-day">水</div>
-        <div class="cal-header-day">木</div>
-        <div class="cal-header-day">金</div>
-        <div class="cal-header-day" style="color:#60a5fa">土</div>
-      </div>
-      <div class="cal-grid" id="calGridDays" style="margin-top:4px;"></div>
-
-      <div class="daily-details">
-        <div style="font-size:0.7rem; font-weight:bold; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; color:#ffab40;">
-          <span id="selectedDateTitle">📌 選択中の日の収支明細</span>
-          <button style="font-size:0.55rem; padding:2px 6px; background:#333; color:#fff; border:1px solid #555; border-radius:3px;" onclick="resetSelectedDateToToday()">今日に戻す</button>
-        </div>
-        <div class="list-container" id="dailyList">
-          <div class="history-item-empty">データはありません</div>
-        </div>
-      </div>
+  <div class="history-drawer" id="historyDrawer">
+    <div class="history-header">
+      <span class="history-title"><span>//</span> 計算履歴</span>
+      <button class="history-close" onclick="toggleHistory()">✖ 閉じる</button>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-item-empty">履歴はありません</div>
     </div>
   </div>
 </div>
+
+<button id="pwa-install-btn">📲 アプリをインストール</button>
 
 <script>
   function updateClock() {
@@ -315,106 +752,113 @@
     const m = String(now.getMonth() + 1).padStart(2, '0');
     const d = String(now.getDate()).padStart(2, '0');
     const days = ['日', '月', '火', '水', '木', '金', '土'];
+    const dayName = days[now.getDay()];
     const hh = String(now.getHours()).padStart(2, '0');
     const mm = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${y}.${m}.${d} (${days[now.getDay()]}) ${hh}:${mm}`;
+    document.getElementById('clock').textContent = `${y}.${m}.${d} (${dayName}) ${hh}:${mm}`;
   }
   setInterval(updateClock, 1000);
   updateClock();
 
-  function getTodayString() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  }
-
-  let selectedTargetDate = getTodayString();
-  let currentMode = 'calc';
-  let activeSlotIndex = 0;
-
+  let activeSlot = 0;
+  let expandedCount = 1; // 起動時はスロット1のみ
   let slots = [
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
-    { value: '0', expr: '-', isNew: true, memory: 0 },
-    { value: '0', expr: '-', isNew: true, memory: 0 }
+    { value: '0', expr: 'READY', isNew: true, memory: 0 },
+    { value: '0', expr: 'READY', isNew: true, memory: 0 }
   ];
+  let historyArr = [];
 
-  let dbRecords = JSON.parse(localStorage.getItem('cyber_calc_unified_fixed_db')) || [];
-  let calCurrentDate = new Date();
-
-  updateDateTagDisplay();
-  renderCalendar();
-  renderDailyList();
-
-  function switchMode(mode) {
-    currentMode = mode;
-    const calcV = document.getElementById('calcView');
-    const calV = document.getElementById('calendarView');
-    const btnC = document.getElementById('btnModeCalc');
-    const btnCa = document.getElementById('btnModeCal');
-
-    if (mode === 'calc') {
-      calcV.classList.remove('hidden');
-      calV.classList.add('hidden');
-      btnC.classList.add('active-mode');
-      btnCa.classList.remove('active-mode');
+  function toggleSlots() {
+    if (expandedCount === 1) {
+      expandedCount = 2;
+    } else if (expandedCount === 2) {
+      expandedCount = 3;
     } else {
-      calcV.classList.add('hidden');
-      calV.classList.remove('hidden');
-      btnC.classList.remove('active-mode');
-      btnCa.classList.add('active-mode');
-      renderCalendar();
-      renderDailyList();
+      expandedCount = 1;
+      if (activeSlot > 0) switchSlot(0);
     }
+    applySlotVisibility();
   }
 
-  function setActiveSlot(idx) {
-    activeSlotIndex = idx;
+  function applySlotVisibility() {
+    const btn = document.getElementById('btn-toggle-slots');
     for (let i = 0; i < 3; i++) {
       const panel = document.getElementById(`slot-${i}`);
-      if (i === idx) {
-        panel.style.border = '1px solid #d97706';
-        panel.style.background = 'linear-gradient(180deg, #2c251e 0%, #1f1914 100%)';
+      if (i < expandedCount) {
+        panel.classList.remove('collapsed');
       } else {
-        panel.style.border = '1px solid #3a3a3a';
-        panel.style.background = 'linear-gradient(180deg, #242424 0%, #1c1c1c 100%)';
+        panel.classList.add('collapsed');
+      }
+    }
+
+    const slot0 = document.getElementById('slot-0');
+    if (expandedCount === 3) {
+      slot0.classList.add('triple-green');
+    } else {
+      slot0.classList.remove('triple-green');
+    }
+
+    if (expandedCount === 1) {
+      slot0.classList.add('single-large');
+      btn.textContent = '展開 🔽';
+    } else {
+      slot0.classList.remove('single-large');
+      if (expandedCount === 2) {
+        btn.textContent = '展開 🔽';
+      } else {
+        btn.textContent = '格納 🔼';
+      }
+    }
+    calculateTotal();
+  }
+
+  function switchSlot(index) {
+    activeSlot = index;
+    for (let i = 0; i < 3; i++) {
+      const panel = document.getElementById(`slot-${i}`);
+      if (i === index) {
+        panel.classList.add('active');
+      } else {
+        panel.classList.remove('active');
       }
     }
   }
 
-  function updateDateTagDisplay() {
-    const tag = document.getElementById('activeDateTag');
-    const today = getTodayString();
-    if (selectedTargetDate === today) {
-      tag.textContent = `(今日: ${today} に反映)`;
-      tag.style.color = '#ffab40';
-    } else {
-      tag.textContent = `(指定日: ${selectedTargetDate} に反映)`;
-      tag.style.color = '#f87171';
-    }
-  }
-
-  function resetSelectedDateToToday() {
-    selectedTargetDate = getTodayString();
-    updateDateTagDisplay();
-    renderCalendar();
-    renderDailyList();
-  }
-
   function formatNumberDisplay(strVal) {
-    if (strVal === 'ERR' || !strVal) return strVal;
+    if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) return strVal;
+
     let parts = String(strVal).split(/([+\-✕÷/%])/);
     if (parts.length > 1) {
       return parts.map(part => {
         if (/^[+\-✕÷/%]$/.test(part)) return part;
-        let sub = part.split('.');
-        let intP = sub[0].replace(/,/g, '');
-        if (!isNaN(intP) && intP !== '') intP = Number(intP).toLocaleString('ja-JP');
-        return sub.length > 1 ? intP + '.' + sub[1] : intP;
+        let subParts = part.split('.');
+        let intPart = subParts[0].replace(/,/g, '');
+        if (!isNaN(intPart) && intPart !== '') {
+          intPart = Number(intPart).toLocaleString('ja-JP');
+        }
+        return subParts.length > 1 ? intPart + '.' + subParts[1] : intPart;
       }).join('');
     }
-    let single = String(strVal).split('.');
-    let intP = single[0].replace(/,/g, '');
-    if (!isNaN(intP) && intP !== '') intP = Number(intP).toLocaleString('ja-JP');
-    return single.length > 1 ? intP + '.' + single[1] : intP;
+
+    let singleParts = String(strVal).split('.');
+    let intPart = singleParts[0].replace(/,/g, '');
+    if (!isNaN(intPart) && intPart !== '') {
+      intPart = Number(intPart).toLocaleString('ja-JP');
+    }
+    if (singleParts.length > 1) {
+      return intPart + '.' + singleParts[1];
+    }
+    return intPart;
+  }
+
+  function calculateTotal() {
+    let sum = 0;
+    for (let i = 0; i < expandedCount; i++) {
+      let val = parseFloat(slots[i].value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
+      if (!isNaN(val)) sum += val;
+    }
+    document.getElementById('total-val').textContent = sum.toLocaleString('ja-JP');
   }
 
   function updateView() {
@@ -423,22 +867,35 @@
       document.getElementById(`expr-${i}`).textContent = slots[i].expr;
       document.getElementById(`mem-${i}`).textContent = slots[i].memory !== 0 ? '[M]' : '';
     }
-
-    let totalSum = slots.reduce((acc, cur) => {
-      let v = parseFloat(cur.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-      return acc + v;
-    }, 0);
-    document.getElementById('total-val').textContent = totalSum.toLocaleString('ja-JP');
+    calculateTotal();
   }
 
   function append(val) {
-    if (val === 'del') { deleteChar(); return; }
-    let s = slots[activeSlotIndex];
-    let displayVal = (val === '*') ? '✕' : (val === '/') ? '÷' : val;
+    let s = slots[activeSlot];
+    if (val === 'del') {
+      deleteChar();
+      return;
+    }
+    
+    let displayVal = val;
+    if (val === '*') displayVal = '✕';
+    if (val === '/') displayVal = '÷';
+
     let rawVal = s.value.replace(/,/g, '');
+
+    if (['+', '-', '*', '/', '%', '✕', '÷'].includes(val)) {
+      if (s.isNew) {
+        s.isNew = false;
+      }
+    }
+
     if (rawVal === '0' || s.isNew) {
       if (['+', '*', '/', '%', '✕', '÷'].includes(val)) return;
-      rawVal = (val === '.') ? '0.' : displayVal;
+      if (val === '.') {
+        rawVal = '0.';
+      } else {
+        rawVal = displayVal;
+      }
       s.isNew = false;
     } else {
       if (val === '.' && rawVal.includes('.')) return;
@@ -450,17 +907,21 @@
   }
 
   function deleteChar() {
-    let s = slots[activeSlotIndex];
+    let s = slots[activeSlot];
     let rawVal = s.value.replace(/,/g, '');
-    if (rawVal.length > 1) rawVal = rawVal.slice(0, -1);
-    else { rawVal = '0'; s.isNew = true; }
+    if (rawVal.length > 1) {
+      rawVal = rawVal.slice(0, -1);
+    } else {
+      rawVal = '0';
+      s.isNew = true;
+    }
     s.value = rawVal;
     s.expr = formatNumberDisplay(rawVal);
     updateView();
   }
 
   function clearDisplay() {
-    let s = slots[activeSlotIndex];
+    let s = slots[activeSlot];
     s.value = '0';
     s.expr = 'READY';
     s.isNew = true;
@@ -468,201 +929,170 @@
   }
 
   function allClearActive() {
-    slots.forEach(s => { s.value = '0'; s.expr = 'READY'; s.isNew = true; s.memory = 0; });
+    for (let i = 0; i < expandedCount; i++) {
+      slots[i].value = '0';
+      slots[i].expr = 'READY';
+      slots[i].isNew = true;
+    }
     updateView();
   }
 
-  function memClear() { slots[activeSlotIndex].memory = 0; updateView(); }
+  function memClear() {
+    slots[activeSlot].memory = 0;
+    updateView();
+  }
   function memPlus() {
-    let s = slots[activeSlotIndex];
+    let s = slots[activeSlot];
     s.memory += parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-    s.isNew = true; updateView();
+    s.isNew = true;
+    updateView();
   }
   function memMinus() {
-    let s = slots[activeSlotIndex];
+    let s = slots[activeSlot];
     s.memory -= parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-    s.isNew = true; updateView();
+    s.isNew = true;
+    updateView();
   }
   function memRecall() {
-    let s = slots[activeSlotIndex];
+    let s = slots[activeSlot];
     s.value = String(s.memory);
     s.expr = `MEM(${s.memory})`;
-    s.isNew = true; updateView();
+    s.isNew = true;
+    updateView();
   }
 
   function togglePopup(target) {
-    ['taxIn', 'taxEx', 'disc'].forEach(t => document.getElementById(t + 'Dropdown').classList.remove('open'));
-    document.getElementById(target + 'Dropdown').classList.toggle('open');
+    const inDropdown = document.getElementById('taxInDropdown');
+    const exDropdown = document.getElementById('taxExDropdown');
+    const discDropdown = document.getElementById('discDropdown');
+
+    const targetEl = document.getElementById(target + 'Dropdown');
+    const isOpen = targetEl.classList.contains('open');
+
+    inDropdown.classList.remove('open');
+    exDropdown.classList.remove('open');
+    discDropdown.classList.remove('open');
+
+    if (!isOpen) {
+      targetEl.classList.add('open');
+    }
   }
 
-  function applyQuickDiscount(rate) {
-    let s = slots[activeSlotIndex];
+  function applyQuickDiscount(rateInput) {
+    let s = slots[activeSlot];
     try {
-      let cur = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
-      if (!isNaN(cur)) {
-        let res = cur * ((100 - rate) / 100);
-        let form = `${cur.toLocaleString('ja-JP')} ✕ ${100 - rate}% (${rate}%OFF)`;
-        s.expr = form;
-        s.value = String(res);
-        addRecord(form, res);
-        s.isNew = false; updateView();
+      let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
+      if (!isNaN(current)) {
+        let multiplier = (100 - rateInput) / 100;
+        let result = current * multiplier;
+        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}%`;
+        
+        s.expr = `${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}% (${rateInput}%OFF)`;
+        s.value = String(result);
+        addHistory(formula, result);
+        s.isNew = false; 
+        updateView();
       }
-    } catch(e) { s.value = 'ERR'; updateView(); }
+    } catch (e) { s.value = 'ERR'; updateView(); }
     document.getElementById('discDropdown').classList.remove('open');
   }
 
-  function applyTax(type, rate) {
-    let s = slots[activeSlotIndex];
+  function applyTax(type, rateInput) {
+    let s = slots[activeSlot];
     try {
-      let cur = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
-      if (!isNaN(cur)) {
-        let res, form;
+      let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
+      if (!isNaN(current)) {
+        let result;
+        let formula;
         if (type === 'in') {
-          res = cur * (1 + rate / 100);
-          form = `${cur.toLocaleString('ja-JP')} (税込${rate}%)`;
+          result = current * (1 + rateInput / 100);
+          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ＋ 税込${rateInput}%`;
+          s.expr = `${current.toLocaleString('ja-JP')} (税込${rateInput}%)`;
         } else {
-          res = cur / (1 + rate / 100);
-          form = `${cur.toLocaleString('ja-JP')} (税抜${rate}%)`;
+          result = current / (1 + rateInput / 100);
+          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} － 税抜${rateInput}%`;
+          s.expr = `${current.toLocaleString('ja-JP')} (税抜${rateInput}%)`;
         }
-        s.value = String(res);
-        s.expr = form;
-        addRecord(form, res);
-        s.isNew = false; updateView();
+        s.value = String(result);
+        addHistory(formula, result);
+        s.isNew = false;
+        updateView();
       }
-    } catch(e) { s.value = 'ERR'; updateView(); }
+    } catch (e) { s.value = 'ERR'; updateView(); }
     document.getElementById('taxInDropdown').classList.remove('open');
     document.getElementById('taxExDropdown').classList.remove('open');
   }
 
   function calculate() {
-    let s = slots[activeSlotIndex];
+    let s = slots[activeSlot];
     try {
-      let clean = s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
-      let full = formatNumberDisplay(s.value.replace(/,/g, ''));
-      let res = Function('"use strict";return (' + clean + ')')();
-      if (!isFinite(res)) throw new Error();
+      let cleanExpr = s.value.replace(/,/g, '');
+      let mathExpr = cleanExpr.replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
+      let fullExpr = formatNumberDisplay(cleanExpr);
+      let res = Function('"use strict";return (' + mathExpr + ')')();
+      
+      s.expr = fullExpr + ' =';
       s.value = String(res);
-      s.expr = full;
+      addHistory(`[S${activeSlot+1}] ${fullExpr}`, res);
       s.isNew = true;
-      addRecord(full, res);
       updateView();
-    } catch(e) { s.value = 'ERR'; s.expr = 'ERROR'; updateView(); }
+    } catch (e) {
+      s.value = 'ERR';
+      s.expr = 'ERROR';
+      s.isNew = true;
+      updateView();
+    }
   }
 
-  // --- カレンダー＆DB連携 ---
-  function addRecord(form, res) {
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  function addHistory(exprText, resVal) {
+    historyArr.unshift({ expr: exprText, result: formatNumberDisplay(resVal) });
+    if (historyArr.length > 20) historyArr.pop();
     
-    dbRecords.unshift({
-      date: selectedTargetDate,
-      time: timeStr,
-      formula: form,
-      result: Number(res)
-    });
-    if (dbRecords.length > 200) dbRecords.pop();
-    localStorage.setItem('cyber_calc_unified_fixed_db', JSON.stringify(dbRecords));
-    renderCalendar();
-    renderDailyList();
-  }
-
-  function changeMonth(diff) {
-    calCurrentDate.setMonth(calCurrentDate.getMonth() + diff);
-    renderCalendar();
-  }
-
-  function renderCalendar() {
-    const year = calCurrentDate.getFullYear();
-    const month = calCurrentDate.getMonth();
-    document.getElementById('calMonthTitle').textContent = `${year}年 ${month + 1}月`;
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-
-    let html = '';
-    for (let i = 0; i < firstDay; i++) {
-      html += `<div class="cal-day" style="background:transparent; border:none; cursor:default;"></div>`;
-    }
-
-    for (let d = 1; d <= lastDate; d++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      const dayRecords = dbRecords.filter(r => r.date === dateStr);
-      const daySum = dayRecords.reduce((acc, cur) => acc + cur.result, 0);
-      const hasData = dayRecords.length > 0;
-      const isSelected = (dateStr === selectedTargetDate);
-
-      html += `
-        <div class="cal-day ${hasData ? 'has-data' : ''} ${isSelected ? 'selected-day' : ''}" onclick="selectDateFromCalendar('${dateStr}')">
-          <span>${d}</span>
-          ${hasData ? `<span class="cal-day-sum">¥${daySum >= 1000 ? Math.round(daySum/1000)+'k' : daySum}</span>` : ''}
-        </div>
-      `;
-    }
-    document.getElementById('calGridDays').innerHTML = html;
-  }
-
-  function selectDateFromCalendar(dateStr) {
-    selectedTargetDate = dateStr;
-    updateDateTagDisplay();
-    renderCalendar();
-    renderDailyList();
-  }
-
-  function renderDailyList() {
-    const list = document.getElementById('dailyList');
-    document.getElementById('selectedDateTitle').textContent = `📌 ${selectedTargetDate} の収支明細`;
-    const filtered = dbRecords.filter(r => r.date === selectedTargetDate);
-
-    if (filtered.length === 0) {
-      list.innerHTML = `<div class="history-item-empty">${selectedTargetDate} のデータはありません</div>`;
-      return;
-    }
-    list.innerHTML = filtered.map(item => `
+    let listHtml = historyArr.map(item => `
       <div class="history-item">
-        <div><div style="font-size:0.6rem; color:#888;">${item.time}</div><div style="font-weight:bold;">${item.formula}</div></div>
-        <div style="font-size:0.9rem; font-weight:bold; color:#ffab40;">= ${item.result.toLocaleString('ja-JP')}</div>
+        <span style="color:#666; font-size:0.8rem;">${item.expr}</span>
+        <span style="color:#003366; font-weight:bold;">= ${item.result}</span>
       </div>
     `).join('');
+    document.getElementById('historyList').innerHTML = listHtml;
   }
 
-  // --- ローカル堅牢OCR / 金額抽出 ---
-  function triggerNativeOCR() {
-    document.getElementById('receiptInput').click();
+  function toggleHistory() {
+    document.getElementById('historyDrawer').classList.toggle('open');
   }
 
-  function processLocalOCR(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+  let deferredPrompt = null;
+  const installBtn = document.getElementById('pwa-install-btn');
 
-    const overlay = document.getElementById('ocrOverlay');
-    const statusText = document.getElementById('ocrStatusText');
-    overlay.classList.add('active');
-    statusText.textContent = "画像を解析中...";
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) {
+      installBtn.style.display = 'block';
+    }
+  });
 
-    // ブラウザ内蔵のCanvasと簡易画像処理でファイルを受け付け、ファイルサイズやプレビュー確認を経て手動入力またはスマート入力を促す、あるいはブラウザ単体で確実に動くポップアップ入力を発動
-    setTimeout(() => {
-      overlay.classList.remove('active');
-      event.target.value = '';
-      
-      // ユーザーが手元でレシートを見ながら確実・瞬時に金額を入力できるよう、ダイアログで金額を尋ねる仕様（誤認識をゼロにするプロ仕様）
-      let inputVal = prompt(`【レシート読取完了】\n画像から読み取った金額（合計）を数字で入力してください：\n(例: 2980)`, "1000");
-      if (inputVal !== null) {
-        let cleanNum = parseFloat(inputVal.replace(/,/g, ''));
-        if (!isNaN(cleanNum)) {
-          let s = slots[activeSlotIndex];
-          s.value = String(cleanNum);
-          s.expr = `📷レシート読取`;
-          s.isNew = true;
-          addRecord(`📷レシート読取`, cleanNum);
-          updateView();
-          alert(`[ ${cleanNum.toLocaleString('ja-JP')} 円 ] を SLOT ${activeSlotIndex} および 📅 [ ${selectedTargetDate} ] のカレンダーに反映しました！`);
-          switchMode('calendar');
-        } else {
-          alert("有効な数字が入力されませんでした。");
-        }
-      }
-    }, 800);
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`ユーザーの選択: ${outcome}`);
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
+    });
   }
+
+  window.addEventListener('appinstalled', () => {
+    console.log('PWAのインストールが完了しました！');
+    deferredPrompt = null;
+    if (installBtn) {
+      installBtn.style.display = 'none';
+    }
+  });
+
+  applySlotVisibility();
 </script>
+
 </body>
 </html>
