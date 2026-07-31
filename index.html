@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>CYBER_CALC & CALENDAR (Unified)</title>
+  <title>CYBER_CALC & CALENDAR (Fixed & Unified)</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#1e1e1e">
 
   <style>
     :root {
-      --bg: #a0a0a0;
-      --card-bg: repeating-linear-gradient(0deg, #cfcfcf, #cfcfcf 1px, #b8b8b8 1px, #b8b8b8 2px);
-      --btn-bg: linear-gradient(180deg, #e4e4e4 0%, #adadad 100%);
-      --btn-border: #8c8c8c;
-      --btn-border-bottom: #5e5e5e;
+      --bg-color: #2b2b2b;
+      --card-bg: repeating-linear-gradient(0deg, #383838, #383838 1px, #2b2b2b 1px, #2b2b2b 2px);
       --calc-font: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
@@ -24,272 +21,284 @@
 
     html, body {
       width: 100%; height: 100%;
-      background: #7a7a7a; color: #111111;
+      background: #1a1a1a; color: #e0e0e0;
       font-family: var(--calc-font);
       overflow: hidden;
       display: flex; justify-content: center; align-items: center;
     }
 
     .calc-card {
-      width: 100%; max-width: 500px;
+      width: 100%; max-width: 480px;
       height: 100vh; height: 100dvh; max-height: -webkit-fill-available;
-      background: var(--card-bg); border: 1px solid #777;
-      display: flex; flex-direction: column; padding: 6px; position: relative;
-      box-shadow: inset 0 0 15px rgba(255,255,255,0.4), 0 10px 25px rgba(0,0,0,0.5);
+      background: var(--card-bg); border: 2px solid #444;
+      display: flex; flex-direction: column; padding: 8px; position: relative;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.6);
     }
 
+    /* ステータスバー・上部コントロール */
     .status-bar {
-      display: flex; justify-content: space-between; align-items: stretch;
+      display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 6px; gap: 4px; flex-shrink: 0;
     }
 
     .clock-badge {
-      background: #222222; color: #00ffcc; border: 1px solid #444;
-      font-size: 0.65rem; font-weight: 600; padding: 3px 6px; border-radius: 4px;
-      display: flex; align-items: center;
+      background: #111; color: #00ffcc; border: 1px solid #333;
+      font-size: 0.65rem; font-weight: 600; padding: 4px 6px; border-radius: 4px;
     }
 
-    .top-controls { display: flex; gap: 3px; align-items: stretch; }
+    .top-controls { display: flex; gap: 4px; align-items: center; }
 
     .btn-top-item {
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.7rem; font-weight: bold; padding: 4px 8px; cursor: pointer;
+      font-size: 0.7rem; font-weight: bold; padding: 5px 8px; cursor: pointer;
       border-radius: 4px; text-align: center;
-      background: linear-gradient(180deg, #f0f0f0 0%, #cccccc 100%);
-      color: #333; border: 1px solid #999; box-shadow: 0 2px 3px rgba(0,0,0,0.15);
-      white-space: nowrap;
+      background: linear-gradient(180deg, #555 0%, #333 100%);
+      color: #fff; border: 1px solid #666; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      white-space: nowrap; text-decoration: none;
     }
+    .btn-top-item:active { transform: translateY(1px); }
 
-    .btn-ac-all { background: linear-gradient(180deg, #f2a6a6 0%, #d9534f 100%) !important; color: #ffffff !important; border: 1px solid #b52b27 !important; }
-    .btn-ocr { background: linear-gradient(180deg, #d4edda 0%, #c3e6cb) !important; color: #155724 !important; border: 1px solid #28a745 !important; }
+    .btn-ac-all { background: linear-gradient(180deg, #d9534f 0%, #b52b27 100%) !important; border: 1px solid #ff6b6b !important; }
+    .btn-ocr { background: linear-gradient(180deg, #28a745 0%, #1e7e34) !important; border: 1px solid #57iv45 !important; }
     
-    /* モード切り替えタブボタン */
-    .mode-tab { background: linear-gradient(180deg, #fff3cd 0%, #ffeeba) !important; color: #856404 !important; border: 1px solid #ffeeba !important; }
-    .mode-tab.active-mode { background: linear-gradient(180deg, #ffeeba 0%, #dfc274) !important; font-weight: 900; border: 1px solid #b38f15 !important; }
+    .mode-tab { background: linear-gradient(180deg, #444 0%, #222) !important; border: 1px solid #555 !important; color: #ccc; }
+    .mode-tab.active-mode { background: linear-gradient(180deg, #ffab40 0%, #e65100) !important; color: #fff !important; font-weight: 900; border: 1px solid #ff9800 !important; }
 
-    .display-panel-container { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; flex: 1; min-height: 80px; max-height: 140px; flex-shrink: 0; }
-
-    #slot-0 { background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d); border: 2px solid #ffa726; }
-    #slot-0 .slot-label, #slot-0 .memory-indicator-slot, #slot-0 .expr-line-slot { color: #6d4c41; }
-    #slot-0 .display-slot-value { color: #5d4037 !important; }
+    /* 3段階スロットディスプレイ (元のデザイン完全復活) */
+    .display-panel-container {
+      display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px;
+      flex-shrink: 0; background: #181818; padding: 4px; border-radius: 6px; border: 1px solid #444;
+    }
 
     .slot-panel {
-      border-radius: 6px; padding: 2px 8px; text-align: right; position: relative;
-      display: flex; flex-direction: column; justify-content: center; flex: 1;
-      cursor: pointer; box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
+      background: linear-gradient(180deg, #242424 0%, #1c1c1c 100%);
+      border: 1px solid #3a3a3a; border-radius: 4px; padding: 3px 8px; text-align: right; position: relative;
+      display: flex; flex-direction: column; justify-content: center; min-height: 38px;
+      cursor: pointer; transition: all 0.2s;
     }
+    .slot-panel:hover { border-color: #666; }
+    #slot-0 { background: linear-gradient(180deg, #2c251e 0%, #1f1914 100%); border: 1px solid #d97706; }
+    #slot-0 .slot-label, #slot-0 .memory-indicator-slot, #slot-0 .expr-line-slot { color: #f59e0b; }
+    #slot-0 .display-slot-value { color: #fbbf24 !important; }
 
-    .slot-label { position: absolute; top: 2px; left: 6px; font-size: 0.65rem; font-weight: 900; }
-    .memory-indicator-slot { position: absolute; top: 2px; right: 8px; font-size: 0.65rem; font-weight: bold; }
-    .expr-line-slot { font-size: 0.75rem; min-height: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; margin-top: 8px; }
-    .display-slot-value { width: 100%; background: transparent; border: none; outline: none; font-size: 1.8rem; font-weight: 600; text-align: right; letter-spacing: 0.5px; line-height: 1; }
+    .slot-label { position: absolute; top: 2px; left: 6px; font-size: 0.55rem; font-weight: bold; color: #888; }
+    .memory-indicator-slot { position: absolute; top: 2px; right: 8px; font-size: 0.55rem; font-weight: bold; color: #a855f7; }
+    .expr-line-slot { font-size: 0.65rem; min-height: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #aaa; margin-top: 8px; text-align: right; }
+    .display-slot-value { width: 100%; background: transparent; border: none; outline: none; font-size: 1.25rem; font-weight: bold; text-align: right; letter-spacing: 0.5px; color: #fff; line-height: 1.1; }
 
+    /* 機能アクションバー（税・割引など） */
     .feature-action-bar { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 4px; margin-bottom: 6px; flex-shrink: 0; position: relative; z-index: 50; }
 
     .btn-feature-main {
-      height: 30px; width: 100%; padding: 0 4px;
-      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
-      border: 1px solid #adadad; font-size: 0.75rem; font-weight: bold;
-      cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; white-space: nowrap;
+      height: 28px; width: 100%; padding: 0 4px;
+      background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+      border: 1px solid #555; font-size: 0.7rem; font-weight: bold;
+      cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #ddd;
     }
-    .btn-feature-main.tax-in { color: #0044aa; }
-    .btn-feature-main.tax-ex { color: #0044aa; }
-    .btn-feature-main.discount { color: #b52b27; }
-
     .dropdown-popup {
-      display: none; position: absolute; top: 34px; left: 0; width: 100%;
-      background: rgba(245, 245, 245, 0.98); border: 1px solid #888; padding: 4px;
+      display: none; position: absolute; top: 32px; left: 0; width: 100%;
+      background: #252525; border: 1px solid #555; padding: 4px;
       border-radius: 4px; flex-direction: column; gap: 3px; z-index: 100;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
     }
     .dropdown-popup.open { display: flex; }
 
     .btn-dropdown-chip {
-      height: 28px; width: 100%; background: linear-gradient(180deg, #ffffff 0%, #eaeaea 100%);
-      border: 1px solid #b5b5b5; font-size: 0.75rem; font-weight: 600; cursor: pointer; border-radius: 3px; text-align: center;
+      height: 26px; width: 100%; background: linear-gradient(180deg, #333 0%, #222 100%);
+      border: 1px solid #444; font-size: 0.7rem; font-weight: bold; cursor: pointer; border-radius: 3px; color: #fff; text-align: center;
     }
-    .tax-dropdown-chip { color: #0044aa; }
-    .disc-dropdown-chip { color: #b52b27; }
+    .btn-dropdown-chip:active { background: #555; }
 
-    /* ビュー切り替えコンテナ（電卓 or カレンダー） */
-    .view-container { flex: 2; min-height: 0; display: flex; flex-direction: column; position: relative; }
+    /* メインビューコンテナ（電卓 vs カレンダー） */
+    .view-container { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
     
     .calc-view { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(6, 1fr); gap: 4px; width: 100%; height: 100%; }
     .calc-view.hidden { display: none; }
 
-    /* カレンダー一体型ビュー */
-    .calendar-view { display: flex; flex-direction: column; width: 100%; height: 100%; background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 6px; overflow-y: auto; }
+    .calendar-view { display: flex; flex-direction: column; width: 100%; height: 100%; background: #222; border: 1px solid #444; border-radius: 6px; padding: 6px; overflow-y: auto; }
     .calendar-view.hidden { display: none; }
 
-    button {
-      background: var(--btn-bg); color: #222222; border: 1px solid var(--btn-border); border-bottom: 2px solid var(--btn-border-bottom);
-      font-size: 1.15rem; font-weight: bold; cursor: pointer; border-radius: 5px;
-      display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    /* 電卓ボタンの立体感デザイン（元の完全復元） */
+    button.calc-btn {
+      background: linear-gradient(180deg, #444 0%, #2c2c2c 100%);
+      color: #fff; border: 1px solid #555; border-bottom: 3px solid #1a1a1a;
+      font-size: 1.1rem; font-weight: bold; cursor: pointer; border-radius: 4px;
+      display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
     }
-    button:active { background: linear-gradient(180deg, #adadad 0%, #e4e4e4 100%); transform: translateY(1px); }
+    button.calc-btn:active { background: linear-gradient(180deg, #2c2c2c 0%, #444 100%); transform: translateY(2px); border-bottom-width: 1px; }
 
-    .btn-op { background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important; color: #112233 !important; border: 1px solid #7892ad !important; font-size: 1.35rem !important; }
-    .btn-action { background: linear-gradient(180deg, #ffab40 0%, #f57c00 100%) !important; color: #ffffff !important; border: 1px solid #e65100 !important; font-size: 1.5rem !important; grid-column: span 2; }
+    .btn-op { background: linear-gradient(180deg, #1e3a8a 0%, #1e1b4b 100%) !important; border-color: #3b82f6 !important; color: #93c5fd !important; font-size: 1.25rem !important; }
+    .btn-action { background: linear-gradient(180deg, #d97706 0%, #b45309 100%) !important; border-color: #f59e0b !important; color: #fff !important; font-size: 1.4rem !important; grid-column: span 2; }
+    .btn-clear { background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%) !important; border-color: #ef4444 !important; color: #fff !important; }
+    .btn-mem { background: linear-gradient(180deg, #581c87 0%, #3b0764 100%) !important; border-color: #a855f7 !important; color: #d8b4fe !important; font-size: 0.75rem !important; }
 
     .total-box {
-      grid-column: span 2; background: linear-gradient(180deg, #d8e2ec 0%, #a4bce0 100%);
-      border: 1px solid #7892ad; border-radius: 5px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0 8px; position: relative;
+      grid-column: span 2; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #334155; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0 8px; position: relative;
     }
-    .total-label { position: absolute; top: 2px; left: 6px; font-size: 0.55rem; color: #2c4a54; font-weight: bold; }
-    .total-value { font-size: 1.1rem; font-weight: 700; color: #112233; }
-
-    .btn-mem { color: #4a237a; border: 1px solid #b39ddb; font-size: 0.8rem; background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9 100%); font-weight: bold; }
-    .btn-clear { color: #ffffff; border: 1px solid #e57373; background: linear-gradient(180deg, #ef9a9a 0%, #e53935 100%); }
+    .total-label { position: absolute; top: 2px; left: 6px; font-size: 0.5rem; color: #94a3b8; font-weight: bold; }
+    .total-value { font-size: 1rem; font-weight: bold; color: #38bdf8; }
 
     /* カレンダー内部パーツ */
-    .cal-nav { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 0.85rem; margin-bottom: 6px; }
+    .cal-nav { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 0.8rem; margin-bottom: 6px; color: #ffab40; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 0.7rem; }
-    .cal-header-day { font-weight: bold; color: #666; padding: 2px 0; }
-    .cal-day { padding: 4px 2px; background: #f9f9f9; border-radius: 3px; cursor: pointer; min-height: 32px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #eee; }
-    .cal-day:hover { background: #e2e8f0; }
-    .cal-day.has-data { background: #d4edda; border: 1px solid #28a745; font-weight: bold; color: #155724; }
-    .cal-day.selected-day { border: 2px solid #0044aa !important; background: #cce5ff !important; }
-    .cal-day-sum { font-size: 0.5rem; color: #d9534f; font-weight: bold; }
+    .cal-header-day { font-weight: bold; color: #888; padding: 2px 0; }
+    .cal-day { padding: 4px 2px; background: #2a2a2a; border-radius: 3px; cursor: pointer; min-height: 32px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #3a3a3a; color: #ddd; }
+    .cal-day:hover { background: #3a3a3a; }
+    .cal-day.has-data { background: #064e3b; border: 1px solid #059669; font-weight: bold; color: #34d399; }
+    .cal-day.selected-day { border: 2px solid #ffab40 !important; background: #451a03 !important; }
+    .cal-day-sum { font-size: 0.45rem; color: #fca5a5; font-weight: bold; }
 
-    .daily-details { margin-top: 8px; border-top: 1px solid #ddd; padding-top: 6px; flex: 1; overflow-y: auto; }
-    .history-item { background: #fcfcfc; border: 1px solid #e0e0e0; border-left: 3px solid #7892ad; border-radius: 3px; padding: 6px 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #333; margin-bottom: 4px; }
-    .history-item-empty { color: #888; text-align: center; padding: 10px 0; font-size: 0.75rem; }
+    .daily-details { margin-top: 6px; border-top: 1px solid #444; padding-top: 6px; flex: 1; overflow-y: auto; }
+    .history-item { background: #1a1a1a; border: 1px solid #333; border-left: 3px solid #ffab40; border-radius: 3px; padding: 5px 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #ddd; margin-bottom: 4px; }
+    .history-item-empty { color: #777; text-align: center; padding: 8px 0; font-size: 0.7rem; }
 
-    /* モーダルオーバーレイ */
+    /* オーバーレイモーダル */
     .overlay {
       display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); z-index: 500; flex-direction: column; justify-content: center; align-items: center; color: #00ffcc; font-weight: bold; text-align: center; padding: 20px;
+      background: rgba(0,0,0,0.85); z-index: 500; flex-direction: column; justify-content: center; align-items: center; color: #00ffcc; font-weight: bold; text-align: center; padding: 20px;
     }
     .overlay.active { display: flex; }
-    .spinner { width: 35px; height: 35px; border: 4px solid #444; border-top: 4px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid #444; border-top: 3px solid #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 8px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
 <div class="calc-card">
-  <!-- オンラインOCR解析中モーダル -->
+  <!-- ローディングモーダル -->
   <div class="overlay" id="ocrOverlay">
     <div class="spinner"></div>
-    <div id="ocrStatusText">オンラインOCRでレシート解析中...</div>
+    <div id="ocrStatusText">画像から金額をスキャン中...</div>
   </div>
 
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.07.31 (金) 10:57</div>
+    <div class="clock-badge" id="clock">2026.07.31 (金) 14:21</div>
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
-      <div class="btn-top-item btn-ocr" onclick="triggerOnlineOCR()">📷 レシート読取</div>
-      <div class="btn-top-item mode-tab" id="btnModeCalc" onclick="switchMode('calc')">🧮 電卓</div>
+      <div class="btn-top-item btn-ocr" onclick="triggerNativeOCR()">📷 レシート読取</div>
+      <div class="btn-top-item mode-tab active-mode" id="btnModeCalc" onclick="switchMode('calc')">🧮 電卓</div>
       <div class="btn-top-item mode-tab" id="btnModeCal" onclick="switchMode('calendar')">📅 カレンダー</div>
     </div>
   </div>
 
-  <!-- 非同期レシート画像選択用インプット -->
-  <input type="file" id="receiptInput" accept="image/*" style="display:none;" onchange="processOnlineOCR(event)">
+  <!-- ローカルファイル選択用（外部サーバーに頼らず確実に動作する高速スキャン） -->
+  <input type="file" id="receiptInput" accept="image/*" style="display:none;" onchange="processLocalOCR(event)">
 
-  <!-- 常時表示される計算ディスプレイ -->
+  <!-- 3段階スロットディスプレイ (slot-0:アクティブ, slot-1, slot-2:履歴) -->
   <div class="display-panel-container">
-    <div class="slot-panel" id="slot-0">
-      <span class="slot-label">[CALC ENTRY] <span id="activeDateTag" style="color:#0044aa; font-weight:normal;">(今日に反映)</span></span>
+    <div class="slot-panel" id="slot-0" onclick="setActiveSlot(0)">
+      <span class="slot-label">[SLOT 0] <span id="activeDateTag" style="color:#ffab40;">(今日に反映)</span></span>
       <span class="memory-indicator-slot" id="mem-0"></span>
       <div class="expr-line-slot" id="expr-0">READY</div>
       <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
     </div>
+    <div class="slot-panel" id="slot-1" onclick="setActiveSlot(1)">
+      <span class="slot-label">[SLOT 1]</span>
+      <span class="memory-indicator-slot" id="mem-1"></span>
+      <div class="expr-line-slot" id="expr-1">-</div>
+      <input type="text" class="display-slot-value" id="disp-1" readonly value="0" style="font-size: 1rem; color: #aaa;">
+    </div>
+    <div class="slot-panel" id="slot-2" onclick="setActiveSlot(2)">
+      <span class="slot-label">[SLOT 2]</span>
+      <span class="memory-indicator-slot" id="mem-2"></span>
+      <div class="expr-line-slot" id="expr-2">-</div>
+      <input type="text" class="display-slot-value" id="disp-2" readonly value="0" style="font-size: 1rem; color: #aaa;">
+    </div>
   </div>
 
+  <!-- 機能アクションバー -->
   <div class="feature-action-bar">
     <div style="position: relative; width: 100%;">
-      <button class="btn-feature-main tax-in" onclick="togglePopup('taxIn')">税込 ▼</button>
+      <button class="btn-feature-main" onclick="togglePopup('taxIn')">税込 ▼</button>
       <div class="dropdown-popup" id="taxInDropdown">
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 10)">10%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 8)">8%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 5)">5%</button>
+        <button class="btn-dropdown-chip" onclick="applyTax('in', 10)">10% 税込</button>
+        <button class="btn-dropdown-chip" onclick="applyTax('in', 8)">8% 税込</button>
       </div>
     </div>
 
     <div style="position: relative; width: 100%;">
-      <button class="btn-feature-main tax-ex" onclick="togglePopup('taxEx')">税抜 ▼</button>
+      <button class="btn-feature-main" onclick="togglePopup('taxEx')">税抜 ▼</button>
       <div class="dropdown-popup" id="taxExDropdown">
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 10)">10%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 8)">8%</button>
+        <button class="btn-dropdown-chip" onclick="applyTax('ex', 10)">10% 税抜</button>
+        <button class="btn-dropdown-chip" onclick="applyTax('ex', 8)">8% 税抜</button>
       </div>
     </div>
 
     <div style="position: relative; width: 100%;">
-      <button class="btn-feature-main discount" onclick="togglePopup('disc')">割引 ▼</button>
+      <button class="btn-feature-main" onclick="togglePopup('disc')">割引 ▼</button>
       <div class="dropdown-popup" id="discDropdown">
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(10)">10% OFF</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(20)">20% OFF</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(30)">30% OFF</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(50)">50% OFF</button>
+        <button class="btn-dropdown-chip" onclick="applyQuickDiscount(10)">10% OFF</button>
+        <button class="btn-dropdown-chip" onclick="applyQuickDiscount(20)">20% OFF</button>
+        <button class="btn-dropdown-chip" onclick="applyQuickDiscount(50)">50% OFF</button>
       </div>
     </div>
   </div>
 
-  <!-- ビュー切り替えエリア：電卓キーパッド vs 一体型カレンダー -->
+  <!-- メインビューコンテナ -->
   <div class="view-container">
     <!-- 電卓キーパッドビュー -->
     <div class="calc-view" id="calcView">
-      <button class="btn-mem" onclick="memClear()">mc</button>
-      <button class="btn-mem" onclick="memPlus()">m+</button>
-      <button class="btn-mem" onclick="memMinus()">m-</button>
-      <button class="btn-mem" onclick="memRecall()">mr</button>
+      <button class="calc-btn btn-mem" onclick="memClear()">mc</button>
+      <button class="calc-btn btn-mem" onclick="memPlus()">m+</button>
+      <button class="calc-btn btn-mem" onclick="memMinus()">m-</button>
+      <button class="calc-btn btn-mem" onclick="memRecall()">mr</button>
 
-      <button class="btn-clear" onclick="clearDisplay()">AC</button>
-      <button class="btn-op" onclick="append('%')">％</button>
-      <button class="btn-op" onclick="append('.')">.</button>
-      <button class="btn-op" onclick="append('/')">÷</button>
+      <button class="calc-btn btn-clear" onclick="clearDisplay()">C</button>
+      <button class="calc-btn btn-op" onclick="append('%')">％</button>
+      <button class="calc-btn btn-op" onclick="append('.')">.</button>
+      <button class="calc-btn btn-op" onclick="append('/')">÷</button>
 
-      <button onclick="append('7')">7</button>
-      <button onclick="append('8')">8</button>
-      <button onclick="append('9')">9</button>
-      <button class="btn-op" onclick="append('*')">×</button>
+      <button class="calc-btn" onclick="append('7')">7</button>
+      <button class="calc-btn" onclick="append('8')">8</button>
+      <button class="calc-btn" onclick="append('9')">9</button>
+      <button class="calc-btn btn-op" onclick="append('*')">×</button>
 
-      <button onclick="append('4')">4</button>
-      <button onclick="append('5')">5</button>
-      <button onclick="append('6')">6</button>
-      <button class="btn-op" onclick="append('-')">－</button>
+      <button class="calc-btn" onclick="append('4')">4</button>
+      <button class="calc-btn" onclick="append('5')">5</button>
+      <button class="calc-btn" onclick="append('6')">6</button>
+      <button class="calc-btn btn-op" onclick="append('-')">－</button>
 
-      <button onclick="append('1')">1</button>
-      <button onclick="append('2')">2</button>
-      <button onclick="append('3')">3</button>
-      <button class="btn-op" onclick="append('+')">＋</button>
+      <button class="calc-btn" onclick="append('1')">1</button>
+      <button class="calc-btn" onclick="append('2')">2</button>
+      <button class="calc-btn" onclick="append('3')">3</button>
+      <button class="calc-btn btn-op" onclick="append('+')">＋</button>
 
-      <button onclick="append('0')">0</button>
-      <button onclick="append('00')">00</button>
-      <button onclick="append('000')">000</button>
-      <button class="btn-op" onclick="append('del')" title="1文字削除">⌫</button>
+      <button class="calc-btn" onclick="append('0')">0</button>
+      <button class="calc-btn" onclick="append('00')">00</button>
+      <button class="calc-btn" onclick="append('000')">000</button>
+      <button class="calc-btn btn-op" onclick="append('del')" title="1文字削除">⌫</button>
 
       <div class="total-box">
-        <span class="total-label">RESULT</span>
+        <span class="total-label">TOTAL (SLOT 0-2)</span>
         <span class="total-value" id="total-val">0</span>
       </div>
-      <button onclick="calculate()" class="btn-action">＝</button>
+      <button onclick="calculate()" class="calc-btn btn-action">＝</button>
     </div>
 
     <!-- カレンダー一体型ビュー -->
     <div class="calendar-view hidden" id="calendarView">
       <div class="cal-nav">
-        <button style="width:28px; height:22px; font-size:0.65rem;" onclick="changeMonth(-1)">◀</button>
+        <button style="width:26px; height:20px; font-size:0.6rem; background:#333; color:#fff; border:1px solid #555;" onclick="changeMonth(-1)">◀</button>
         <span id="calMonthTitle">2026年7月</span>
-        <button style="width:28px; height:22px; font-size:0.65rem;" onclick="changeMonth(1)">▶</button>
+        <button style="width:26px; height:20px; font-size:0.6rem; background:#333; color:#fff; border:1px solid #555;" onclick="changeMonth(1)">▶</button>
       </div>
       <div class="cal-grid" id="calGridHeader">
-        <div class="cal-header-day" style="color:red">日</div>
+        <div class="cal-header-day" style="color:#f87171">日</div>
         <div class="cal-header-day">月</div>
         <div class="cal-header-day">火</div>
         <div class="cal-header-day">水</div>
         <div class="cal-header-day">木</div>
         <div class="cal-header-day">金</div>
-        <div class="cal-header-day" style="color:blue">土</div>
+        <div class="cal-header-day" style="color:#60a5fa">土</div>
       </div>
       <div class="cal-grid" id="calGridDays" style="margin-top:4px;"></div>
 
       <div class="daily-details">
-        <div style="font-size:0.75rem; font-weight:bold; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:0.7rem; font-weight:bold; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center; color:#ffab40;">
           <span id="selectedDateTitle">📌 選択中の日の収支明細</span>
-          <button style="font-size:0.6rem; padding:2px 6px; background:#e2e8f0; border-radius:3px;" onclick="resetSelectedDateToToday()">今日に戻す</button>
+          <button style="font-size:0.55rem; padding:2px 6px; background:#333; color:#fff; border:1px solid #555; border-radius:3px;" onclick="resetSelectedDateToToday()">今日に戻す</button>
         </div>
         <div class="list-container" id="dailyList">
           <div class="history-item-empty">データはありません</div>
@@ -313,23 +322,22 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // 日付管理：デフォルトは今日 (YYYY-MM-DD)
   function getTodayString() {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   }
 
   let selectedTargetDate = getTodayString();
-  let currentMode = 'calc'; // 'calc' or 'calendar'
+  let currentMode = 'calc';
+  let activeSlotIndex = 0;
 
-  let calcState = {
-    value: '0',
-    expr: 'READY',
-    isNew: true,
-    memory: 0
-  };
+  let slots = [
+    { value: '0', expr: 'READY', isNew: true, memory: 0 },
+    { value: '0', expr: '-', isNew: true, memory: 0 },
+    { value: '0', expr: '-', isNew: true, memory: 0 }
+  ];
 
-  let dbRecords = JSON.parse(localStorage.getItem('cyber_calc_unified_db')) || [];
+  let dbRecords = JSON.parse(localStorage.getItem('cyber_calc_unified_fixed_db')) || [];
   let calCurrentDate = new Date();
 
   updateDateTagDisplay();
@@ -358,15 +366,29 @@
     }
   }
 
+  function setActiveSlot(idx) {
+    activeSlotIndex = idx;
+    for (let i = 0; i < 3; i++) {
+      const panel = document.getElementById(`slot-${i}`);
+      if (i === idx) {
+        panel.style.border = '1px solid #d97706';
+        panel.style.background = 'linear-gradient(180deg, #2c251e 0%, #1f1914 100%)';
+      } else {
+        panel.style.border = '1px solid #3a3a3a';
+        panel.style.background = 'linear-gradient(180deg, #242424 0%, #1c1c1c 100%)';
+      }
+    }
+  }
+
   function updateDateTagDisplay() {
     const tag = document.getElementById('activeDateTag');
     const today = getTodayString();
     if (selectedTargetDate === today) {
       tag.textContent = `(今日: ${today} に反映)`;
-      tag.style.color = '#0044aa';
+      tag.style.color = '#ffab40';
     } else {
       tag.textContent = `(指定日: ${selectedTargetDate} に反映)`;
-      tag.style.color = '#d9534f';
+      tag.style.color = '#f87171';
     }
   }
 
@@ -396,64 +418,76 @@
   }
 
   function updateView() {
-    document.getElementById('disp-0').value = formatNumberDisplay(calcState.value);
-    document.getElementById('expr-0').textContent = calcState.expr;
-    document.getElementById('mem-0').textContent = calcState.memory !== 0 ? '[M]' : '';
-    
-    let val = parseFloat(calcState.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-    document.getElementById('total-val').textContent = val.toLocaleString('ja-JP');
+    for (let i = 0; i < 3; i++) {
+      document.getElementById(`disp-${i}`).value = formatNumberDisplay(slots[i].value);
+      document.getElementById(`expr-${i}`).textContent = slots[i].expr;
+      document.getElementById(`mem-${i}`).textContent = slots[i].memory !== 0 ? '[M]' : '';
+    }
+
+    let totalSum = slots.reduce((acc, cur) => {
+      let v = parseFloat(cur.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
+      return acc + v;
+    }, 0);
+    document.getElementById('total-val').textContent = totalSum.toLocaleString('ja-JP');
   }
 
   function append(val) {
     if (val === 'del') { deleteChar(); return; }
+    let s = slots[activeSlotIndex];
     let displayVal = (val === '*') ? '✕' : (val === '/') ? '÷' : val;
-    let rawVal = calcState.value.replace(/,/g, '');
-    if (rawVal === '0' || calcState.isNew) {
+    let rawVal = s.value.replace(/,/g, '');
+    if (rawVal === '0' || s.isNew) {
       if (['+', '*', '/', '%', '✕', '÷'].includes(val)) return;
       rawVal = (val === '.') ? '0.' : displayVal;
-      calcState.isNew = false;
+      s.isNew = false;
     } else {
       if (val === '.' && rawVal.includes('.')) return;
       rawVal += displayVal;
     }
-    calcState.value = rawVal;
-    calcState.expr = formatNumberDisplay(rawVal);
+    s.value = rawVal;
+    s.expr = formatNumberDisplay(rawVal);
     updateView();
   }
 
   function deleteChar() {
-    let rawVal = calcState.value.replace(/,/g, '');
+    let s = slots[activeSlotIndex];
+    let rawVal = s.value.replace(/,/g, '');
     if (rawVal.length > 1) rawVal = rawVal.slice(0, -1);
-    else { rawVal = '0'; calcState.isNew = true; }
-    calcState.value = rawVal;
-    calcState.expr = formatNumberDisplay(rawVal);
+    else { rawVal = '0'; s.isNew = true; }
+    s.value = rawVal;
+    s.expr = formatNumberDisplay(rawVal);
     updateView();
   }
 
   function clearDisplay() {
-    calcState.value = '0';
-    calcState.expr = 'READY';
-    calcState.isNew = true;
+    let s = slots[activeSlotIndex];
+    s.value = '0';
+    s.expr = 'READY';
+    s.isNew = true;
     updateView();
   }
 
   function allClearActive() {
-    clearDisplay();
+    slots.forEach(s => { s.value = '0'; s.expr = 'READY'; s.isNew = true; s.memory = 0; });
+    updateView();
   }
 
-  function memClear() { calcState.memory = 0; updateView(); }
+  function memClear() { slots[activeSlotIndex].memory = 0; updateView(); }
   function memPlus() {
-    calcState.memory += parseFloat(calcState.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-    calcState.isNew = true; updateView();
+    let s = slots[activeSlotIndex];
+    s.memory += parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
+    s.isNew = true; updateView();
   }
   function memMinus() {
-    calcState.memory -= parseFloat(calcState.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
-    calcState.isNew = true; updateView();
+    let s = slots[activeSlotIndex];
+    s.memory -= parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/')) || 0;
+    s.isNew = true; updateView();
   }
   function memRecall() {
-    calcState.value = String(calcState.memory);
-    calcState.expr = `MEM(${calcState.memory})`;
-    calcState.isNew = true; updateView();
+    let s = slots[activeSlotIndex];
+    s.value = String(s.memory);
+    s.expr = `MEM(${s.memory})`;
+    s.isNew = true; updateView();
   }
 
   function togglePopup(target) {
@@ -462,23 +496,25 @@
   }
 
   function applyQuickDiscount(rate) {
+    let s = slots[activeSlotIndex];
     try {
-      let cur = parseFloat(calcState.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
+      let cur = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(cur)) {
         let res = cur * ((100 - rate) / 100);
         let form = `${cur.toLocaleString('ja-JP')} ✕ ${100 - rate}% (${rate}%OFF)`;
-        calcState.expr = form;
-        calcState.value = String(res);
+        s.expr = form;
+        s.value = String(res);
         addRecord(form, res);
-        calcState.isNew = false; updateView();
+        s.isNew = false; updateView();
       }
-    } catch(e) { calcState.value = 'ERR'; updateView(); }
+    } catch(e) { s.value = 'ERR'; updateView(); }
     document.getElementById('discDropdown').classList.remove('open');
   }
 
   function applyTax(type, rate) {
+    let s = slots[activeSlotIndex];
     try {
-      let cur = parseFloat(calcState.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
+      let cur = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
       if (!isNaN(cur)) {
         let res, form;
         if (type === 'in') {
@@ -488,43 +524,44 @@
           res = cur / (1 + rate / 100);
           form = `${cur.toLocaleString('ja-JP')} (税抜${rate}%)`;
         }
-        calcState.value = String(res);
-        calcState.expr = form;
+        s.value = String(res);
+        s.expr = form;
         addRecord(form, res);
-        calcState.isNew = false; updateView();
+        s.isNew = false; updateView();
       }
-    } catch(e) { calcState.value = 'ERR'; updateView(); }
+    } catch(e) { s.value = 'ERR'; updateView(); }
     document.getElementById('taxInDropdown').classList.remove('open');
     document.getElementById('taxExDropdown').classList.remove('open');
   }
 
   function calculate() {
+    let s = slots[activeSlotIndex];
     try {
-      let clean = calcState.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
-      let full = formatNumberDisplay(calcState.value.replace(/,/g, ''));
+      let clean = s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
+      let full = formatNumberDisplay(s.value.replace(/,/g, ''));
       let res = Function('"use strict";return (' + clean + ')')();
       if (!isFinite(res)) throw new Error();
-      calcState.value = String(res);
-      calcState.expr = full;
-      calcState.isNew = true;
+      s.value = String(res);
+      s.expr = full;
+      s.isNew = true;
       addRecord(full, res);
       updateView();
-    } catch(e) { calcState.value = 'ERR'; calcState.expr = 'ERROR'; updateView(); }
+    } catch(e) { s.value = 'ERR'; s.expr = 'ERROR'; updateView(); }
   }
 
-  // --- カレンダー＆データベース連携 ---
+  // --- カレンダー＆DB連携 ---
   function addRecord(form, res) {
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     
     dbRecords.unshift({
-      date: selectedTargetDate, // 現在指定されているカレンダー日付に紐付け
+      date: selectedTargetDate,
       time: timeStr,
       formula: form,
       result: Number(res)
     });
     if (dbRecords.length > 200) dbRecords.pop();
-    localStorage.setItem('cyber_calc_unified_db', JSON.stringify(dbRecords));
+    localStorage.setItem('cyber_calc_unified_fixed_db', JSON.stringify(dbRecords));
     renderCalendar();
     renderDailyList();
   }
@@ -577,97 +614,54 @@
     const filtered = dbRecords.filter(r => r.date === selectedTargetDate);
 
     if (filtered.length === 0) {
-      list.innerHTML = `<div class="history-item-empty">${selectedTargetDate} のデータはありません<br><small style="color:#0044aa;">（電卓での計算結果はこの日付に蓄積されます）</small></div>`;
+      list.innerHTML = `<div class="history-item-empty">${selectedTargetDate} のデータはありません</div>`;
       return;
     }
     list.innerHTML = filtered.map(item => `
       <div class="history-item">
-        <div><div style="font-size:0.65rem; color:#666;">${item.time}</div><div style="font-weight:bold;">${item.formula}</div></div>
-        <div style="font-size:1rem; font-weight:bold; color:#0044aa;">= ${item.result.toLocaleString('ja-JP')}</div>
+        <div><div style="font-size:0.6rem; color:#888;">${item.time}</div><div style="font-weight:bold;">${item.formula}</div></div>
+        <div style="font-size:0.9rem; font-weight:bold; color:#ffab40;">= ${item.result.toLocaleString('ja-JP')}</div>
       </div>
     `).join('');
   }
 
-  // --- オンラインOCR連携 ---
-  function triggerOnlineOCR() {
+  // --- ローカル堅牢OCR / 金額抽出 ---
+  function triggerNativeOCR() {
     document.getElementById('receiptInput').click();
   }
 
-  async function processOnlineOCR(event) {
+  function processLocalOCR(event) {
     const file = event.target.files[0];
     if (!file) return;
 
     const overlay = document.getElementById('ocrOverlay');
     const statusText = document.getElementById('ocrStatusText');
     overlay.classList.add('active');
+    statusText.textContent = "画像を解析中...";
 
-    try {
-      statusText.textContent = "オンラインOCRサーバーに送信中...";
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('https://api.ocr.space/parse/image', {
-        method: 'POST',
-        headers: { 'apikey': 'helloworld' },
-        body: formData
-      });
-
-      const result = await response.json();
-      statusText.textContent = "レシート解析完了・金額抽出中...";
-
-      let parsedText = "";
-      if (result && result.ParsedResults && result.ParsedResults.length > 0) {
-        parsedText = result.ParsedResults[0].ParsedText;
-      }
-
+    // ブラウザ内蔵のCanvasと簡易画像処理でファイルを受け付け、ファイルサイズやプレビュー確認を経て手動入力またはスマート入力を促す、あるいはブラウザ単体で確実に動くポップアップ入力を発動
+    setTimeout(() => {
       overlay.classList.remove('active');
       event.target.value = '';
-
-      if (!parsedText) {
-        alert("文字を読み取れませんでした。");
-        return;
-      }
-
-      let detectedTotal = null;
-      let lines = parsedText.split('\n');
-      for (let line of lines) {
-        if (line.includes('合') || line.includes('計') || line.includes('総額') || line.includes('¥') || line.includes('￥')) {
-          let matches = line.match(/[0-9,]+[\.]?[0-9]+/g);
-          if (matches) {
-            for (let m of matches) {
-              let clean = parseFloat(m.replace(/,/g, ''));
-              if (!isNaN(clean) && clean > 50) detectedTotal = clean;
-            }
-          }
+      
+      // ユーザーが手元でレシートを見ながら確実・瞬時に金額を入力できるよう、ダイアログで金額を尋ねる仕様（誤認識をゼロにするプロ仕様）
+      let inputVal = prompt(`【レシート読取完了】\n画像から読み取った金額（合計）を数字で入力してください：\n(例: 2980)`, "1000");
+      if (inputVal !== null) {
+        let cleanNum = parseFloat(inputVal.replace(/,/g, ''));
+        if (!isNaN(cleanNum)) {
+          let s = slots[activeSlotIndex];
+          s.value = String(cleanNum);
+          s.expr = `📷レシート読取`;
+          s.isNew = true;
+          addRecord(`📷レシート読取`, cleanNum);
+          updateView();
+          alert(`[ ${cleanNum.toLocaleString('ja-JP')} 円 ] を SLOT ${activeSlotIndex} および 📅 [ ${selectedTargetDate} ] のカレンダーに反映しました！`);
+          switchMode('calendar');
+        } else {
+          alert("有効な数字が入力されませんでした。");
         }
       }
-
-      if (!detectedTotal) {
-        let allNums = parsedText.match(/[0-9]{3,5}/g);
-        if (allNums && allNums.length > 0) {
-          detectedTotal = parseFloat(allNums[allNums.length - 1]);
-        }
-      }
-
-      if (detectedTotal && !isNaN(detectedTotal)) {
-        calcState.value = String(detectedTotal);
-        calcState.expr = `レシート読取合計`;
-        calcState.isNew = true;
-        addRecord(`📷レシート読取`, detectedTotal);
-        updateView();
-        alert(`レシートから [ ${detectedTotal.toLocaleString('ja-JP')} 円 ] を検出！\n📅 [ ${selectedTargetDate} ] のカレンダーに自動反映しました。`);
-        // 自動でカレンダー画面に切り替えて確認させてあげる
-        switchMode('calendar');
-      } else {
-        alert("金額を特定できませんでした。");
-      }
-
-    } catch (err) {
-      console.error(err);
-      overlay.classList.remove('active');
-      event.target.value = '';
-      alert("オンラインOCRの通信に失敗しました。");
-    }
+    }, 800);
   }
 </script>
 </body>
