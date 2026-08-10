@@ -981,14 +981,18 @@
   function applyQuickDiscount(rateInput) {
     let s = slots[activeSlot];
     try {
-      let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
+      let cleanExpr = s.value.replace(/,/g, '');
+      let mathExpr = cleanExpr.replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
+      let current = Function('"use strict";return (' + mathExpr + ')')();
+
       if (!isNaN(current)) {
         let multiplier = (100 - rateInput) / 100;
         let result = current * multiplier;
-        let formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}%`;
         
-        s.expr = `${current.toLocaleString('ja-JP')} ✕ ${100 - rateInput}% (${rateInput}%OFF)`;
+        // 直前の計算式全体を含めて式を繋げる
         s.value = String(result);
+        s.expr = `${cleanExpr} ✕ ${100 - rateInput}%`;
+        let formula = `[S${activeSlot+1}] ${s.expr}`;
         addHistory(formula, result);
         s.isNew = false; 
         updateView();
@@ -1000,20 +1004,21 @@
   function applyTax(type, rateInput) {
     let s = slots[activeSlot];
     try {
-      let current = parseFloat(s.value.replace(/,/g, '').replace(/✕/g, '*').replace(/÷/g, '/'));
+      let cleanExpr = s.value.replace(/,/g, '');
+      let mathExpr = cleanExpr.replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
+      let current = Function('"use strict";return (' + mathExpr + ')')();
+
       if (!isNaN(current)) {
         let result;
-        let formula;
         if (type === 'in') {
           result = current * (1 + rateInput / 100);
-          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} ＋ 税込${rateInput}%`;
-          s.expr = `${current.toLocaleString('ja-JP')} (税込${rateInput}%)`;
+          s.expr = `${cleanExpr} (税込${rateInput}%)`;
         } else {
           result = current / (1 + rateInput / 100);
-          formula = `[S${activeSlot+1}] ${current.toLocaleString('ja-JP')} － 税抜${rateInput}%`;
-          s.expr = `${current.toLocaleString('ja-JP')} (税抜${rateInput}%)`;
+          s.expr = `${cleanExpr} (税抜${rateInput}%)`;
         }
         s.value = String(result);
+        let formula = `[S${activeSlot+1}] ${s.expr}`;
         addHistory(formula, result);
         s.isNew = false;
         updateView();
