@@ -281,9 +281,9 @@
       line-height: 1;
     }
 
-    /* 展開前（スロット1単独）専用：サイズそのままで太さを少し細く(400) */
+    /* 展開前（スロット1単独）専用：少し小さく調整 (3.6rem、太さ400) */
     .slot-panel.single-large .display-slot-value {
-      font-size: 4.4rem !important;
+      font-size: 3.6rem !important;
       font-weight: 400 !important;
     }
 
@@ -1030,11 +1030,13 @@
       let mathExpr = cleanExpr.replace(/✕/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
       let fullExpr = formatNumberDisplay(cleanExpr);
       let res = Function('"use strict";return (' + mathExpr + ')')();
+      if (!isFinite(res)) throw new Error();
       
-      s.expr = fullExpr + ' =';
+      let formula = `[S${activeSlot+1}] ${fullExpr}`;
       s.value = String(res);
-      addHistory(`[S${activeSlot+1}] ${fullExpr}`, res);
+      s.expr = fullExpr;
       s.isNew = true;
+      addHistory(formula, res);
       updateView();
     } catch (e) {
       s.value = 'ERR';
@@ -1044,54 +1046,56 @@
     }
   }
 
-  function addHistory(exprText, resVal) {
-    historyArr.unshift({ expr: exprText, result: formatNumberDisplay(resVal) });
-    if (historyArr.length > 20) historyArr.pop();
-    
-    let listHtml = historyArr.map(item => `
-      <div class="history-item">
-        <span style="color:#666; font-size:0.8rem;">${item.expr}</span>
-        <span style="color:#003366; font-weight:bold;">= ${item.result}</span>
-      </div>
-    `).join('');
-    document.getElementById('historyList').innerHTML = listHtml;
+  function addHistory(formula, result) {
+    let timeNow = document.getElementById('clock').textContent.split(' ')[1];
+    let resStr = Number(result).toLocaleString('ja-JP', { maximumFractionDigits: 10 });
+    historyArr.unshift({ formula: formula, result: resStr, time: timeNow });
+    if (historyArr.length > 50) historyArr.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (historyArr.length === 0) {
+      list.innerHTML = '<div class="history-item-empty">履歴はありません</div>';
+      return;
+    }
+    let html = '';
+    historyArr.forEach(item => {
+      html += `
+        <div class="history-item">
+          <div>
+            <div style="font-size:0.75rem; color:#666; margin-bottom:2px;">${item.time}</div>
+            <div style="font-weight:bold; color:#222;">${item.formula} = <span style="color:#0044aa;">${item.result}</span></div>
+          </div>
+        </div>
+      `;
+    });
+    list.innerHTML = html;
   }
 
   function toggleHistory() {
-    document.getElementById('historyDrawer').classList.toggle('open');
+    const drawer = document.getElementById('historyDrawer');
+    drawer.classList.toggle('open');
   }
 
-  let deferredPrompt = null;
-  const installBtn = document.getElementById('pwa-install-btn');
-
+  let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    if (installBtn) {
-      installBtn.style.display = 'block';
-    }
+    document.getElementById('pwa-install-btn').style.display = 'block';
   });
 
-  if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
+  document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+    if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      console.log(`ユーザーの選択: ${outcome}`);
+      if (outcome === 'accepted') {
+        document.getElementById('pwa-install-btn').style.display = 'none';
+      }
       deferredPrompt = null;
-      installBtn.style.display = 'none';
-    });
-  }
-
-  window.addEventListener('appinstalled', () => {
-    console.log('PWAのインストールが完了しました！');
-    deferredPrompt = null;
-    if (installBtn) {
-      installBtn.style.display = 'none';
     }
   });
-
-  applySlotVisibility();
 </script>
 
 </body>
