@@ -114,9 +114,10 @@
 
     .btn-control {
       background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
-      color: #0369a1 !important;
-      border: 1px solid #7dd3fc !important;
+      color: #dc2626 !important; /* 文字を赤に */
+      border: 1px solid #38bdf8 !important;
       border-bottom: 3px solid #0284c7 !important;
+      background: linear-gradient(180deg, #d8f3fc 0%, #70c2f2 100%) !important; /* 背景を青に調整 */
     }
 
     .btn-ac-all {
@@ -154,16 +155,21 @@
     }
 
     /* SLOT 1: 展開時（薄い蛍光色のモスグリーン系） */
-    .calc-card.expanded #slot-0 {
+    .calc-card.expanded-2 #slot-0,
+    .calc-card.expanded-3 #slot-0 {
       background: linear-gradient(180deg, #e6f4ea 0%, #cbe8d7 100%);
       border: 2px solid #57a673;
     }
-    .calc-card.expanded #slot-0 .slot-label,
-    .calc-card.expanded #slot-0 .memory-indicator-slot,
-    .calc-card.expanded #slot-0 .expr-line-slot {
+    .calc-card.expanded-2 #slot-0 .slot-label,
+    .calc-card.expanded-2 #slot-0 .memory-indicator-slot,
+    .calc-card.expanded-2 #slot-0 .expr-line-slot,
+    .calc-card.expanded-3 #slot-0 .slot-label,
+    .calc-card.expanded-3 #slot-0 .memory-indicator-slot,
+    .calc-card.expanded-3 #slot-0 .expr-line-slot {
       color: #2e6b43;
     }
-    .calc-card.expanded #slot-0 .display-slot-value {
+    .calc-card.expanded-2 #slot-0 .display-slot-value,
+    .calc-card.expanded-3 #slot-0 .display-slot-value {
       color: #13331f !important;
     }
 
@@ -227,16 +233,20 @@
       opacity: 1;
     }
 
-    .calc-card.expanded #slot-0.active {
+    .calc-card.expanded-2 #slot-0.active,
+    .calc-card.expanded-3 #slot-0.active {
       border: 2.5px solid #2e6b43 !important;
       background: linear-gradient(180deg, #cbe8d7 0%, #aedbc2 100%) !important;
       box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 0 10px rgba(87, 166, 115, 0.4);
     }
-    .calc-card.expanded #slot-0.active .slot-label,
-    .calc-card.expanded #slot-0.active .expr-line-slot {
+    .calc-card.expanded-2 #slot-0.active .slot-label,
+    .calc-card.expanded-2 #slot-0.active .expr-line-slot,
+    .calc-card.expanded-3 #slot-0.active .slot-label,
+    .calc-card.expanded-3 #slot-0.active .expr-line-slot {
       color: #1e462c !important;
     }
-    .calc-card.expanded #slot-0.active .display-slot-value {
+    .calc-card.expanded-2 #slot-0.active .display-slot-value,
+    .calc-card.expanded-3 #slot-0.active .display-slot-value {
       color: #13331f !important;
     }
 
@@ -473,17 +483,18 @@
       transform: translateY(3px);
     }
 
+    /* 演算子（スクショの配色に合わせ調整） */
     .btn-op {
-      background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%) !important;
+      background: linear-gradient(180deg, #8fb7eb 0%, #4a88d6 100%) !important;
       color: #ffffff !important;
-      border: 1px solid #60a5fa !important;
-      border-bottom: 4px solid #1d4ed8 !important;
+      border: 1px solid #3b74b8 !important;
+      border-bottom: 4px solid #1e4a82 !important;
       font-size: 1.5rem !important;
       box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
     }
     
     .btn-op:active {
-      background: linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%) !important;
+      background: linear-gradient(180deg, #4a88d6 0%, #8fb7eb 100%) !important;
       border-bottom-width: 1px !important;
       transform: translateY(3px) !important;
     }
@@ -689,7 +700,7 @@
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
-      <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
+      <div class="btn-top-item btn-control" onclick="toggleHistory()" style="color:#0369a1 !important; background:linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;">履歴 📂</div>
     </div>
   </div>
 
@@ -908,22 +919,27 @@
 
 
   /* =========================
-     スロット展開
+     スロット展開（1段→2段→3段→1段ループ）
   ========================= */
 
   function toggleSlots() {
 
     const card = document.getElementById('calcCard');
 
-    if (expandedCount === 3) {
+    if (expandedCount === 1) {
+      expandedCount = 2;
+      card.classList.remove('expanded-3');
+      card.classList.add('expanded-2');
+    } else if (expandedCount === 2) {
+      expandedCount = 3;
+      card.classList.remove('expanded-2');
+      card.classList.add('expanded-3');
+    } else {
       expandedCount = 1;
-      card.classList.remove('expanded');
+      card.classList.remove('expanded-2', 'expanded-3');
       if (activeSlot > 0) {
         switchSlot(0);
       }
-    } else {
-      expandedCount = 3;
-      card.classList.add('expanded');
     }
 
     applySlotVisibility();
@@ -946,6 +962,9 @@
     if (expandedCount === 1) {
       document.getElementById('slot-0').classList.add('single-large');
       btn.textContent = '展開 ▼';
+    } else if (expandedCount === 2) {
+      document.getElementById('slot-0').classList.remove('single-large');
+      btn.textContent = '展開 ▲';
     } else {
       document.getElementById('slot-0').classList.remove('single-large');
       btn.textContent = '格納 ▲';
@@ -975,7 +994,7 @@
 
 
   /* =========================
-     数字表示
+     数字表示（掛け算記号を小さめの「✕」に）
   ========================= */
 
   function formatNumberDisplay(strVal) {
@@ -986,8 +1005,11 @@
       return strVal;
     }
 
+    // かけ算記号を小さめ・スリムな「✕」に置換
+    let sanitized = String(strVal).replace(/\*/g, '✕');
+
     let parts =
-      String(strVal).split(/([+\-✕÷/%])/);
+      sanitized.split(/([+\-✕÷/%])/);
 
     if (parts.length > 1) {
 
@@ -1019,7 +1041,7 @@
     }
 
     let singleParts =
-      String(strVal).split('.');
+      sanitized.split('.');
 
     let intPart =
       singleParts[0].replace(/,/g, '');
