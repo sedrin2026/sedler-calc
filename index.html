@@ -21,16 +21,7 @@
   <style>
     :root {
       --bg: #a0a0a0;
-      --card-bg: repeating-linear-gradient(
-        0deg,
-        #cfcfcf,
-        #cfcfcf 1px,
-        #b8b8b8 1px,
-        #b8b8b8 2px
-      );
-      --btn-bg: linear-gradient(180deg, #e4e4e4 0%, #adadad 100%);
-      --btn-border: #8c8c8c;
-      --btn-border-bottom: #5e5e5e;
+      --card-bg: linear-gradient(180deg, #f0f4f8 0%, #d9e2ec 100%);
       --calc-font: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
@@ -64,7 +55,7 @@
       flex-direction: column;
       padding: 6px;
       position: relative;
-      box-shadow: inset 0 0 15px rgba(255,255,255,0.4), 0 10px 25px rgba(0,0,0,0.5);
+      box-shadow: inset 0 0 15px rgba(255,255,255,0.6), 0 10px 25px rgba(0,0,0,0.5);
     }
 
     .status-bar {
@@ -77,9 +68,9 @@
     }
 
     .clock-badge {
-      background: #222222;
+      background: #112222;
       color: #00ffcc;
-      border: 1px solid #444;
+      border: 1px solid #285d73;
       font-family: var(--calc-font);
       font-size: 0.7rem;
       font-weight: 600;
@@ -104,25 +95,35 @@
       font-weight: bold;
       padding: 4px 10px;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 5px;
       min-width: 50px;
       text-align: center;
-      background: linear-gradient(180deg, #f0f0f0 0%, #cccccc 100%);
+      background: linear-gradient(180deg, #ffffff 0%, #cbf0fa 100%);
       color: #333;
-      border: 1px solid #999;
-      box-shadow: 0 2px 3px rgba(0,0,0,0.15);
+      border: 1px solid #99b8cc;
+      border-bottom: 3px solid #6b95b0;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+      transition: all 0.08s ease;
+    }
+
+    .btn-top-item:active {
+      transform: translateY(2px);
+      border-bottom-width: 1px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .btn-control {
-      background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important;
-      color: #112233 !important;
-      border: 1px solid #7892ad !important;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
+      color: #0369a1 !important;
+      border: 1px solid #7dd3fc !important;
+      border-bottom: 3px solid #0284c7 !important;
     }
 
     .btn-ac-all {
-      background: #0044aa !important;
-      color: #ffffff !important;
-      border: 1px solid #7892ad !important;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
+      color: #0369a1 !important;
+      border: 1px solid #7dd3fc !important;
+      border-bottom: 3px solid #0284c7 !important;
     }
 
     .display-panel-container {
@@ -135,77 +136,77 @@
     }
 
     #slot-0 {
-      background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
-      border: 2px solid #ffa726;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd);
+      border: 2px solid #38bdf8;
     }
 
     #slot-0 .slot-label,
     #slot-0 .memory-indicator-slot,
     #slot-0 .expr-line-slot {
-      color: #6d4c41;
+      color: #0369a1;
     }
 
     #slot-0 .display-slot-value {
-      color: #5d4037 !important;
+      color: #0f172a !important;
     }
 
     #slot-0.triple-green {
-      background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9) !important;
-      border: 2px solid #a5d6a7 !important;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd) !important;
+      border: 2px solid #38bdf8 !important;
     }
 
     #slot-0.triple-green .slot-label,
     #slot-0.triple-green .memory-indicator-slot,
     #slot-0.triple-green .expr-line-slot {
-      color: #2e7d32 !important;
+      color: #0369a1 !important;
     }
 
     #slot-0.triple-green .display-slot-value {
-      color: #1b5e20 !important;
+      color: #0f172a !important;
     }
 
     #slot-0.triple-green.active {
-      border: 2.5px solid #285d73 !important;
-      background: linear-gradient(180deg, #d0e8f2 0%, #8fb9c6 100%) !important;
+      border: 2.5px solid #0284c7 !important;
+      background: linear-gradient(180deg, #bae6fd 0%, #7dd3fc 100%) !important;
     }
 
     #slot-0.triple-green.active .slot-label,
     #slot-0.triple-green.active .expr-line-slot {
-      color: #2c4a54 !important;
+      color: #0369a1 !important;
     }
 
     #slot-0.triple-green.active .display-slot-value {
-      color: #11222c !important;
+      color: #0f172a !important;
     }
 
     #slot-1 {
-      background: linear-gradient(180deg, #ffe0b2 0%, #ffb74d);
-      border: 2px solid #ffa726;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd);
+      border: 2px solid #38bdf8;
     }
 
     #slot-1 .slot-label,
     #slot-1 .memory-indicator-slot,
     #slot-1 .expr-line-slot {
-      color: #6d4c41;
+      color: #0369a1;
     }
 
     #slot-1 .display-slot-value {
-      color: #5d4037 !important;
+      color: #0f172a !important;
     }
 
     #slot-2 {
-      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9);
-      border: 2px solid #b39ddb;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd);
+      border: 2px solid #38bdf8;
     }
 
     #slot-2 .slot-label,
     #slot-2 .memory-indicator-slot,
     #slot-2 .expr-line-slot {
-      color: #4a237a;
+      color: #0369a1;
     }
 
     #slot-2 .display-slot-value {
-      color: #3b1c64 !important;
+      color: #0f172a !important;
     }
 
     .slot-panel {
@@ -219,7 +220,7 @@
       flex: 1;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1);
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.05);
       overflow: hidden;
       max-height: 200px;
     }
@@ -235,22 +236,22 @@
     }
 
     .slot-panel.active {
-      border: 2.5px solid #285d73 !important;
-      background: linear-gradient(180deg, #d0e8f2 0%, #8fb9c6 100%) !important;
-      box-shadow: inset 0 3px 6px rgba(0,0,0,0.2), 0 0 10px rgba(41, 128, 185, 0.4);
+      border: 2.5px solid #0284c7 !important;
+      background: linear-gradient(180deg, #bae6fd 0%, #7dd3fc 100%) !important;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 0 10px rgba(56, 189, 248, 0.4);
       opacity: 1;
     }
 
     .slot-panel.active .slot-label {
-      color: #2c4a54 !important;
+      color: #0369a1 !important;
     }
 
     .slot-panel.active .expr-line-slot {
-      color: #4a6772 !important;
+      color: #0369a1 !important;
     }
 
     .slot-panel.active .display-slot-value {
-      color: #11222c !important;
+      color: #0f172a !important;
     }
 
     .slot-label {
@@ -312,14 +313,14 @@
     .single-divider {
       width: 100%;
       border: none;
-      border-top: 1.5px solid #285d73;
+      border-top: 1.5px solid #38bdf8;
       margin-bottom: 3px;
     }
 
     .single-guide-text {
       font-family: var(--calc-font);
       font-size: 0.75rem;
-      color: #4a6772;
+      color: #0369a1;
       font-weight: bold;
       text-align: left;
       letter-spacing: -0.5px;
@@ -338,50 +339,54 @@
     }
 
     .btn-feature-main {
-      height: 32px;
+      height: 34px;
       width: 100%;
       padding: 0 4px;
-      background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
-      border: 1px solid #adadad;
+      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+      border: 1px solid #cbd5e1;
+      border-bottom: 3px solid #94a3b8;
       font-family: var(--calc-font);
       font-size: 0.75rem;
       font-weight: bold;
       cursor: pointer;
-      border-radius: 4px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      border-radius: 5px;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.15);
       display: flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
+      transition: all 0.08s ease;
     }
 
     .btn-feature-main.tax-in,
     .btn-feature-main.tax-ex {
-      color: #0044aa;
+      color: #0369a1;
     }
 
     .btn-feature-main.discount {
-      color: #b52b27;
+      color: #991b1b;
     }
 
     .btn-feature-main:active {
-      background: #ccc;
+      transform: translateY(2px);
+      border-bottom-width: 1px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .dropdown-popup {
       display: none;
       position: absolute;
-      top: 36px;
+      top: 38px;
       left: 0;
       width: 100%;
-      background: rgba(245, 245, 245, 0.98);
-      border: 1px solid #888;
+      background: rgba(245, 247, 250, 0.98);
+      border: 1px solid #94a3b8;
       padding: 4px;
-      border-radius: 4px;
+      border-radius: 5px;
       flex-direction: column;
       gap: 3px;
       z-index: 100;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
       max-height: 220px;
       overflow-y: auto;
       scrollbar-width: thin;
@@ -394,27 +399,31 @@
     .btn-dropdown-chip {
       height: 30px;
       width: 100%;
-      background: linear-gradient(180deg, #ffffff 0%, #eaeaea 100%);
-      border: 1px solid #b5b5b5;
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+      border: 1px solid #cbd5e1;
+      border-bottom: 2px solid #94a3b8;
       font-family: var(--calc-font);
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      border-radius: 3px;
+      border-radius: 4px;
       text-align: center;
       flex-shrink: 0;
+      transition: all 0.06s ease;
     }
 
     .tax-dropdown-chip {
-      color: #0044aa;
+      color: #0369a1;
     }
 
     .disc-dropdown-chip {
-      color: #b52b27;
+      color: #991b1b;
     }
 
     .btn-dropdown-chip:active {
-      background: #d9534f;
+      transform: translateY(1px);
+      border-bottom-width: 1px;
+      background: #0284c7;
       color: #fff;
     }
 
@@ -428,64 +437,74 @@
     }
 
     button {
-      background: var(--btn-bg);
-      color: #222222;
-      border: 1px solid var(--btn-border);
-      border-bottom: 2px solid var(--btn-border-bottom);
+      background: linear-gradient(180deg, #526075 0%, #334155 100%);
+      color: #ffffff;
+      border: 1px solid #1e293b;
+      border-bottom: 4px solid #0b111e;
       font-family: var(--calc-font);
       font-size: 1.25rem;
       font-weight: bold;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 6px;
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.25);
       height: 100%;
       width: 100%;
-      transition: filter 0.05s;
+      transition: all 0.08s cubic-bezier(0.2, 0, 0, 1);
     }
 
     button:active {
-      background: linear-gradient(180deg, #adadad 0%, #e4e4e4 100%);
-      box-shadow: inset 0 2px 3px rgba(0,0,0,0.3);
-      transform: translateY(1px);
+      background: linear-gradient(180deg, #334155 0%, #475569 100%);
+      border-bottom-width: 1px;
+      box-shadow: inset 0 3px 5px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.1);
+      transform: translateY(3px);
     }
 
     .btn-op {
-      background: linear-gradient(180deg, #d8e2ec 0%, #9ab4d0 100%) !important;
-      color: #112233 !important;
-      border: 1px solid #7892ad !important;
-      border-bottom: 2px solid #566c82 !important;
+      background: linear-gradient(180deg, #a7d0fd 0%, #60a5fa 100%) !important;
+      color: #1e3a8a !important;
+      border: 1px solid #60a5fa !important;
+      border-bottom: 4px solid #1d4ed8 !important;
       font-size: 1.5rem !important;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+    
+    .btn-op:active {
+      background: linear-gradient(180deg, #60a5fa 0%, #93c5fd 100%) !important;
+      border-bottom-width: 1px !important;
+      transform: translateY(3px) !important;
     }
 
     .btn-action {
-      background: linear-gradient(180deg, #ffab40 0%, #f57c00 100%) !important;
+      background: linear-gradient(180deg, #fb923c 0%, #f97316 100%) !important;
       color: #ffffff !important;
-      border: 1px solid #e65100 !important;
-      border-bottom: 2px solid #b23c00 !important;
+      border: 1px solid #fb923c !important;
+      border-bottom: 4px solid #9a3412 !important;
       font-size: 1.8rem !important;
-      box-shadow: 0 3px 6px rgba(245, 124, 0, 0.4);
+      box-shadow: 0 4px 8px rgba(234, 88, 12, 0.4);
       grid-column: span 2;
     }
 
     .btn-action:active {
-      background: linear-gradient(180deg, #f57c00 100%, #ffab40 100%) !important;
+      background: linear-gradient(180deg, #f97316 0%, #ea580c 100%) !important;
+      border-bottom-width: 1px !important;
+      transform: translateY(3px) !important;
     }
 
     .total-box {
       grid-column: span 2;
-      background: linear-gradient(180deg, #d8e2ec 0%, #a4bce0 100%);
-      border: 1px solid #7892ad;
-      border-bottom: 2px solid #566c82;
-      border-radius: 5px;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+      border: 1px solid #38bdf8;
+      border-bottom: 3px solid #0284c7;
+      border-radius: 6px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-end;
       padding: 0 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      box-shadow: 0 3px 5px rgba(0,0,0,0.15);
       position: relative;
     }
 
@@ -494,7 +513,7 @@
       top: 2px;
       left: 6px;
       font-size: 0.58rem;
-      color: #2c4a54;
+      color: #0369a1;
       font-weight: bold;
     }
 
@@ -502,24 +521,38 @@
       font-family: var(--calc-font);
       font-size: 1.25rem;
       font-weight: 700;
-      color: #112233;
+      color: #0f172a;
       letter-spacing: 0.5px;
     }
 
     .btn-mem {
-      color: #4a237a;
-      border: 1px solid #b39ddb;
-      border-bottom: 2px solid #7e57c2;
+      color: #581c87;
+      border: 1px solid #d8b4fe;
+      border-bottom: 4px solid #7e22ce;
       font-size: 0.85rem;
-      background: linear-gradient(180deg, #ede7f6 0%, #d1c4e9 100%);
+      background: linear-gradient(180deg, #f5f3ff 0%, #e9d5ff 100%);
       font-weight: bold;
+      box-shadow: 0 4px 6px rgba(147, 51, 234, 0.15);
+    }
+    
+    .btn-mem:active {
+      background: linear-gradient(180deg, #e9d5ff 0%, #d8b4fe 100%);
+      border-bottom-width: 1px;
+      transform: translateY(3px);
     }
 
     .btn-clear {
       color: #ffffff;
-      border: 1px solid #e57373;
-      border-bottom: 2px solid #c62828;
-      background: linear-gradient(180deg, #ef9a9a 0%, #e53935 100%);
+      border: 1px solid #fca5a5;
+      border-bottom: 4px solid #7f1d1d;
+      background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+      box-shadow: 0 4px 6px rgba(220, 38, 38, 0.25);
+    }
+    
+    .btn-clear:active {
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+      border-bottom-width: 1px;
+      transform: translateY(3px);
     }
 
     .history-drawer {
@@ -528,8 +561,8 @@
       left: 0;
       width: 100%;
       height: 0;
-      background: #f0f0f0;
-      border-top: 3px solid #7892ad;
+      background: #f8fafc;
+      border-top: 3px solid #38bdf8;
       transition: height 0.25s ease;
       overflow-y: auto;
       z-index: 200;
@@ -546,7 +579,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #ccc;
+      border-bottom: 2px solid #cbd5e1;
       padding-bottom: 8px;
       margin-bottom: 12px;
       gap: 8px;
@@ -554,7 +587,7 @@
 
     .history-title {
       font-size: 0.95rem;
-      color: #333;
+      color: #1e293b;
       font-weight: 900;
       white-space: nowrap;
       display: flex;
@@ -563,8 +596,9 @@
     }
 
     .history-close {
-      background: linear-gradient(180deg, #f2a6a6 0%, #d9534f 100%);
-      border: 1px solid #b52b27;
+      background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+      border: 1px solid #dc2626;
+      border-bottom: 3px solid #991b1b;
       color: #fff;
       font-size: 0.7rem;
       padding: 4px 8px;
@@ -572,6 +606,11 @@
       cursor: pointer;
       font-weight: bold;
       white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .history-close:active {
+      transform: translateY(2px);
+      border-bottom-width: 1px;
     }
 
     .history-list {
@@ -582,8 +621,8 @@
 
     .history-item {
       background: #ffffff;
-      border: 1px solid #dcdcdc;
-      border-left: 4px solid #7892ad;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #38bdf8;
       border-radius: 4px;
       padding: 8px 10px;
       display: flex;
@@ -591,12 +630,12 @@
       align-items: center;
       font-family: var(--calc-font);
       font-size: 0.9rem;
-      color: #333;
+      color: #1e293b;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     .history-item-empty {
-      color: #888;
+      color: #64748b;
       text-align: center;
       padding: 20px 0;
       font-size: 0.85rem;
@@ -1312,14 +1351,13 @@
 
 
   /* =========================================================
-     修正済み：割引 (右辺の数値のみを抽出して割引)
+     割引 (右辺の数値のみを抽出して割引)
   ========================================================= */
 
   function applyQuickDiscount(rateInput) {
     let s = slots[activeSlot];
-    let fullExpr = s.value; // 例: "250+100"
+    let fullExpr = s.value;
     
-    // 最後に含まれる演算子の位置を探す
     const ops = /[+\-✕÷]/g;
     let match, lastOpIndex = -1;
     while ((match = ops.exec(fullExpr)) !== null) {
@@ -1331,25 +1369,20 @@
       let targetNumStr = "";
 
       if (lastOpIndex === -1) {
-        // 演算子なし (例: "500")
         targetNumStr = fullExpr;
       } else {
-        // 演算子あり (例: "250+100" -> prefix: "250+", target: "100")
         prefix = fullExpr.substring(0, lastOpIndex + 1);
         targetNumStr = fullExpr.substring(lastOpIndex + 1);
       }
 
-      // 数値を評価して割引を適用
       let targetNum = parseFloat(targetNumStr.replace(/,/g, ''));
       if (isNaN(targetNum)) throw new Error();
 
       let discounted = targetNum * ((100 - rateInput) / 100);
 
-      // 式を再構築
       s.value = prefix + String(discounted);
       s.expr = formatNumberDisplay(s.value);
 
-      // 履歴には変更内容を記録
       let formula = `[S${activeSlot+1}] ${targetNumStr} ✕ ${100 - rateInput}%`;
       addHistory(formula, discounted);
 
@@ -1581,13 +1614,13 @@
 
           <div>
 
-            <div style="font-size:0.75rem; color:#666; margin-bottom:2px;">
+            <div style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">
               ${item.time}
             </div>
 
-            <div style="font-weight:bold; color:#222;">
+            <div style="font-weight:bold; color:#1e293b;">
               ${item.formula} =
-              <span style="color:#0044aa;">
+              <span style="color:#0284c7;">
                 ${item.result}
               </span>
             </div>
