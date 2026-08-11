@@ -113,18 +113,17 @@
     }
 
     .btn-control {
-      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
-      color: #dc2626 !important; /* 文字を赤に */
-      border: 1px solid #38bdf8 !important;
-      border-bottom: 3px solid #0284c7 !important;
-      background: linear-gradient(180deg, #d8f3fc 0%, #70c2f2 100%) !important; /* 背景を青に調整 */
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid #0284c7 !important;
+      border-bottom: 3px solid #0369a1 !important;
     }
 
     .btn-ac-all {
-      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;
-      color: #0369a1 !important;
-      border: 1px solid #7dd3fc !important;
-      border-bottom: 3px solid #0284c7 !important;
+      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%) !important;
+      color: #ffffff !important;
+      border: 1px solid #1d4ed8 !important;
+      border-bottom: 3px solid #1e3a8a !important;
     }
 
     .display-panel-container {
@@ -321,6 +320,14 @@
       font-weight: 400 !important;
     }
 
+    /* 小さな掛け算記号用クラス（文字サイズに対して少し小さく、位置を微調整） */
+    .small-mult {
+      font-size: 0.7em;
+      vertical-align: middle;
+      display: inline-block;
+      margin: 0 0.05em;
+    }
+
     .single-guide-area {
       display: none;
       flex-direction: column;
@@ -483,7 +490,6 @@
       transform: translateY(3px);
     }
 
-    /* 演算子（スクショの配色に合わせ調整） */
     .btn-op {
       background: linear-gradient(180deg, #8fb7eb 0%, #4a88d6 100%) !important;
       color: #ffffff !important;
@@ -695,12 +701,12 @@
 <div class="calc-card" id="calcCard">
 
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.08.12 (水) 03:08</div>
+    <div class="clock-badge" id="clock">2026.08.12 (水) 03:46</div>
 
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
-      <div class="btn-top-item btn-control" onclick="toggleHistory()" style="color:#0369a1 !important; background:linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%) !important;">履歴 📂</div>
+      <div class="btn-top-item btn-control" onclick="toggleHistory()" style="background:linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important; color:#ffffff !important; border-color:#0284c7 !important;">履歴 📂</div>
     </div>
   </div>
 
@@ -710,7 +716,7 @@
       <span class="slot-label">[SLOT 1]</span>
       <span class="memory-indicator-slot" id="mem-0"></span>
       <div class="expr-line-slot" id="expr-0">READY</div>
-      <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
+      <div class="display-slot-value" id="disp-0">0</div>
       
       <div class="single-guide-area">
         <hr class="single-divider">
@@ -722,14 +728,14 @@
       <span class="slot-label">[SLOT 2]</span>
       <span class="memory-indicator-slot" id="mem-1"></span>
       <div class="expr-line-slot" id="expr-1">READY</div>
-      <input type="text" class="display-slot-value" id="disp-1" readonly value="0">
+      <div class="display-slot-value" id="disp-1">0</div>
     </div>
 
     <div class="slot-panel collapsed" id="slot-2" onclick="switchSlot(2)">
       <span class="slot-label">[SLOT 3]</span>
       <span class="memory-indicator-slot" id="mem-2"></span>
       <div class="expr-line-slot" id="expr-2">READY</div>
-      <input type="text" class="display-slot-value" id="disp-2" readonly value="0">
+      <div class="display-slot-value" id="disp-2">0</div>
     </div>
 
   </div>
@@ -1005,17 +1011,16 @@
       return strVal;
     }
 
-    // かけ算記号を小さめ・スリムな「✕」に置換
-    let sanitized = String(strVal).replace(/\*/g, '✕');
+    let sanitized = String(strVal).replace(/\*/g, '<span class="small-mult">✕</span>');
 
     let parts =
-      sanitized.split(/([+\-✕÷/%])/);
+      sanitized.split(/([+\-÷/%]|<span class="small-mult">✕<\/span>)/);
 
     if (parts.length > 1) {
 
       return parts.map(part => {
 
-        if (/^[+\-✕÷/%]$/.test(part)) {
+        if (/^[+\-÷/%]$/.test(part) || part.includes('small-mult')) {
           return part;
         }
 
@@ -1080,13 +1085,13 @@
 
     for (let i = 0; i < expandedCount; i++) {
 
-      let val =
-        parseFloat(
-          slots[i].value
-            .replace(/,/g, '')
-            .replace(/✕/g, '*')
-            .replace(/÷/g, '/')
-        );
+      let cleanVal =
+        slots[i].value
+          .replace(/,/g, '')
+          .replace(/✕/g, '*')
+          .replace(/÷/g, '/');
+
+      let val = parseFloat(cleanVal);
 
       if (!isNaN(val)) {
         sum += val;
@@ -1108,7 +1113,7 @@
 
     for (let i = 0; i < 3; i++) {
 
-      document.getElementById(`disp-${i}`).value =
+      document.getElementById(`disp-${i}`).innerHTML =
         formatNumberDisplay(slots[i].value);
 
       document.getElementById(`expr-${i}`).textContent =
@@ -1190,7 +1195,7 @@
     }
 
     s.value = rawVal;
-    s.expr = formatNumberDisplay(rawVal);
+    s.expr = formatNumberDisplay(rawVal).replace(/<[^>]*>/g, '');
 
     updateView();
   }
@@ -1219,7 +1224,7 @@
     }
 
     s.value = rawVal;
-    s.expr = formatNumberDisplay(rawVal);
+    s.expr = formatNumberDisplay(rawVal).replace(/<[^>]*>/g, '');
 
     updateView();
   }
@@ -1386,7 +1391,7 @@
       let discounted = targetNum * ((100 - rateInput) / 100);
 
       s.value = prefix + String(discounted);
-      s.expr = formatNumberDisplay(s.value);
+      s.expr = formatNumberDisplay(s.value).replace(/<[^>]*>/g, '');
 
       let formula = `[S${activeSlot+1}] ${targetNumStr} ✕ ${100 - rateInput}%`;
       addHistory(formula, discounted);
@@ -1502,7 +1507,7 @@
           .replace(/%/g, '/100');
 
       let fullExpr =
-        formatNumberDisplay(cleanExpr);
+        formatNumberDisplay(cleanExpr).replace(/<[^>]*>/g, '');
 
       let res =
         Function(
