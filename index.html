@@ -1118,6 +1118,9 @@
       if (s.isNew) {
         s.isNew = false;
       }
+      
+      // TOTAL保持解除（四則演算が押されたら連続計算モードへ）
+      totalLocked = false;
     }
 
     if (rawVal === '0' || s.isNew) {
@@ -1383,6 +1386,7 @@
         let result =
           current * multiplier;
 
+        // 割引後の数値を現在の計算式の中に戻す
         s.value = String(result);
 
         s.expr =
@@ -1393,7 +1397,11 @@
 
         addHistory(formula, result);
 
+        // 次の計算へ引き継げるようにisNewをfalseにする
         s.isNew = false;
+        
+        // TOTAL保持を解除して、次の計算を可能にする
+        totalLocked = false;
 
         updateView();
       }
@@ -1468,6 +1476,9 @@
         addHistory(formula, result);
 
         s.isNew = false;
+        
+        // TOTAL保持を解除
+        totalLocked = false;
 
         updateView();
       }
@@ -1530,7 +1541,9 @@
 
       s.value = String(res);
       s.expr = fullExpr;
-      s.isNew = true;
+      
+      // 計算結果をそのまま次の操作へ引き継げるようにする
+      s.isNew = false;
 
       /*
        * 履歴には通常どおり追加
