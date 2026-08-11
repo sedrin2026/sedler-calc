@@ -320,12 +320,13 @@
       font-weight: 400 !important;
     }
 
-    /* 小さな掛け算記号用クラス（文字サイズに対して少し小さく、位置を微調整） */
+    /* 掛け算記号のサイズと位置の調整（数字と自然に揃える） */
     .small-mult {
-      font-size: 0.7em;
-      vertical-align: middle;
+      font-size: 0.55em;
+      vertical-align: 0.1em;
       display: inline-block;
-      margin: 0 0.05em;
+      margin: 0 0.15em;
+      font-weight: 600;
     }
 
     .single-guide-area {
@@ -701,7 +702,7 @@
 <div class="calc-card" id="calcCard">
 
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.08.12 (水) 03:46</div>
+    <div class="clock-badge" id="clock">2026.08.12 (水) 04:20</div>
 
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
