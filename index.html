@@ -88,9 +88,6 @@
       align-items: stretch;
     }
 
-    /* -------------------------------------------------------------
-       トップコントロールボタン（立体感＆押し込みアクション）
-       ------------------------------------------------------------- */
     .btn-top-item {
       display: flex;
       align-items: center;
@@ -261,6 +258,13 @@
       margin-top: 10px;
     }
 
+    .display-slot-value .small-mult {
+      font-size: 0.65em;
+      vertical-align: 0.15em;
+      display: inline-block;
+      margin: 0 0.15em;
+    }
+
     .display-slot-value {
       width: 100%;
       background: transparent;
@@ -317,9 +321,6 @@
       z-index: 50;
     }
 
-    /* -------------------------------------------------------------
-       機能アクションボタン（税込・税抜・割引バーの立体ボタン）
-       ------------------------------------------------------------- */
     .btn-feature-main {
       height: 34px;
       width: 100%;
@@ -418,14 +419,11 @@
       min-height: 0;
     }
 
-    /* -------------------------------------------------------------
-       全ボタン共通のベース立体設計 (物理的押し込みアニメーション対応)
-       ------------------------------------------------------------- */
     button {
       background: linear-gradient(180deg, #f2f5fa 0%, #bec7d6 100%);
       color: #222a36;
       border: 1px solid #9ba6b5;
-      border-bottom: 4px solid #6b7788; /* 下部の厚み（立体感） */
+      border-bottom: 4px solid #6b7788;
       font-family: var(--calc-font);
       font-size: 1.3rem;
       font-weight: bold;
@@ -441,15 +439,13 @@
       transition: all 0.07s cubic-bezier(0.2, 0.8, 0.4, 1);
     }
 
-    /* ボタンを押したときの「一瞬でグッと凹む」演出 */
     button:active {
       background: linear-gradient(180deg, #bec7d6 0%, #e2e7ef 100%) !important;
-      border-bottom-width: 1px !important; /* 下の厚みが縮まる */
-      transform: translateY(3px);          /* 下へ押し込まれる */
-      box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important; /* 内側に影が落ちて凹んだように見せる */
+      border-bottom-width: 1px !important;
+      transform: translateY(3px);
+      box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
     }
 
-    /* テンキー（ダークグレー調の立体ボタン） */
     .btn-num {
       background: linear-gradient(180deg, #4d5562 0%, #22272e 100%) !important;
       color: #ffffff !important;
@@ -461,7 +457,6 @@
       background: linear-gradient(180deg, #22272e 0%, #383f4a 100%) !important;
     }
 
-    /* 四則演算・記号ボタン（ブルーグレー系の立体ボタン） */
     .btn-op {
       background: linear-gradient(180deg, #9cbcdb 0%, #466f9e 100%) !important;
       color: #ffffff !important;
@@ -474,7 +469,6 @@
       background: linear-gradient(180deg, #466f9e 0%, #769bc0 100%) !important;
     }
 
-    /* メモリーボタン（パープル系の立体ボタン） */
     .btn-mem {
       color: #5d3894;
       border: 1px solid #bfa4e3;
@@ -488,7 +482,6 @@
       background: linear-gradient(180deg, #cdb6f0 0%, #e6dcfc 100%) !important;
     }
 
-    /* 赤いACボタン（立体感強調） */
     .btn-clear {
       color: #ffffff;
       border: 1px solid #e06663;
@@ -502,7 +495,6 @@
       background: linear-gradient(180deg, #cc2c28 0%, #e65552 100%) !important;
     }
 
-    /* TOTALボックス（アイスブルー調のくぼみ表示部） */
     .total-box {
       grid-column: span 2;
       background: linear-gradient(180deg, #e4effb 0%, #b2cef0 100%);
@@ -536,7 +528,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* イコール（＝）ボタン（鮮やかなオレンジの立体大型ボタン） */
     .btn-action {
       background: linear-gradient(180deg, #ffb84d 0%, #d96800 100%) !important;
       color: #ffffff !important;
@@ -717,6 +708,7 @@
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 10)">10%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 8)">8%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 5)">5%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 1)">1%</button>
       </div>
     </div>
 
@@ -729,6 +721,7 @@
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 10)">10%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 8)">8%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 5)">5%</button>
+        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 1)">1%</button>
       </div>
     </div>
 
@@ -741,7 +734,11 @@
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(10)">10%OFF</button>
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(20)">20%OFF</button>
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(30)">30%OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(40)">40%OFF</button>
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(50)">50%OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(60)">60%OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(70)">70%OFF</button>
+        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(80)">80%OFF</button>
       </div>
     </div>
 
@@ -872,10 +869,14 @@
 
   function formatNumberDisplay(strVal) {
     if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) return strVal;
+    
     let parts = String(strVal).split(/([+\-✕÷/%])/);
     if (parts.length > 1) {
       return parts.map(part => {
-        if (/^[+\-✕÷/%]$/.test(part)) return part;
+        if (part === '✕') {
+          return '<span class="small-mult">✕</span>';
+        }
+        if (/^[+\-÷/%]$/.test(part)) return part;
         let subParts = part.split('.');
         let intPart = subParts[0].replace(/,/g, '');
         if (!isNaN(intPart) && intPart !== '') {
@@ -908,7 +909,7 @@
 
   function updateView() {
     for (let i = 0; i < 3; i++) {
-      document.getElementById(`disp-${i}`).value = formatNumberDisplay(slots[i].value);
+      document.getElementById(`disp-${i}`).innerHTML = formatNumberDisplay(slots[i].value);
       document.getElementById(`expr-${i}`).textContent = slots[i].expr;
       document.getElementById(`mem-${i}`).textContent = slots[i].memory !== 0 ? '[M]' : '';
     }
