@@ -1020,12 +1020,6 @@
 
   /* =========================================================
      TOTAL計算
-
-     TOTAL保持中：
-       保存したTOTALをそのまま表示
-
-     通常時：
-       展開中スロットを合計
   ========================================================= */
 
   function calculateTotal() {
@@ -1119,7 +1113,6 @@
         s.isNew = false;
       }
       
-      // TOTAL保持解除（四則演算が押されたら連続計算モードへ）
       totalLocked = false;
     }
 
@@ -1190,11 +1183,6 @@
 
   /* =========================================================
      中央左側の大きなAC
-
-     ・現在のスロットをクリア
-     ・TOTALを0にする
-     ・TOTALを0のまま保持
-     ・履歴は一切消さない
   ========================================================= */
 
   function clearDisplay() {
@@ -1205,21 +1193,8 @@
     s.expr = 'READY';
     s.isNew = true;
 
-
-    /*
-     * TOTALを0にして保持
-     */
     totalValue = 0;
     totalLocked = true;
-
-
-    /*
-     * ★ historyArr は変更しない
-     *
-     * これにより、履歴画面の
-     * 計算式・結果・時刻などは
-     * そのまま残る。
-     */
 
     updateView();
   }
@@ -1227,13 +1202,6 @@
 
   /* =========================================================
      上部右側の赤いAC
-
-     従来通り：
-       展開中のスロットをクリア
-       TOTAL保持を解除
-       TOTALを通常計算に戻す
-
-     履歴は消さない
   ========================================================= */
 
   function allClearActive() {
@@ -1245,17 +1213,8 @@
       slots[i].isNew = true;
     }
 
-
-    /*
-     * TOTAL保持を解除
-     */
     totalValue = 0;
     totalLocked = false;
-
-
-    /*
-     * 履歴は消さない
-     */
 
     updateView();
   }
@@ -1352,70 +1311,58 @@
   }
 
 
-  /* =========================
-     割引
-  ========================= */
+  /* =========================================================
+     修正済み：割引 (右辺の数値のみを抽出して割引)
+  ========================================================= */
 
   function applyQuickDiscount(rateInput) {
-
     let s = slots[activeSlot];
+    let fullExpr = s.value; // 例: "250+100"
+    
+    // 最後に含まれる演算子の位置を探す
+    const ops = /[+\-✕÷]/g;
+    let match, lastOpIndex = -1;
+    while ((match = ops.exec(fullExpr)) !== null) {
+      lastOpIndex = match.index;
+    }
 
     try {
+      let prefix = "";
+      let targetNumStr = "";
 
-      let cleanExpr =
-        s.value.replace(/,/g, '');
-
-      let mathExpr =
-        cleanExpr
-          .replace(/✕/g, '*')
-          .replace(/÷/g, '/')
-          .replace(/%/g, '/100');
-
-      let current =
-        Function(
-          '"use strict";return (' +
-          mathExpr +
-          ')'
-        )();
-
-      if (!isNaN(current)) {
-
-        let multiplier =
-          (100 - rateInput) / 100;
-
-        let result =
-          current * multiplier;
-
-        // 割引後の数値を現在の計算式の中に戻す
-        s.value = String(result);
-
-        s.expr =
-          `${cleanExpr} ✕ ${100 - rateInput}%`;
-
-        let formula =
-          `[S${activeSlot+1}] ${s.expr}`;
-
-        addHistory(formula, result);
-
-        // 次の計算へ引き継げるようにisNewをfalseにする
-        s.isNew = false;
-        
-        // TOTAL保持を解除して、次の計算を可能にする
-        totalLocked = false;
-
-        updateView();
+      if (lastOpIndex === -1) {
+        // 演算子なし (例: "500")
+        targetNumStr = fullExpr;
+      } else {
+        // 演算子あり (例: "250+100" -> prefix: "250+", target: "100")
+        prefix = fullExpr.substring(0, lastOpIndex + 1);
+        targetNumStr = fullExpr.substring(lastOpIndex + 1);
       }
 
+      // 数値を評価して割引を適用
+      let targetNum = parseFloat(targetNumStr.replace(/,/g, ''));
+      if (isNaN(targetNum)) throw new Error();
+
+      let discounted = targetNum * ((100 - rateInput) / 100);
+
+      // 式を再構築
+      s.value = prefix + String(discounted);
+      s.expr = formatNumberDisplay(s.value);
+
+      // 履歴には変更内容を記録
+      let formula = `[S${activeSlot+1}] ${targetNumStr} ✕ ${100 - rateInput}%`;
+      addHistory(formula, discounted);
+
+      s.isNew = false;
+      totalLocked = false;
+      updateView();
+
     } catch (e) {
-
       s.value = 'ERR';
-
       updateView();
     }
 
-    document
-      .getElementById('discDropdown')
-      .classList.remove('open');
+    document.getElementById('discDropdown').classList.remove('open');
   }
 
 
@@ -1477,7 +1424,6 @@
 
         s.isNew = false;
         
-        // TOTAL保持を解除
         totalLocked = false;
 
         updateView();
@@ -1502,9 +1448,6 @@
 
   /* =========================================================
      「＝」計算
-
-     「＝」を押した時点のTOTALを保存
-     以後、中央左側ACを押すまで保持
   ========================================================= */
 
   function calculate() {
@@ -1542,19 +1485,10 @@
       s.value = String(res);
       s.expr = fullExpr;
       
-      // 計算結果をそのまま次の操作へ引き継げるようにする
       s.isNew = false;
 
-      /*
-       * 履歴には通常どおり追加
-       */
       addHistory(formula, res);
 
-
-      /*
-       * 「＝」を押した時点の
-       * 全展開スロットのTOTALを保存
-       */
       totalValue = 0;
 
       for (let i = 0; i < expandedCount; i++) {
@@ -1572,10 +1506,6 @@
         }
       }
 
-
-      /*
-       * TOTALを保持
-       */
       totalLocked = true;
 
       updateView();
