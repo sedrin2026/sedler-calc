@@ -24,7 +24,7 @@
       --calc-font: system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
 
     html, body {
       width: 100%;
@@ -88,6 +88,9 @@
       align-items: stretch;
     }
 
+    /* -------------------------------------------------------------
+       トップコントロールボタン（立体感＆押し込みアクション）
+       ------------------------------------------------------------- */
     .btn-top-item {
       display: flex;
       align-items: center;
@@ -100,25 +103,43 @@
       border-radius: 6px;
       min-width: 50px;
       text-align: center;
-      background: linear-gradient(180deg, #f8f9fc 0%, #d8dbe2 100%);
+      background: linear-gradient(180deg, #f8f9fc 0%, #d0d4df 100%);
       color: #2b3748;
-      border: 1px solid #b0b8c4;
-      border-bottom: 2px solid #8e98a8;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border: 1px solid #adb5c0;
+      border-bottom: 4px solid #7a8494;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      transition: all 0.08s ease;
+    }
+
+    .btn-top-item:active {
+      background: linear-gradient(180deg, #d0d4df 0%, #e8ecf2 100%);
+      border-bottom-width: 1px;
+      transform: translateY(3px);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .btn-control {
-      background: linear-gradient(180deg, #e3edf7 0%, #b8d0ed 100%) !important;
+      background: linear-gradient(180deg, #edf3fc 0%, #bcd3ef 100%) !important;
       color: #1b3a5b !important;
       border: 1px solid #93b3d4 !important;
-      border-bottom: 2px solid #6c8fae !important;
+      border-bottom: 4px solid #57789a !important;
+    }
+    .btn-control:active {
+      background: linear-gradient(180deg, #bcd3ef 0%, #edf3fc 100%) !important;
+      border-bottom-width: 1px !important;
+      transform: translateY(3px);
     }
 
     .btn-ac-all {
-      background: linear-gradient(180deg, #e3edf7 0%, #b8d0ed 100%) !important;
+      background: linear-gradient(180deg, #edf3fc 0%, #bcd3ef 100%) !important;
       color: #1b3a5b !important;
       border: 1px solid #93b3d4 !important;
-      border-bottom: 2px solid #6c8fae !important;
+      border-bottom: 4px solid #57789a !important;
+    }
+    .btn-ac-all:active {
+      background: linear-gradient(180deg, #bcd3ef 0%, #edf3fc 100%) !important;
+      border-bottom-width: 1px !important;
+      transform: translateY(3px);
     }
 
     .display-panel-container {
@@ -130,7 +151,6 @@
       min-height: 80px;
     }
 
-    /* スロット共通背景（ガラス調・光沢グラデ） */
     .slot-panel {
       border-radius: 8px;
       padding: 2px 10px;
@@ -147,7 +167,6 @@
       max-height: 200px;
     }
 
-    /* SLOT 1 (アイスブルー系) */
     #slot-0 {
       background: linear-gradient(180deg, #eaf2fb 0%, #b5d2ef 100%);
       border: 1.5px solid #8ab8e6;
@@ -162,7 +181,6 @@
       color: #1a334e !important;
     }
 
-    /* SLOT 2 (オレンジ系) */
     #slot-1 {
       background: linear-gradient(180deg, #fff3e0 0%, #ffcc80 100%);
       border: 1.5px solid #ffb74d;
@@ -177,7 +195,6 @@
       color: #593507 !important;
     }
 
-    /* SLOT 3 (パープル系) */
     #slot-2 {
       background: linear-gradient(180deg, #f3eefc 0%, #d5c4f2 100%);
       border: 1.5px solid #bfa0e8;
@@ -202,7 +219,6 @@
       pointer-events: none;
     }
 
-    /* アクティブなスロット（サイバーブルーのハイライト枠） */
     .slot-panel.active {
       border: 2px solid #00bfff !important;
       background: linear-gradient(180deg, #d8f1fd 0%, #9bcbe9 100%) !important;
@@ -301,23 +317,34 @@
       z-index: 50;
     }
 
+    /* -------------------------------------------------------------
+       機能アクションボタン（税込・税抜・割引バーの立体ボタン）
+       ------------------------------------------------------------- */
     .btn-feature-main {
       height: 34px;
       width: 100%;
       padding: 0 4px;
-      background: linear-gradient(180deg, #ffffff 0%, #e1e6ed 100%);
+      background: linear-gradient(180deg, #ffffff 0%, #d8e0ec 100%);
       border: 1px solid #adb5c0;
-      border-bottom: 2px solid #8993a2;
+      border-bottom: 4px solid #7c889a;
       font-family: var(--calc-font);
       font-size: 0.78rem;
       font-weight: bold;
       cursor: pointer;
       border-radius: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.12);
       display: flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
+      transition: all 0.08s ease;
+    }
+
+    .btn-feature-main:active {
+      background: linear-gradient(180deg, #d8e0ec 0%, #edf2f8 100%);
+      border-bottom-width: 1px;
+      transform: translateY(3px);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
     }
 
     .btn-feature-main.tax-in,
@@ -327,11 +354,6 @@
 
     .btn-feature-main.discount {
       color: #b32d29;
-    }
-
-    .btn-feature-main:active {
-      background: #d0d7e2;
-      transform: translateY(1px);
     }
 
     .dropdown-popup {
@@ -360,8 +382,9 @@
     .btn-dropdown-chip {
       height: 30px;
       width: 100%;
-      background: linear-gradient(180deg, #ffffff 0%, #eaeef4 100%);
+      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
       border: 1px solid #b5c0cc;
+      border-bottom: 3px solid #8592a2;
       font-family: var(--calc-font);
       font-size: 0.8rem;
       font-weight: 600;
@@ -369,6 +392,13 @@
       border-radius: 4px;
       text-align: center;
       flex-shrink: 0;
+      transition: all 0.06s ease;
+    }
+
+    .btn-dropdown-chip:active {
+      background: linear-gradient(180deg, #d0d7e2 0%, #ffffff 100%);
+      border-bottom-width: 1px;
+      transform: translateY(2px);
     }
 
     .tax-dropdown-chip {
@@ -377,11 +407,6 @@
 
     .disc-dropdown-chip {
       color: #b32d29;
-    }
-
-    .btn-dropdown-chip:active {
-      background: #4a7bb0;
-      color: #fff;
     }
 
     .grid {
@@ -393,12 +418,14 @@
       min-height: 0;
     }
 
-    /* 共通ボタン（標準：シルバーグラデーション） */
+    /* -------------------------------------------------------------
+       全ボタン共通のベース立体設計 (物理的押し込みアニメーション対応)
+       ------------------------------------------------------------- */
     button {
-      background: linear-gradient(180deg, #f0f3f8 0%, #cbd2df 100%);
+      background: linear-gradient(180deg, #f2f5fa 0%, #bec7d6 100%);
       color: #222a36;
       border: 1px solid #9ba6b5;
-      border-bottom: 2px solid #727e90;
+      border-bottom: 4px solid #6b7788; /* 下部の厚み（立体感） */
       font-family: var(--calc-font);
       font-size: 1.3rem;
       font-weight: bold;
@@ -407,70 +434,75 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.18);
       height: 100%;
       width: 100%;
-      transition: filter 0.05s;
+      position: relative;
+      transition: all 0.07s cubic-bezier(0.2, 0.8, 0.4, 1);
     }
 
+    /* ボタンを押したときの「一瞬でグッと凹む」演出 */
     button:active {
-      background: linear-gradient(180deg, #cbd2df 0%, #f0f3f8 100%);
-      box-shadow: inset 0 2px 3px rgba(0,0,0,0.25);
-      transform: translateY(1px);
+      background: linear-gradient(180deg, #bec7d6 0%, #e2e7ef 100%) !important;
+      border-bottom-width: 1px !important; /* 下の厚みが縮まる */
+      transform: translateY(3px);          /* 下へ押し込まれる */
+      box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important; /* 内側に影が落ちて凹んだように見せる */
     }
 
-    /* テンキー（ダークグレー調ボタン） */
+    /* テンキー（ダークグレー調の立体ボタン） */
     .btn-num {
-      background: linear-gradient(180deg, #444b56 0%, #262b33 100%) !important;
+      background: linear-gradient(180deg, #4d5562 0%, #22272e 100%) !important;
       color: #ffffff !important;
       border: 1px solid #1a1e24 !important;
-      border-bottom: 2px solid #0d0f12 !important;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+      border-bottom: 4px solid #080a0d !important;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.35) !important;
     }
     .btn-num:active {
-      background: linear-gradient(180deg, #262b33 0%, #444b56 100%) !important;
+      background: linear-gradient(180deg, #22272e 0%, #383f4a 100%) !important;
     }
 
-    /* 四則演算・記号ボタン（ブルーグレー系） */
+    /* 四則演算・記号ボタン（ブルーグレー系の立体ボタン） */
     .btn-op {
-      background: linear-gradient(180deg, #8ba8cc 0%, #5279a8 100%) !important;
+      background: linear-gradient(180deg, #9cbcdb 0%, #466f9e 100%) !important;
       color: #ffffff !important;
-      border: 1px solid #3d5e86 !important;
-      border-bottom: 2px solid #273e5a !important;
+      border: 1px solid #365375 !important;
+      border-bottom: 4px solid #1c2e44 !important;
       font-size: 1.5rem !important;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.25) !important;
     }
     .btn-op:active {
-      background: linear-gradient(180deg, #5279a8 0%, #8ba8cc 100%) !important;
+      background: linear-gradient(180deg, #466f9e 0%, #769bc0 100%) !important;
     }
 
-    /* メモリーボタン（パープル系） */
+    /* メモリーボタン（パープル系の立体ボタン） */
     .btn-mem {
       color: #5d3894;
       border: 1px solid #bfa4e3;
-      border-bottom: 2px solid #8e65be;
+      border-bottom: 4px solid #774f9e;
       font-size: 0.85rem;
-      background: linear-gradient(180deg, #f2ecfb 0%, #d8c6f2 100%);
+      background: linear-gradient(180deg, #f6f1fc 0%, #cdb6f0 100%);
       font-weight: bold;
+      box-shadow: 0 4px 6px rgba(93, 56, 148, 0.15);
     }
     .btn-mem:active {
-      background: linear-gradient(180deg, #d8c6f2 0%, #f2ecfb 100%);
+      background: linear-gradient(180deg, #cdb6f0 0%, #e6dcfc 100%) !important;
     }
 
-    /* 赤いACボタン */
+    /* 赤いACボタン（立体感強調） */
     .btn-clear {
       color: #ffffff;
-      border: 1px solid #d9534f;
-      border-bottom: 2px solid #962825;
-      background: linear-gradient(180deg, #f26c68 0%, #d93835 100%) !important;
+      border: 1px solid #e06663;
+      border-bottom: 4px solid #7d201e;
+      background: linear-gradient(180deg, #fa7d79 0%, #cc2c28 100%) !important;
       font-size: 1.5rem !important;
       font-weight: bold;
+      box-shadow: 0 4px 6px rgba(204, 44, 40, 0.3) !important;
     }
     .btn-clear:active {
-      background: linear-gradient(180deg, #d93835 0%, #f26c68 100%) !important;
+      background: linear-gradient(180deg, #cc2c28 0%, #e65552 100%) !important;
     }
 
-    /* TOTALボックス（アイスブルー調） */
+    /* TOTALボックス（アイスブルー調のくぼみ表示部） */
     .total-box {
       grid-column: span 2;
       background: linear-gradient(180deg, #e4effb 0%, #b2cef0 100%);
@@ -482,7 +514,7 @@
       justify-content: center;
       align-items: flex-end;
       padding: 0 10px;
-      box-shadow: inset 0 1px 3px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.05);
       position: relative;
     }
 
@@ -504,20 +536,23 @@
       letter-spacing: 0.5px;
     }
 
-    /* イコール（＝）ボタン（鮮やかなオレンジグラデーション） */
+    /* イコール（＝）ボタン（鮮やかなオレンジの立体大型ボタン） */
     .btn-action {
-      background: linear-gradient(180deg, #ffaa33 0%, #e67300 100%) !important;
+      background: linear-gradient(180deg, #ffb84d 0%, #d96800 100%) !important;
       color: #ffffff !important;
-      border: 1px solid #b85b00 !important;
-      border-bottom: 2px solid #854100 !important;
+      border: 1px solid #bf5f00 !important;
+      border-bottom: 4px solid #663300 !important;
       font-size: 1.8rem !important;
-      box-shadow: 0 3px 6px rgba(230, 115, 0, 0.4);
+      box-shadow: 0 5px 8px rgba(217, 104, 0, 0.45);
       grid-column: span 2;
       border-radius: 6px;
     }
 
     .btn-action:active {
-      background: linear-gradient(180deg, #e67300 100%, #ffaa33 0%) !important;
+      background: linear-gradient(180deg, #d96800 0%, #ff9900 100%) !important;
+      border-bottom-width: 1px !important;
+      transform: translateY(3px);
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.35) !important;
     }
 
     .history-drawer {
@@ -563,8 +598,9 @@
     }
 
     .history-close {
-      background: linear-gradient(180deg, #f26c68 0%, #d93835 100%);
-      border: 1px solid #962825;
+      background: linear-gradient(180deg, #fa7d79 0%, #cc2c28 100%);
+      border: 1px solid #e06663;
+      border-bottom: 3px solid #7d201e;
       color: #fff;
       font-size: 0.7rem;
       padding: 4px 8px;
@@ -782,7 +818,7 @@
   updateClock();
 
   let activeSlot = 0;
-  let expandedCount = 3; // デフォルトで3段表示に最適化
+  let expandedCount = 3;
   let slots = [
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
