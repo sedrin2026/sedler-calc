@@ -258,6 +258,7 @@
       margin-top: 10px;
     }
 
+    /* ディスプレイ内の掛け算記号（✕）のサイズを数字より小さく調整するスタイル */
     .display-slot-value .small-mult {
       font-size: 0.65em;
       vertical-align: 0.15em;
@@ -708,7 +709,6 @@
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 10)">10%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 8)">8%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 5)">5%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('in', 1)">1%</button>
       </div>
     </div>
 
@@ -721,7 +721,6 @@
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 10)">10%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 8)">8%</button>
         <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 5)">5%</button>
-        <button class="btn-dropdown-chip tax-dropdown-chip" onclick="applyTax('ex', 1)">1%</button>
       </div>
     </div>
 
@@ -734,11 +733,7 @@
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(10)">10%OFF</button>
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(20)">20%OFF</button>
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(30)">30%OFF</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(40)">40%OFF</button>
         <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(50)">50%OFF</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(60)">60%OFF</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(70)">70%OFF</button>
-        <button class="btn-dropdown-chip disc-dropdown-chip" onclick="applyQuickDiscount(80)">80%OFF</button>
       </div>
     </div>
 
@@ -870,6 +865,7 @@
   function formatNumberDisplay(strVal) {
     if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) return strVal;
     
+    // かけ算の記号（✕）の部分にだけ小さなサイズ用のHTMLタグ（スパン）を適用する
     let parts = String(strVal).split(/([+\-✕÷/%])/);
     if (parts.length > 1) {
       return parts.map(part => {
@@ -909,6 +905,7 @@
 
   function updateView() {
     for (let i = 0; i < 3; i++) {
+      // ディスプレイ（inputではなく数値・式を表示するエリアに変更するためinnerHTMLを使用）
       document.getElementById(`disp-${i}`).innerHTML = formatNumberDisplay(slots[i].value);
       document.getElementById(`expr-${i}`).textContent = slots[i].expr;
       document.getElementById(`mem-${i}`).textContent = slots[i].memory !== 0 ? '[M]' : '';
