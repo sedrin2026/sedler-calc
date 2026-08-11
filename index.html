@@ -135,78 +135,64 @@
       min-height: 80px;
     }
 
+    /* SLOT 1: 通常時（スクショのブルー系） */
     #slot-0 {
-      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd);
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
       border: 2px solid #38bdf8;
     }
-
     #slot-0 .slot-label,
     #slot-0 .memory-indicator-slot,
-    #slot-0 .expr-line-slot {
+    #slot-0 .expr-line-slot,
+    #slot-0 .single-guide-text {
       color: #0369a1;
     }
-
     #slot-0 .display-slot-value {
       color: #0f172a !important;
     }
-
-    #slot-0.triple-green {
-      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd) !important;
-      border: 2px solid #38bdf8 !important;
+    #slot-0 .single-divider {
+      border-top-color: #38bdf8;
     }
 
-    #slot-0.triple-green .slot-label,
-    #slot-0.triple-green .memory-indicator-slot,
-    #slot-0.triple-green .expr-line-slot {
-      color: #0369a1 !important;
+    /* SLOT 1: 展開時（薄い蛍光色のモスグリーン系） */
+    .calc-card.expanded #slot-0 {
+      background: linear-gradient(180deg, #e6f4ea 0%, #cbe8d7 100%);
+      border: 2px solid #57a673;
+    }
+    .calc-card.expanded #slot-0 .slot-label,
+    .calc-card.expanded #slot-0 .memory-indicator-slot,
+    .calc-card.expanded #slot-0 .expr-line-slot {
+      color: #2e6b43;
+    }
+    .calc-card.expanded #slot-0 .display-slot-value {
+      color: #13331f !important;
     }
 
-    #slot-0.triple-green .display-slot-value {
-      color: #0f172a !important;
-    }
-
-    #slot-0.triple-green.active {
-      border: 2.5px solid #0284c7 !important;
-      background: linear-gradient(180deg, #bae6fd 0%, #7dd3fc 100%) !important;
-    }
-
-    #slot-0.triple-green.active .slot-label,
-    #slot-0.triple-green.active .expr-line-slot {
-      color: #0369a1 !important;
-    }
-
-    #slot-0.triple-green.active .display-slot-value {
-      color: #0f172a !important;
-    }
-
+    /* SLOT 2 (オレンジ系) */
     #slot-1 {
-      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd);
-      border: 2px solid #38bdf8;
+      background: linear-gradient(180deg, #ffedd5 0%, #fed7aa);
+      border: 2px solid #fb923c;
     }
-
     #slot-1 .slot-label,
     #slot-1 .memory-indicator-slot,
     #slot-1 .expr-line-slot {
-      color: #0369a1;
+      color: #c2410c;
     }
-
     #slot-1 .display-slot-value {
-      color: #0f172a !important;
+      color: #431407 !important;
     }
 
+    /* SLOT 3 (紫系) */
     #slot-2 {
-      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd);
-      border: 2px solid #38bdf8;
+      background: linear-gradient(180deg, #f3e8ff 0%, #e9d5ff);
+      border: 2px solid #c084fc;
     }
-
     #slot-2 .slot-label,
     #slot-2 .memory-indicator-slot,
     #slot-2 .expr-line-slot {
-      color: #0369a1;
+      color: #7e22ce;
     }
-
     #slot-2 .display-slot-value {
-      color: #0f172a !important;
+      color: #3b0764 !important;
     }
 
     .slot-panel {
@@ -237,21 +223,47 @@
 
     .slot-panel.active {
       border: 2.5px solid #0284c7 !important;
-      background: linear-gradient(180deg, #bae6fd 0%, #7dd3fc 100%) !important;
       box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 0 10px rgba(56, 189, 248, 0.4);
       opacity: 1;
     }
 
-    .slot-panel.active .slot-label {
-      color: #0369a1 !important;
+    .calc-card.expanded #slot-0.active {
+      border: 2.5px solid #2e6b43 !important;
+      background: linear-gradient(180deg, #cbe8d7 0%, #aedbc2 100%) !important;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 0 10px rgba(87, 166, 115, 0.4);
+    }
+    .calc-card.expanded #slot-0.active .slot-label,
+    .calc-card.expanded #slot-0.active .expr-line-slot {
+      color: #1e462c !important;
+    }
+    .calc-card.expanded #slot-0.active .display-slot-value {
+      color: #13331f !important;
     }
 
-    .slot-panel.active .expr-line-slot {
-      color: #0369a1 !important;
+    #slot-1.active {
+      border: 2.5px solid #ea580c !important;
+      background: linear-gradient(180deg, #fed7aa 0%, #fdba74 100%) !important;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 0 10px rgba(234, 88, 12, 0.4);
+    }
+    #slot-1.active .slot-label,
+    #slot-1.active .expr-line-slot {
+      color: #9a3412 !important;
+    }
+    #slot-1.active .display-slot-value {
+      color: #431407 !important;
     }
 
-    .slot-panel.active .display-slot-value {
-      color: #0f172a !important;
+    #slot-2.active {
+      border: 2.5px solid #9333ea !important;
+      background: linear-gradient(180deg, #e9d5ff 0%, #d8b4fe 100%) !important;
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.1), 0 0 10px rgba(147, 51, 234, 0.4);
+    }
+    #slot-2.active .slot-label,
+    #slot-2.active .expr-line-slot {
+      color: #6b21a8 !important;
+    }
+    #slot-2.active .display-slot-value {
+      color: #3b0764 !important;
     }
 
     .slot-label {
@@ -313,14 +325,13 @@
     .single-divider {
       width: 100%;
       border: none;
-      border-top: 1.5px solid #38bdf8;
+      border-top: 1.5px solid #0369a1;
       margin-bottom: 3px;
     }
 
     .single-guide-text {
       font-family: var(--calc-font);
       font-size: 0.75rem;
-      color: #0369a1;
       font-weight: bold;
       text-align: left;
       letter-spacing: -0.5px;
@@ -463,8 +474,8 @@
     }
 
     .btn-op {
-      background: linear-gradient(180deg, #a7d0fd 0%, #60a5fa 100%) !important;
-      color: #1e3a8a !important;
+      background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%) !important;
+      color: #ffffff !important;
       border: 1px solid #60a5fa !important;
       border-bottom: 4px solid #1d4ed8 !important;
       font-size: 1.5rem !important;
@@ -472,7 +483,7 @@
     }
     
     .btn-op:active {
-      background: linear-gradient(180deg, #60a5fa 0%, #93c5fd 100%) !important;
+      background: linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%) !important;
       border-bottom-width: 1px !important;
       transform: translateY(3px) !important;
     }
@@ -670,14 +681,14 @@
 
 <body>
 
-<div class="calc-card">
+<div class="calc-card" id="calcCard">
 
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.00.00 (---) 00:00</div>
+    <div class="clock-badge" id="clock">2026.08.12 (水) 03:08</div>
 
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
-      <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 🔽</div>
+      <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
     </div>
   </div>
@@ -689,12 +700,10 @@
       <span class="memory-indicator-slot" id="mem-0"></span>
       <div class="expr-line-slot" id="expr-0">READY</div>
       <input type="text" class="display-slot-value" id="disp-0" readonly value="0">
-
+      
       <div class="single-guide-area">
         <hr class="single-divider">
-        <div class="single-guide-text">
-          〔展開をタップでスロットを三段階表示〕
-        </div>
+        <span class="single-guide-text">〔展開をタップでスロットを三段階表示〕</span>
       </div>
     </div>
 
@@ -788,7 +797,6 @@
     <button class="btn-mem" onclick="memMinus()">m-</button>
     <button class="btn-mem" onclick="memRecall()">mr</button>
 
-    <!-- 中央左側の大きなAC -->
     <button class="btn-clear" onclick="clearDisplay()">AC</button>
 
     <button class="btn-op" onclick="append('%')">％</button>
@@ -905,18 +913,17 @@
 
   function toggleSlots() {
 
-    if (expandedCount === 1) {
-      expandedCount = 2;
+    const card = document.getElementById('calcCard');
 
-    } else if (expandedCount === 2) {
-      expandedCount = 3;
-
-    } else {
+    if (expandedCount === 3) {
       expandedCount = 1;
-
+      card.classList.remove('expanded');
       if (activeSlot > 0) {
         switchSlot(0);
       }
+    } else {
+      expandedCount = 3;
+      card.classList.add('expanded');
     }
 
     applySlotVisibility();
@@ -925,14 +932,10 @@
 
   function applySlotVisibility() {
 
-    const btn =
-      document.getElementById('btn-toggle-slots');
+    const btn = document.getElementById('btn-toggle-slots');
 
     for (let i = 0; i < 3; i++) {
-
-      const panel =
-        document.getElementById(`slot-${i}`);
-
+      const panel = document.getElementById(`slot-${i}`);
       if (i < expandedCount) {
         panel.classList.remove('collapsed');
       } else {
@@ -940,29 +943,12 @@
       }
     }
 
-    const slot0 =
-      document.getElementById('slot-0');
-
-    if (expandedCount === 3) {
-      slot0.classList.add('triple-green');
-    } else {
-      slot0.classList.remove('triple-green');
-    }
-
     if (expandedCount === 1) {
-
-      slot0.classList.add('single-large');
-      btn.textContent = '展開 🔽';
-
+      document.getElementById('slot-0').classList.add('single-large');
+      btn.textContent = '展開 ▼';
     } else {
-
-      slot0.classList.remove('single-large');
-
-      if (expandedCount === 2) {
-        btn.textContent = '展開 🔽';
-      } else {
-        btn.textContent = '格納 🔼';
-      }
+      document.getElementById('slot-0').classList.remove('single-large');
+      btn.textContent = '格納 ▲';
     }
 
     calculateTotal();
@@ -978,10 +964,7 @@
     activeSlot = index;
 
     for (let i = 0; i < 3; i++) {
-
-      const panel =
-        document.getElementById(`slot-${i}`);
-
+      const panel = document.getElementById(`slot-${i}`);
       if (i === index) {
         panel.classList.add('active');
       } else {
@@ -1351,7 +1334,7 @@
 
 
   /* =========================================================
-     割引 (右辺の数値のみを抽出して割引)
+     割引
   ========================================================= */
 
   function applyQuickDiscount(rateInput) {
@@ -1456,7 +1439,6 @@
         addHistory(formula, result);
 
         s.isNew = false;
-        
         totalLocked = false;
 
         updateView();
@@ -1465,7 +1447,6 @@
     } catch (e) {
 
       s.value = 'ERR';
-
       updateView();
     }
 
@@ -1517,7 +1498,6 @@
 
       s.value = String(res);
       s.expr = fullExpr;
-      
       s.isNew = false;
 
       addHistory(formula, res);
@@ -1611,22 +1591,17 @@
 
       html += `
         <div class="history-item">
-
           <div>
-
             <div style="font-size:0.75rem; color:#64748b; margin-bottom:2px;">
               ${item.time}
             </div>
-
             <div style="font-weight:bold; color:#1e293b;">
               ${item.formula} =
               <span style="color:#0284c7;">
                 ${item.result}
               </span>
             </div>
-
           </div>
-
         </div>
       `;
     });
@@ -1640,10 +1615,7 @@
   ========================= */
 
   function toggleHistory() {
-
-    const drawer =
-      document.getElementById('historyDrawer');
-
+    const drawer = document.getElementById('historyDrawer');
     drawer.classList.toggle('open');
   }
 
@@ -1657,42 +1629,26 @@
   window.addEventListener(
     'beforeinstallprompt',
     (e) => {
-
       e.preventDefault();
-
       deferredPrompt = e;
-
-      document
-        .getElementById('pwa-install-btn')
-        .style.display = 'block';
+      document.getElementById('pwa-install-btn').style.display = 'block';
     }
   );
 
 
-  document
-    .getElementById('pwa-install-btn')
-    .addEventListener(
-      'click',
-      async () => {
-
-        if (deferredPrompt) {
-
-          deferredPrompt.prompt();
-
-          const { outcome } =
-            await deferredPrompt.userChoice;
-
-          if (outcome === 'accepted') {
-
-            document
-              .getElementById('pwa-install-btn')
-              .style.display = 'none';
-          }
-
-          deferredPrompt = null;
+  document.getElementById('pwa-install-btn').addEventListener(
+    'click',
+    async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('pwa-install-btn').style.display = 'none';
         }
+        deferredPrompt = null;
       }
-    );
+    }
+  );
 
 
   /* =========================
