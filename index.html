@@ -320,12 +320,12 @@
       font-weight: 400 !important;
     }
 
-    /* 掛け算記号のサイズと位置の調整（数字と自然に揃える） */
+    /* 掛け算記号のサイズと位置の調整 */
     .small-mult {
-      font-size: 0.55em;
-      vertical-align: 0.1em;
-      display: inline-block;
-      margin: 0 0.15em;
+      font-size: 1em;
+      vertical-align: baseline;
+      display: inline;
+      margin: 0 0.05em;
       font-weight: 600;
     }
 
@@ -702,7 +702,7 @@
 <div class="calc-card" id="calcCard">
 
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.08.12 (水) 04:20</div>
+    <div class="clock-badge" id="clock">2026.08.12 (水) 04:30</div>
 
     <div class="top-controls">
       <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
@@ -1001,7 +1001,7 @@
 
 
   /* =========================
-     数字表示（掛け算記号を小さめの「✕」に）
+     数字表示（掛け算記号を「×」に統一）
   ========================= */
 
   function formatNumberDisplay(strVal) {
@@ -1012,10 +1012,10 @@
       return strVal;
     }
 
-    let sanitized = String(strVal).replace(/\*/g, '<span class="small-mult">✕</span>');
+    let sanitized = String(strVal).replace(/\*/g, '<span class="small-mult">×</span>');
 
     let parts =
-      sanitized.split(/([+\-÷/%]|<span class="small-mult">✕<\/span>)/);
+      sanitized.split(/([+\-÷/%]|<span class="small-mult">×<\/span>)/);
 
     if (parts.length > 1) {
 
@@ -1089,7 +1089,7 @@
       let cleanVal =
         slots[i].value
           .replace(/,/g, '')
-          .replace(/✕/g, '*')
+          .replace(/×/g, '*')
           .replace(/÷/g, '/');
 
       let val = parseFloat(cleanVal);
@@ -1144,7 +1144,7 @@
     let displayVal = val;
 
     if (val === '*') {
-      displayVal = '✕';
+      displayVal = '×';
     }
 
     if (val === '/') {
@@ -1155,7 +1155,7 @@
       s.value.replace(/,/g, '');
 
     if (
-      ['+', '-', '*', '/', '%', '✕', '÷']
+      ['+', '-', '*', '/', '%', '×', '÷']
         .includes(val)
     ) {
 
@@ -1169,7 +1169,7 @@
     if (rawVal === '0' || s.isNew) {
 
       if (
-        ['+', '*', '/', '%', '✕', '÷']
+        ['+', '*', '/', '%', '×', '÷']
           .includes(val)
       ) {
         return;
@@ -1290,7 +1290,7 @@
       parseFloat(
         s.value
           .replace(/,/g, '')
-          .replace(/✕/g, '*')
+          .replace(/×/g, '*')
           .replace(/÷/g, '/')
       ) || 0;
 
@@ -1308,7 +1308,7 @@
       parseFloat(
         s.value
           .replace(/,/g, '')
-          .replace(/✕/g, '*')
+          .replace(/×/g, '*')
           .replace(/÷/g, '/')
       ) || 0;
 
@@ -1369,7 +1369,7 @@
     let s = slots[activeSlot];
     let fullExpr = s.value;
     
-    const ops = /[+\-✕÷]/g;
+    const ops = /[+\-×÷]/g;
     let match, lastOpIndex = -1;
     while ((match = ops.exec(fullExpr)) !== null) {
       lastOpIndex = match.index;
@@ -1394,7 +1394,7 @@
       s.value = prefix + String(discounted);
       s.expr = formatNumberDisplay(s.value).replace(/<[^>]*>/g, '');
 
-      let formula = `[S${activeSlot+1}] ${targetNumStr} ✕ ${100 - rateInput}%`;
+      let formula = `[S${activeSlot+1}] ${targetNumStr} × ${100 - rateInput}%`;
       addHistory(formula, discounted);
 
       s.isNew = false;
@@ -1425,7 +1425,7 @@
 
       let mathExpr =
         cleanExpr
-          .replace(/✕/g, '*')
+          .replace(/×/g, '*')
           .replace(/÷/g, '/')
           .replace(/%/g, '/100');
 
@@ -1503,7 +1503,7 @@
 
       let mathExpr =
         cleanExpr
-          .replace(/✕/g, '*')
+          .replace(/×/g, '*')
           .replace(/÷/g, '/')
           .replace(/%/g, '/100');
 
@@ -1538,7 +1538,7 @@
           parseFloat(
             slots[i].value
               .replace(/,/g, '')
-              .replace(/✕/g, '*')
+              .replace(/×/g, '*')
               .replace(/÷/g, '/')
           );
 
