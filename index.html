@@ -314,6 +314,16 @@
       text-align: right;
       letter-spacing: 0.5px;
       line-height: 1;
+      /* 修正: 横方向のオーバーフロー時に右寄せ（末尾常時表示・左側スクロールアウト）にするための設定 */
+      white-space: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none; /* Firefox用スクロールバー非表示 */
+    }
+
+    /* Chrome, Safari用スクロールバー非表示 */
+    .display-slot-value::-webkit-scrollbar {
+      display: none;
     }
 
     .slot-panel.single-large .display-slot-value {
@@ -466,7 +476,7 @@
       min-height: 0;
     }
 
-    /* 修正：ボタンの配色・影・立体感（ご提示のスクショ・指定に合わせた外観） */
+    /* ボタンの配色・影・立体感 */
     button {
       background: linear-gradient(180deg, #505050 0%, #202020 100%);
       color: #ffffff;
@@ -1116,8 +1126,11 @@
 
     for (let i = 0; i < 3; i++) {
 
-      document.getElementById(`disp-${i}`).innerHTML =
-        formatNumberDisplay(slots[i].value);
+      const dispEl = document.getElementById(`disp-${i}`);
+      dispEl.innerHTML = formatNumberDisplay(slots[i].value);
+
+      // 数式表示の更新後、右端（末尾）が常に表示されるようにスクロール位置を最右端へ移動
+      dispEl.scrollLeft = dispEl.scrollWidth;
 
       document.getElementById(`expr-${i}`).textContent =
         slots[i].expr;
@@ -1682,8 +1695,9 @@
 
 
   /* =========================
-     初期表示
-  ========================= */
+     /* =========================
+        初期表示
+     ========================= */
 
   updateView();
 
