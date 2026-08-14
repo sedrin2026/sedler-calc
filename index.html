@@ -314,6 +314,9 @@
       text-align: right;
       letter-spacing: 0.5px;
       line-height: 1;
+      /* 修正: 先頭・末尾が境界に食い込まないよう左右にパディング（余白）を追加 */
+      padding-left: 12px;
+      padding-right: 12px;
       /* 修正: 横方向のオーバーフロー時に右寄せ（末尾常時表示・左側スクロールアウト）にするための設定 */
       white-space: nowrap;
       overflow-x: auto;
@@ -1129,7 +1132,7 @@
       const dispEl = document.getElementById(`disp-${i}`);
       dispEl.innerHTML = formatNumberDisplay(slots[i].value);
 
-      // 数式表示の更新後、右端（末尾）が常に表示されるようにスクロール位置を最右端へ移動
+      // 数式表示の更新後、パディングを考慮して右端（末尾）が常に完全に見えるようにスクロール位置を設定
       dispEl.scrollLeft = dispEl.scrollWidth;
 
       document.getElementById(`expr-${i}`).textContent =
@@ -1695,9 +1698,8 @@
 
 
   /* =========================
-     /* =========================
-        初期表示
-     ========================= */
+     初期表示
+  ========================= */
 
   updateView();
 
