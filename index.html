@@ -320,7 +320,7 @@
       overflow-x: auto;
       overflow-y: hidden;
       scrollbar-width: none;
-      direction: ltr; /* 左からの自然な表示を維持 */
+      direction: ltr;
       unicode-bidi: plaintext;
     }
 
@@ -1172,7 +1172,6 @@
       const dispEl = document.getElementById(`disp-${i}`);
       dispEl.innerHTML = formatNumberDisplay(slots[i].value);
 
-      // 表示更新後にレイアウトが確定してから右端（末尾）へ自動スクロール
       requestAnimationFrame(() => {
         dispEl.scrollLeft = dispEl.scrollWidth;
       });
@@ -1561,11 +1560,20 @@
       let cleanExpr =
         s.value.replace(/,/g, '');
 
+      // 末尾が四則演算子（+, -, *, /, ×, ÷）で終わっている場合の例外処理
+      if (/[\+\-\*\/\×\÷]$/.test(cleanExpr)) {
+        cleanExpr = cleanExpr.slice(0, -1);
+      }
+
       let mathExpr =
         cleanExpr
           .replace(/×/g, '*')
           .replace(/÷/g, '/')
           .replace(/%/g, '/100');
+
+      if (mathExpr === '') {
+        throw new Error();
+      }
 
       let fullExpr =
         formatNumberDisplay(cleanExpr).replace(/<[^>]*>/g, '');
