@@ -320,6 +320,8 @@
       overflow-x: auto;
       overflow-y: hidden;
       scrollbar-width: none;
+      direction: rtl;
+      unicode-bidi: plaintext;
     }
 
     .display-slot-value::-webkit-scrollbar {
@@ -1011,6 +1013,49 @@
 
 
   /* =========================
+     数値の小数点以下2桁制限・整形処理
+  ========================= */
+
+  function limitDecimalPlaces(strVal) {
+    if (strVal === 'ERR' || strVal === 'ERROR' || !strVal) {
+      return strVal;
+    }
+
+    // 演算子が含まれる数式の場合は各数値を処理する
+    let sanitized = String(strVal).replace(/\*/g, '<span class="small-mult">×</span>');
+    let parts = sanitized.split(/([+\-÷/%]|<span class="small-mult">×<\/span>)/);
+
+    if (parts.length > 1) {
+      return parts.map(part => {
+        if (/^[+\-÷/%]$/.test(part) || part.includes('small-mult')) {
+          return part;
+        }
+        return formatSingleNumberString(part);
+      }).join('');
+    }
+
+    return formatSingleNumberString(sanitized);
+  }
+
+  function formatSingleNumberString(numStr) {
+    let clean = numStr.replace(/,/g, '');
+    let subParts = clean.split('.');
+    let intPart = subParts[0];
+
+    if (!isNaN(intPart) && intPart !== '') {
+      intPart = Number(intPart).toLocaleString('ja-JP');
+    }
+
+    if (subParts.length > 1) {
+      let decPart = subParts[1].substring(0, 2); // 小数点以下2桁まで
+      return intPart + '.' + decPart;
+    }
+
+    return intPart;
+  }
+
+
+  /* =========================
      数字表示（掛け算記号を「×」に統一）
   ========================= */
 
@@ -1022,7 +1067,8 @@
       return strVal;
     }
 
-    let sanitized = String(strVal).replace(/\*/g, '<span class="small-mult">×</span>');
+    let limited = limitDecimalPlaces(strVal);
+    let sanitized = String(limited);
 
     let parts =
       sanitized.split(/([+\-÷/%]|<span class="small-mult">×<\/span>)/);
@@ -1127,7 +1173,7 @@
       const dispEl = document.getElementById(`disp-${i}`);
       dispEl.innerHTML = formatNumberDisplay(slots[i].value);
 
-      dispEl.scrollLeft = dispEl.scrollWidth;
+      dispEl.scrollLeft = 0;
 
       document.getElementById(`expr-${i}`).textContent =
         slots[i].expr;
@@ -1590,7 +1636,7 @@
       Number(result).toLocaleString(
         'ja-JP',
         {
-          maximumFractionDigits: 10
+          maximumFractionDigits: 2
         }
       );
 
