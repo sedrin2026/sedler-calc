@@ -314,17 +314,14 @@
       text-align: right;
       letter-spacing: 0.5px;
       line-height: 1;
-      /* 修正: 先頭・末尾が境界に食い込まないよう左右にパディング（余白）を追加 */
       padding-left: 12px;
       padding-right: 12px;
-      /* 修正: 横方向のオーバーフロー時に右寄せ（末尾常時表示・左側スクロールアウト）にするための設定 */
       white-space: nowrap;
       overflow-x: auto;
       overflow-y: hidden;
-      scrollbar-width: none; /* Firefox用スクロールバー非表示 */
+      scrollbar-width: none;
     }
 
-    /* Chrome, Safari用スクロールバー非表示 */
     .display-slot-value::-webkit-scrollbar {
       display: none;
     }
@@ -334,7 +331,6 @@
       font-weight: 400 !important;
     }
 
-    /* 掛け算記号のサイズと位置の調整 */
     .small-mult {
       font-size: 1em;
       vertical-align: baseline;
@@ -479,7 +475,6 @@
       min-height: 0;
     }
 
-    /* ボタンの配色・影・立体感 */
     button {
       background: linear-gradient(180deg, #505050 0%, #202020 100%);
       color: #ffffff;
@@ -1132,7 +1127,6 @@
       const dispEl = document.getElementById(`disp-${i}`);
       dispEl.innerHTML = formatNumberDisplay(slots[i].value);
 
-      // 数式表示の更新後、パディングを考慮して右端（末尾）が常に完全に見えるようにスクロール位置を設定
       dispEl.scrollLeft = dispEl.scrollWidth;
 
       document.getElementById(`expr-${i}`).textContent =
