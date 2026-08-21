@@ -1009,6 +1009,35 @@ body.household-mode .household-screen{
   background:linear-gradient(180deg,#0e7490 0%,#075985 100%) !important;
 }
 
+
+/* 電卓ディスプレイ内のLOG案内 */
+.log-guide-text{
+  display:block;
+  margin-top:5px;
+  color:#0e7490;
+  font-size:.78em;
+  font-weight:800;
+}
+/* 家計簿「その他」の個別名目入力 */
+.household-custom-name{
+  grid-column:1 / -1;
+  width:100%;
+  min-height:40px;
+  box-sizing:border-box;
+  padding:8px 10px;
+  border:1px solid rgba(103,232,249,.45);
+  border-radius:10px;
+  background:#020617;
+  color:#e2e8f0;
+  font-size:.9rem;
+  outline:none;
+}
+.household-custom-name:focus{
+  border-color:#67e8f9;
+  box-shadow:0 0 0 2px rgba(103,232,249,.12);
+}
+.household-custom-name::placeholder{color:#64748b;}
+
 </style>
 </head>
 
@@ -1038,6 +1067,7 @@ body.household-mode .household-screen{
       <div class="single-guide-area">
         <hr class="single-divider">
         <span class="single-guide-text">〔展開をタップでスロットを三段階表示〕</span>
+        <span class="single-guide-text log-guide-text">〔数値を入力後、LOGをタップで家計簿画面に反映/推移〕</span>
       </div>
     </div>
 
@@ -2090,7 +2120,7 @@ body.household-mode .household-screen{
    CYBER CALC // HOUSEHOLD LOG
 ========================================================= */
 const HOUSEHOLD_KEY = 'cyberCalcHouseholdLog_v1';
-const householdCategories = ['収入','支出','家賃','電気代','水道代','ガス代','スマホ代','インターネット代','その他'];
+const householdCategories = ['家賃','電気代','水道代','ガス代','スマホ代','インターネット代','その他'];
 
 /*
  * 家計簿の「現在入力中」の項目は、ページを開いた時点では0件。
@@ -2118,7 +2148,8 @@ function logActiveValue(){
   householdEntries.push({
     id: Date.now() + Math.random(),
     amount,
-    category:'支出',
+    category:'その他',
+    customName:'',
     time:new Date().toLocaleString('ja-JP',{
       month:'2-digit',
       day:'2-digit',
@@ -2162,10 +2193,11 @@ function closeHousehold(){
   window.scrollTo(0,0);
 }
 
-function householdOptions(selected){
-  return householdCategories
-    .map(c => `<option value="${c}" ${c===selected?'selected':''}>${c}</option>`)
-    .join('');
+function householdOptions(selected, customName=''){
+  return householdCategories.map(c=>{
+    const label=(c==='その他' && selected==='その他' && customName) ? customName : c;
+    return `<option value="${c}" ${c===selected?'selected':''}>${esc(label)}</option>`;
+  }).join('');
 }
 
 function updateHouseholdCategory(id, category){
@@ -2173,6 +2205,17 @@ function updateHouseholdCategory(id, category){
   if(!item) return;
 
   item.category=category;
+  if(category!=='その他') item.customName='';
+  if(typeof item.customName!=='string') item.customName='';
+  saveHousehold();
+  renderHousehold();
+}
+
+function updateHouseholdCustomName(id, value){
+  const item=householdEntries.find(x=>String(x.id)===String(id));
+  if(!item) return;
+
+  item.customName=String(value||'').trim().slice(0,40);
   saveHousehold();
   renderHousehold();
 }
@@ -2220,7 +2263,8 @@ function recordHouseholdSnapshot(){
     note,
     items:active.map(x=>({
       amount:Number(x.amount||0),
-      category:x.category
+      category:x.category,
+      customName:x.customName||''
     }))
   });
 
@@ -2256,7 +2300,8 @@ function renderHouseholdRecords(){
   box.innerHTML=householdRecords.map((r,i)=>{
     const grouped={};
     r.items.forEach(x=>{
-      grouped[x.category]=(grouped[x.category]||0)+x.amount;
+      const label=(x.category==='その他' && x.customName) ? x.customName : x.category;
+      grouped[label]=(grouped[label]||0)+x.amount;
     });
 
     return `<details class="household-record-card">
@@ -2314,8 +2359,15 @@ function renderHousehold(){
           <div class="household-time">${item.time}</div>
         </div>
         <select class="household-category" onchange="updateHouseholdCategory('${item.id}',this.value)">
-          ${householdOptions(item.category)}
+          ${householdOptions(item.category,item.customName||'')}
         </select>
+        ${item.category==='その他' ? `
+          <input class="household-custom-name"
+            type="text" maxlength="40"
+            value="${esc(item.customName||'')}"
+            placeholder="支払い・支出名目を入力（例：食費、病院代、日用品）"
+            onchange="updateHouseholdCustomName('${item.id}',this.value)">
+        ` : ''}
       </div>
     `).join('');
   }
