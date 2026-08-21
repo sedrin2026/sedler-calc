@@ -2148,25 +2148,42 @@ body {
 ========================================================= */
 const HOUSEHOLD_KEY = 'cyberCalcHouseholdLog_v1';
 const householdCategories = ['収入','支出','家賃','電気代','水道代','ガス代','スマホ代','インターネット代','その他'];
-let householdEntries = JSON.parse(localStorage.getItem(HOUSEHOLD_KEY) || '[]');
+
+/*
+ * 家計簿の「現在入力中」の項目は、ページを開いた時点では0件。
+ * 過去の保存記録は HOUSEHOLD_RECORD_KEY 側で別管理する。
+ *
+ * 旧バージョンで localStorage に残っている未保存の入力項目は、
+ * 「保存済み記録」とは別物なので初期表示には復元しない。
+ */
+let householdEntries = [];
 
 function logActiveValue(){
   const s = slots[activeSlot];
   const raw = String(s.value || '').replace(/,/g,'').trim();
+
   if(!/^-?(?:\d+\.?\d*|\.\d+)$/.test(raw)){
     alert('LOGするには、スロットに数字だけを表示してください。');
     return;
   }
+
   const amount = Number(raw);
   if(!Number.isFinite(amount)) return;
+
+  // LOGを1回押すたびに、現在の数字を1項目だけ追加する。
   householdEntries.push({
     id: Date.now() + Math.random(),
     amount,
     category:'支出',
-    time:new Date().toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})
+    time:new Date().toLocaleString('ja-JP',{
+      month:'2-digit',
+      day:'2-digit',
+      hour:'2-digit',
+      minute:'2-digit'
+    })
   });
+
   saveHousehold();
-  renderHousehold();
   openHousehold();
 }
 
@@ -2177,16 +2194,22 @@ function saveHousehold(){
 function openHousehold(){
   const screen=document.getElementById('householdScreen');
   if(!screen) return;
+
   screen.classList.add('open');
   screen.setAttribute('aria-hidden','false');
   document.getElementById('calcCard').style.display='none';
+
+  // 開いた時は「現在入力中の項目」だけを表示。
+  // 保存済み記録は下部の householdRecords にのみ表示する。
   renderHousehold();
+  renderHouseholdRecords();
   window.scrollTo(0,0);
 }
 
 function closeHousehold(){
   const screen=document.getElementById('householdScreen');
   if(!screen) return;
+
   screen.classList.remove('open');
   screen.setAttribute('aria-hidden','true');
   document.getElementById('calcCard').style.display='';
@@ -2194,49 +2217,170 @@ function closeHousehold(){
 }
 
 function householdOptions(selected){
-  return householdCategories.map(c => `<option value="${c}" ${c===selected?'selected':''}>${c}</option>`).join('');
+  return householdCategories
+    .map(c => `<option value="${c}" ${c===selected?'selected':''}>${c}</option>`)
+    .join('');
 }
 
 function updateHouseholdCategory(id, category){
   const item=householdEntries.find(x=>String(x.id)===String(id));
   if(!item) return;
+
   item.category=category;
   saveHousehold();
   renderHousehold();
 }
 
 function deleteHouseholdEntry(id){
-  const item=householdEntries.find(x=>String(x.id)===String(id));
-  if(!item) return;
-  item.removed=true;
+  const index=householdEntries.findIndex(x=>String(x.id)===String(id));
+  if(index === -1) return;
+
+  // その項目だけを現在の家計簿から除外する。
+  householdEntries.splice(index, 1);
   saveHousehold();
   renderHousehold();
 }
 
 function activeHouseholdEntries(){
-  return householdEntries.filter(x=>!x.removed);
+  return householdEntries;
 }
 
 const HOUSEHOLD_RECORD_KEY='cyberCalcHouseholdRecords_v1';
 let householdRecords=JSON.parse(localStorage.getItem(HOUSEHOLD_RECORD_KEY)||'[]');
-function saveHouseholdRecords(){localStorage.setItem(HOUSEHOLD_RECORD_KEY,JSON.stringify(householdRecords));}
+
+function saveHouseholdRecords(){
+  localStorage.setItem(HOUSEHOLD_RECORD_KEY,JSON.stringify(householdRecords));
+}
 
 function recordHouseholdSnapshot(){
   const active=activeHouseholdEntries();
   const total=active.reduce((s,x)=>s+Number(x.amount||0),0);
   const note=(document.getElementById('householdNote')?.value||'').trim();
-  if(!active.length && !note){ alert('記録する内容がありません。'); return; }
+
+  if(!active.length && !note){
+    alert('記録する内容がありません。');
+    return;
+  }
+
   const now=new Date();
   const days=['日','月','火','水','木','金','土'];
   const stamp=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]}) ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
   householdRecords.unshift({
-    id:Date.now()+Math.random(), stamp, total, note,
-    items:active.map(x=>({amount:Number(x.amount||0),category:x.category}))
+    id:Date.now()+Math.random(),
+    stamp,
+    total,
+    note,
+    items:active.map(x=>({
+      amount:Number(x.amount||0),
+      category:x.category
+    }))
   });
+
+  // 保存記録は従来どおり最大10件。
   householdRecords=householdRecords.slice(0,10);
   saveHouseholdRecords();
-  const noteEl=document.getElementById('householdNote'); if(noteEl) noteEl.value='';
+
+  const noteEl=document.getElementById('householdNote');
+  if(noteEl) noteEl.value='';
+
   renderHouseholdRecords();
+}
+
+function esc(s){
+  return String(s).replace(/[&<>'"]/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    "'":'&#39;',
+    '"':'&quot;'
+  }[c]));
+}
+
+function renderHouseholdRecords(){
+  const box=document.getElementById('householdRecords');
+  if(!box) return;
+
+  if(!householdRecords.length){
+    box.innerHTML='';
+    return;
+  }
+
+  box.innerHTML=householdRecords.map((r,i)=>{
+    const grouped={};
+    r.items.forEach(x=>{
+      grouped[x.category]=(grouped[x.category]||0)+x.amount;
+    });
+
+    return `<details class="household-record-card">
+      <button type="button" class="household-record-delete" aria-label="記録を閉じる">×</button>
+      <summary>
+        <span>記録 ${householdRecords.length-i}</span>
+        <span>${esc(r.stamp)}　¥${Number(r.total).toLocaleString('ja-JP')}</span>
+      </summary>
+      <div class="household-record-detail">
+        ${Object.entries(grouped).map(([k,v])=>`<div><span>${esc(k)}</span><strong>¥${Number(v).toLocaleString('ja-JP')}</strong></div>`).join('')}
+        <div class="record-note">
+          <span>備考</span>
+          <span>${esc(r.note||'なし')}</span>
+        </div>
+      </div>
+    </details>`;
+  }).join('');
+
+  box.querySelectorAll('.household-record-delete').forEach(btn=>{
+    btn.onclick=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      btn.closest('.household-record-card').classList.add('is-closed');
+    };
+  });
+}
+
+function renderHousehold(){
+  const list=document.getElementById('householdList');
+  const totalEl=document.getElementById('householdTotal');
+  const breakdown=document.getElementById('householdBreakdown');
+
+  if(!list||!totalEl||!breakdown) return;
+
+  const active=activeHouseholdEntries();
+
+  // 初期状態・全削除後は入力項目0件。
+  if(!active.length){
+    list.innerHTML='<div class="household-empty">LOGボタンを押すと、ここに金額が追加されます。</div>';
+  }else{
+    list.innerHTML=active.map(item=>`
+      <div class="household-row" id="household-row-${item.id}">
+        <button class="household-delete" title="この項目を閉じる" onclick="deleteHouseholdEntry('${item.id}')">×</button>
+        <div>
+          <div class="household-amount">¥${Number(item.amount).toLocaleString('ja-JP')}</div>
+          <div class="household-time">${item.time}</div>
+        </div>
+        <select class="household-category" onchange="updateHouseholdCategory('${item.id}',this.value)">
+          ${householdOptions(item.category)}
+        </select>
+      </div>
+    `).join('');
+  }
+
+  // 現在画面に表示されている項目だけをリアルタイム集計。
+  const total=active.reduce((sum,x)=>sum+Number(x.amount||0),0);
+  const income=active
+    .filter(x=>x.category==='収入')
+    .reduce((sum,x)=>sum+Number(x.amount||0),0);
+  const expense=active
+    .filter(x=>x.category!=='収入')
+    .reduce((sum,x)=>sum+Number(x.amount||0),0);
+
+  totalEl.textContent='¥'+total.toLocaleString('ja-JP');
+  breakdown.textContent=`収入 ¥${income.toLocaleString('ja-JP')}　支出 ¥${expense.toLocaleString('ja-JP')}`;
+}
+
+// 初期表示：入力項目は必ず0件。
+// 保存済み記録だけは下部に従来どおり表示。
+renderHousehold();
+renderHouseholdRecords();
 }
 function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function renderHouseholdRecords(){
