@@ -993,6 +993,22 @@ body.household-mode .household-screen{
 .household-tab,.household-tab-btn,[data-tab="household"]{
   border-radius:14px !important;
 }
+
+/* LOGボタンと家計簿アクションボタンを同色で統一 */
+#householdScreen .household-close,
+#householdScreen .household-record-btn{
+  background:linear-gradient(180deg,#22d3ee 0%,#0e7490 100%) !important;
+  color:#fff !important;
+  border:1px solid #06b6d4 !important;
+  border-bottom:3px solid #075985 !important;
+  box-shadow:0 4px 10px rgba(0,0,0,.28);
+  font-weight:900;
+}
+#householdScreen .household-close:active,
+#householdScreen .household-record-btn:active{
+  background:linear-gradient(180deg,#0e7490 0%,#075985 100%) !important;
+}
+
 </style>
 </head>
 
