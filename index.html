@@ -799,6 +799,74 @@
 #householdScreen .record-card summary{padding-right:38px}
 #householdScreen .record-card.is-removed{display:none}
 
+
+/* === HOUSEHOLD FIX: match CYBER CALC palette + prevent top clipping === */
+html,body{background:#7a7a7a!important;}
+#householdScreen{
+  display:none;
+  width:100%;
+  max-width:500px;
+  height:100dvh;
+  min-height:0!important;
+  margin:0 auto;
+  padding:6px;
+  box-sizing:border-box;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:linear-gradient(180deg,#f0f4f8 0%,#d9e2ec 100%)!important;
+  color:#111!important;
+  border:1px solid #777;
+  box-shadow:inset 0 0 15px rgba(255,255,255,.6),0 10px 25px rgba(0,0,0,.5);
+}
+#householdScreen.open{display:flex;flex-direction:column;}
+#householdScreen .household-header{
+  background:linear-gradient(180deg,#f0f4f8 0%,#d9e2ec 100%)!important;
+  border-bottom:3px solid #94a3b8!important;
+  padding:6px 4px 8px!important;
+  color:#111!important;
+}
+#householdScreen .household-kicker{color:#334155!important;}
+#householdScreen .household-title{color:#111!important;}
+#householdScreen .household-close,
+#householdScreen .household-record-btn{
+  background:linear-gradient(180deg,#fff 0%,#e2e8f0 100%)!important;
+  color:#111!important;
+  border:1px solid #cbd5e1!important;
+  border-bottom:3px solid #94a3b8!important;
+  border-radius:5px!important;
+  box-shadow:0 3px 5px rgba(0,0,0,.15)!important;
+}
+#householdScreen .household-row,
+#householdScreen .household-total-card,
+#householdScreen .household-note-card,
+#householdScreen .household-record-card{
+  background:linear-gradient(180deg,#fff 0%,#eef2f7 100%)!important;
+  border:1px solid #cbd5e1!important;
+  color:#111!important;
+  box-shadow:0 3px 6px rgba(0,0,0,.12)!important;
+}
+#householdScreen .household-amount,
+#householdScreen .household-title,
+#householdScreen .household-total-value{color:#111!important;}
+#householdScreen .household-category,
+#householdScreen .household-note{
+  background:#fff!important;color:#111!important;border:1px solid #94a3b8!important;
+}
+#householdScreen .household-total-card{border-bottom:3px solid #94a3b8!important;}
+#householdScreen .household-total-label{color:#334155!important;}
+#householdScreen .household-breakdown,
+#householdScreen .household-time{color:#64748b!important;}
+#householdScreen .household-record-card summary{color:#111!important;}
+#householdScreen .household-record-detail{color:#334155!important;border-top:1px solid #cbd5e1!important;}
+#householdScreen .household-delete,
+#householdScreen .household-record-delete{
+  position:absolute;right:6px;top:6px;width:27px;height:27px;padding:0;
+  border:1px solid #94a3b8!important;border-radius:5px!important;
+  background:#f8fafc!important;color:#111!important;font-weight:900;line-height:1;z-index:5;
+}
+#householdScreen .household-record-card{position:relative;padding-right:34px;}
+#householdScreen .household-record-card.is-closed{display:none;}
+
 </style>
 </head>
 
@@ -1977,8 +2045,18 @@ function renderHouseholdRecords(){
   if(!householdRecords.length){box.innerHTML='';return;}
   box.innerHTML=householdRecords.map((r,i)=>{
     const grouped={}; r.items.forEach(x=>grouped[x.category]=(grouped[x.category]||0)+x.amount);
-    return `<details class="household-record-card"><summary><span>記録 ${householdRecords.length-i}</span><span>${esc(r.stamp)}　¥${Number(r.total).toLocaleString('ja-JP')}</span></summary><div class="household-record-detail">${Object.entries(grouped).map(([k,v])=>`<div><span>${esc(k)}</span><strong>¥${Number(v).toLocaleString('ja-JP')}</strong></div>`).join('')}<div class="record-note"><span>備考</span><span>${esc(r.note||'なし')}</span></div></div></details>`;
+    return `<details class="household-record-card">
+      <button type="button" class="household-record-delete" aria-label="記録を閉じる">×</button>
+      <summary><span>記録 ${householdRecords.length-i}</span><span>${esc(r.stamp)}　¥${Number(r.total).toLocaleString('ja-JP')}</span></summary>
+      <div class="household-record-detail">${Object.entries(grouped).map(([k,v])=>`<div><span>${esc(k)}</span><strong>¥${Number(v).toLocaleString('ja-JP')}</strong></div>`).join('')}<div class="record-note"><span>備考</span><span>${esc(r.note||'なし')}</span></div></div>
+    </details>`;
   }).join('');
+  box.querySelectorAll('.household-record-delete').forEach(btn=>{
+    btn.onclick=e=>{
+      e.preventDefault(); e.stopPropagation();
+      btn.closest('.household-record-card').classList.add('is-closed');
+    };
+  });
 }
 
 function renderHousehold(){
