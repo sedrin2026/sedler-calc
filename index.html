@@ -2347,49 +2347,48 @@ function renderHousehold(){
 
   const active=activeHouseholdEntries();
 
-  // 初期状態・全削除後は入力項目0件。
   if(!active.length){
     list.innerHTML='<div class="household-empty">LOGボタンを押すと、ここに金額が追加されます。</div>';
   }else{
-    list.innerHTML=active.map(item=>`
+    list.innerHTML=active.map(item=>{
+      const custom = item.customName || '';
+      const isOther = item.category === 'その他';
+
+      return `
       <div class="household-row" id="household-row-${item.id}">
         <button class="household-delete" title="この項目を閉じる" onclick="deleteHouseholdEntry('${item.id}')">×</button>
+
         <div>
           <div class="household-amount">¥${Number(item.amount).toLocaleString('ja-JP')}</div>
           <div class="household-time">${item.time}</div>
         </div>
-        <select class="household-category" onchange="updateHouseholdCategory('${item.id}',this.value)">
-          ${householdOptions(item.category,item.customName||'')}
+
+        <select class="household-category"
+          onchange="updateHouseholdCategory('${item.id}', this.value)">
+          ${householdOptions(item.category, custom)}
         </select>
-        ${item.category==='その他' ? `
-          <input class="household-custom-name"
-            type="text" maxlength="40"
-            value="${esc(item.customName||'')}"
+
+        ${isOther ? `
+          <input
+            class="household-custom-name"
+            type="text"
+            maxlength="40"
+            value="${esc(custom)}"
             placeholder="支払い・支出名目を入力（例：食費、病院代、日用品）"
-            onchange="updateHouseholdCustomName('${item.id}',this.value)">
+            oninput="updateHouseholdCustomName('${item.id}', this.value)"
+          >
         ` : ''}
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
-  // 現在画面に表示されている項目だけをリアルタイム集計。
   const total=active.reduce((sum,x)=>sum+Number(x.amount||0),0);
-  const income=active
-    .filter(x=>x.category==='収入')
-    .reduce((sum,x)=>sum+Number(x.amount||0),0);
-  const expense=active
-    .filter(x=>x.category!=='収入')
-    .reduce((sum,x)=>sum+Number(x.amount||0),0);
+  const expense=active.reduce((sum,x)=>sum+Number(x.amount||0),0);
 
   totalEl.textContent='¥'+total.toLocaleString('ja-JP');
-  breakdown.textContent=`収入 ¥${income.toLocaleString('ja-JP')}　支出 ¥${expense.toLocaleString('ja-JP')}`;
+  breakdown.textContent=`支出 ¥${expense.toLocaleString('ja-JP')}`;
 }
 
-// 初期表示：入力項目は必ず0件。
-// 保存済み記録だけは下部に従来どおり表示。
-renderHousehold();
-renderHouseholdRecords();
-function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function renderHouseholdRecords(){
   const box=document.getElementById('householdRecords'); if(!box) return;
   if(!householdRecords.length){box.innerHTML='';return;}
