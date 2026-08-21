@@ -945,6 +945,8 @@
   white-space:nowrap;
 }
 .household-record-delete{
+  z-index:5;
+  cursor:pointer;
   position:absolute;
   right:7px;
   top:7px;
@@ -2226,11 +2228,11 @@ function renderHouseholdRecords(){
     });
 
     return `<details class="household-record-card">
-      <button type="button" class="household-record-delete" aria-label="記録を閉じる">×</button>
       <summary>
         <span>記録 ${householdRecords.length-i}</span>
         <span>${esc(r.stamp)}　¥${Number(r.total).toLocaleString('ja-JP')}</span>
       </summary>
+      <button type="button" class="household-record-delete" aria-label="この記録を閉じる">×</button>
       <div class="household-record-detail">
         ${Object.entries(grouped).map(([k,v])=>`<div><span>${esc(k)}</span><strong>¥${Number(v).toLocaleString('ja-JP')}</strong></div>`).join('')}
         <div class="record-note">
@@ -2248,7 +2250,7 @@ function renderHouseholdRecords(){
       const card = btn.closest('.household-record-card');
       if(card){
         // 保存記録そのものは削除せず、画面上だけ閉じる。
-        card.style.display='none';
+        card.style.setProperty('display','none','important');
       }
     };
   });
@@ -2313,7 +2315,8 @@ function renderHouseholdRecords(){
   box.querySelectorAll('.household-record-delete').forEach(btn=>{
     btn.onclick=e=>{
       e.preventDefault(); e.stopPropagation();
-      btn.closest('.household-record-card').classList.add('is-closed');
+      const card = btn.closest('.household-record-card');
+      if(card) card.style.display = 'none';
     };
   });
 }
