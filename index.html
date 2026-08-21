@@ -1038,6 +1038,48 @@ body.household-mode .household-screen{
 }
 .household-custom-name::placeholder{color:#64748b;}
 
+
+/* 「その他」選択時の専用名目入力 */
+.household-other-editor{
+  grid-column:1 / -1;
+  width:100%;
+  box-sizing:border-box;
+  margin-top:1px;
+  padding:10px;
+  border:1px solid rgba(103,232,249,.32);
+  border-radius:11px;
+  background:rgba(2,6,23,.72);
+}
+.household-other-editor-label{
+  display:block;
+  margin-bottom:6px;
+  color:#67e8f9;
+  font-size:.72rem;
+  font-weight:900;
+}
+.household-other-input{
+  width:100%;
+  min-height:40px;
+  box-sizing:border-box;
+  padding:8px 10px;
+  border:1px solid rgba(103,232,249,.48);
+  border-radius:9px;
+  background:#020617;
+  color:#e2e8f0;
+  outline:none;
+  font-size:.9rem;
+}
+.household-other-input:focus{
+  border-color:#67e8f9;
+  box-shadow:0 0 0 2px rgba(103,232,249,.12);
+}
+.household-other-input::placeholder{color:#64748b;}
+.household-category-display{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
 </style>
 </head>
 
@@ -2195,7 +2237,10 @@ function closeHousehold(){
 
 function householdOptions(selected, customName=''){
   return householdCategories.map(c=>{
-    const label=(c==='その他' && selected==='その他' && customName) ? customName : c;
+    let label=c;
+    if(c==='その他' && selected==='その他' && customName){
+      label=`その他/${customName}`;
+    }
     return `<option value="${c}" ${c===selected?'selected':''}>${esc(label)}</option>`;
   }).join('');
 }
@@ -2207,17 +2252,40 @@ function updateHouseholdCategory(id, category){
   item.category=category;
   if(category!=='その他') item.customName='';
   if(typeof item.customName!=='string') item.customName='';
+
   saveHousehold();
   renderHousehold();
+
+  if(category==='その他'){
+    const input=document.querySelector(
+      `.household-other-input[data-entry-id="${CSS.escape(String(id))}"]`
+    );
+    if(input){
+      requestAnimationFrame(()=>{
+        input.focus();
+        input.select();
+      });
+    }
+  }
 }
 
 function updateHouseholdCustomName(id, value){
   const item=householdEntries.find(x=>String(x.id)===String(id));
   if(!item) return;
 
-  item.customName=String(value||'').trim().slice(0,40);
+  item.customName=String(value||'').slice(0,40);
   saveHousehold();
   renderHousehold();
+
+  const input=document.querySelector(
+    `.household-other-input[data-entry-id="${CSS.escape(String(id))}"]`
+  );
+  if(input){
+    requestAnimationFrame(()=>{
+      input.focus();
+      input.setSelectionRange(input.value.length,input.value.length);
+    });
+  }
 }
 
 function deleteHouseholdEntry(id){
@@ -2300,7 +2368,9 @@ function renderHouseholdRecords(){
   box.innerHTML=householdRecords.map((r,i)=>{
     const grouped={};
     r.items.forEach(x=>{
-      const label=(x.category==='その他' && x.customName) ? x.customName : x.category;
+      const label=(x.category==='その他' && x.customName)
+        ? `その他/${x.customName}`
+        : x.category;
       grouped[label]=(grouped[label]||0)+x.amount;
     });
 
@@ -2363,20 +2433,24 @@ function renderHousehold(){
           <div class="household-time">${item.time}</div>
         </div>
 
-        <select class="household-category"
+        <select class="household-category household-category-display"
           onchange="updateHouseholdCategory('${item.id}', this.value)">
           ${householdOptions(item.category, custom)}
         </select>
 
         ${isOther ? `
-          <input
-            class="household-custom-name"
-            type="text"
-            maxlength="40"
-            value="${esc(custom)}"
-            placeholder="支払い・支出名目を入力（例：食費、病院代、日用品）"
-            oninput="updateHouseholdCustomName('${item.id}', this.value)"
-          >
+          <div class="household-other-editor">
+            <label class="household-other-editor-label">その他の支払い・支出名目</label>
+            <input
+              class="household-other-input"
+              data-entry-id="${esc(item.id)}"
+              type="text"
+              maxlength="40"
+              value="${esc(custom)}"
+              placeholder="例：食事会、病院代、日用品"
+              oninput="updateHouseholdCustomName('${item.id}', this.value)"
+            >
+          </div>
         ` : ''}
       </div>`;
     }).join('');
