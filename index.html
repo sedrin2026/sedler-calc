@@ -1080,6 +1080,7 @@ body.household-mode .household-screen{
   white-space:nowrap;
 }
 
+
 </style>
 </head>
 
@@ -1104,7 +1105,15 @@ body.household-mode .household-screen{
       <span class="slot-label">[SLOT 1]</span>
       <span class="memory-indicator-slot" id="mem-0"></span>
       <div class="expr-line-slot" id="expr-0">READY</div>
-      <div class="display-slot-value" id="disp-0">0</div>
+      <div class="display-slot-value" id="disp-0">0</di
+.household-other-control{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;margin:12px 0 12px}
+.household-other-button{flex:0 0 auto;min-width:78px;min-height:42px;padding:8px 15px;border-radius:11px;border:1px solid rgba(103,232,249,.5);background:#0f172a;color:#67e8f9;font-weight:900}
+.household-other-button.active{background:linear-gradient(180deg,#22d3ee 0%,#0e7490 100%);color:#fff;border-color:#06b6d4}
+.household-other-input-main{flex:1 1 auto;min-width:0;min-height:42px;box-sizing:border-box;padding:8px 12px;border:1px solid rgba(103,232,249,.45);border-radius:11px;background:#020617;color:#e2e8f0;outline:none}
+.household-other-input-main:focus{border-color:#67e8f9;box-shadow:0 0 0 2px rgba(103,232,249,.12)}
+.household-other-input-main:disabled{opacity:.6;cursor:not-allowed}
+.household-custom-display{flex:1 1 auto;min-width:0;padding:10px 12px;border:1px solid rgba(103,232,249,.35);border-radius:10px;background:#020617;color:#e2e8f0;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+v>
       
       <div class="single-guide-area">
         <hr class="single-divider">
@@ -1274,9 +1283,13 @@ body.household-mode .household-screen{
     <div class="household-empty" id="householdEmpty">LOGボタンを押すと、ここに金額が追加されます。</div>
   </div>
 
+  <div class="household-other-control">
+  <button id="householdOtherButton" class="household-other-button" type="button" onclick="enableHouseholdOther()">その他</button>
+  <input id="householdOtherInput" class="household-other-input-main" type="text" maxlength="40" disabled placeholder="その他の名目を入力" oninput="updateHouseholdOtherName(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();commitHouseholdOtherName();}" onblur="commitHouseholdOtherName()" >
+</div>
   <div class="household-total-card">
     <div class="household-total-label">HOUSEHOLD TOTAL</div>
-    <div class="household-total-value" id="householdTotal">¥0</div>
+<div class="household-total-value" id="householdTotal">¥0</div>
     <div class="household-breakdown" id="householdBreakdown">収入 ¥0　支出 ¥0</div>
   </div>
   <div class="household-note-card">
@@ -2162,7 +2175,7 @@ body.household-mode .household-screen{
    CYBER CALC // HOUSEHOLD LOG
 ========================================================= */
 const HOUSEHOLD_KEY = 'cyberCalcHouseholdLog_v1';
-const householdCategories = ['家賃','電気代','水道代','ガス代','スマホ代','インターネット代','その他'];
+const householdCategories=['家賃','電気代','水道代','ガス代','スマホ代','インターネット代'];
 
 /*
  * 家計簿の「現在入力中」の項目は、ページを開いた時点では0件。
@@ -2172,6 +2185,8 @@ const householdCategories = ['家賃','電気代','水道代','ガス代','ス�
  * 「保存済み記録」とは別物なので初期表示には復元しない。
  */
 let householdEntries = [];
+let householdOtherEnabled=false;
+let householdOtherName='';
 // 現在入力中の家計簿項目はページを開くたび0件から開始。保存済み記録は別管理。
 
 function logActiveValue(){
@@ -2190,7 +2205,7 @@ function logActiveValue(){
   householdEntries.push({
     id: Date.now() + Math.random(),
     amount,
-    category:'その他',
+    category:'家賃', customName:'',
     customName:'',
     time:new Date().toLocaleString('ja-JP',{
       month:'2-digit',
@@ -2203,6 +2218,32 @@ function logActiveValue(){
   saveHousehold();
   openHousehold();
 }
+
+function enableHouseholdOther(){
+  householdOtherEnabled=true;
+  const btn=document.getElementById('householdOtherButton');
+  const input=document.getElementById('householdOtherInput');
+  if(btn) btn.classList.add('active');
+  if(input){ input.disabled=false; input.focus(); }
+}
+function commitHouseholdOtherName(){
+  const input=document.getElementById('householdOtherInput');
+  const name=String((input&&input.value)||'').trim().slice(0,40);
+  if(!name) return;
+  const s=slots[activeSlot];
+  const raw=String(s?.value||'').replace(/,/g,'').trim();
+  const amount=Number(raw);
+  if(!Number.isFinite(amount)) return;
+  householdEntries.push({
+    id:Date.now()+Math.random(), amount,
+    category:'__OTHER__', customName:name,
+    time:new Date().toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})
+  });
+  saveHousehold(); renderHousehold();
+  householdOtherName='';
+  input.value='';
+}
+function updateHouseholdOtherName(value){ householdOtherName=String(value||'').slice(0,40); }
 
 function saveHousehold(){
   localStorage.setItem(HOUSEHOLD_KEY, JSON.stringify(householdEntries));
@@ -2235,14 +2276,8 @@ function closeHousehold(){
   window.scrollTo(0,0);
 }
 
-function householdOptions(selected, customName=''){
-  return householdCategories.map(c=>{
-    let label=c;
-    if(c==='その他' && selected==='その他' && customName){
-      label=`その他/${customName}`;
-    }
-    return `<option value="${c}" ${c===selected?'selected':''}>${esc(label)}</option>`;
-  }).join('');
+function householdOptions(selected){
+  return householdCategories.map(c=>`<option value="${c}" ${c===selected?'selected':''}>${esc(c)}</option>`).join('');
 }
 
 function updateHouseholdCategory(id, category){
@@ -2269,24 +2304,6 @@ function updateHouseholdCategory(id, category){
   }
 }
 
-function updateHouseholdCustomName(id, value){
-  const item=householdEntries.find(x=>String(x.id)===String(id));
-  if(!item) return;
-
-  item.customName=String(value||'').slice(0,40);
-  saveHousehold();
-  renderHousehold();
-
-  const input=document.querySelector(
-    `.household-other-input[data-entry-id="${CSS.escape(String(id))}"]`
-  );
-  if(input){
-    requestAnimationFrame(()=>{
-      input.focus();
-      input.setSelectionRange(input.value.length,input.value.length);
-    });
-  }
-}
 
 function deleteHouseholdEntry(id){
   const index=householdEntries.findIndex(x=>String(x.id)===String(id));
@@ -2412,55 +2429,23 @@ function renderHousehold(){
   const list=document.getElementById('householdList');
   const totalEl=document.getElementById('householdTotal');
   const breakdown=document.getElementById('householdBreakdown');
-
-  if(!list||!totalEl||!breakdown) return;
-
+  if(!list||!totalEl||!breakdown)return;
   const active=activeHouseholdEntries();
-
-  if(!active.length){
-    list.innerHTML='<div class="household-empty">LOGボタンを押すと、ここに金額が追加されます。</div>';
-  }else{
-    list.innerHTML=active.map(item=>{
-      const custom = item.customName || '';
-      const isOther = item.category === 'その他';
-
-      return `
-      <div class="household-row" id="household-row-${item.id}">
-        <button class="household-delete" title="この項目を閉じる" onclick="deleteHouseholdEntry('${item.id}')">×</button>
-
-        <div>
-          <div class="household-amount">¥${Number(item.amount).toLocaleString('ja-JP')}</div>
-          <div class="household-time">${item.time}</div>
-        </div>
-
-        <select class="household-category household-category-display"
-          onchange="updateHouseholdCategory('${item.id}', this.value)">
-          ${householdOptions(item.category, custom)}
-        </select>
-
-        ${isOther ? `
-          <div class="household-other-editor">
-            <label class="household-other-editor-label">その他の支払い・支出名目</label>
-            <input
-              class="household-other-input"
-              data-entry-id="${esc(item.id)}"
-              type="text"
-              maxlength="40"
-              value="${esc(custom)}"
-              placeholder="例：食事会、病院代、日用品"
-              oninput="updateHouseholdCustomName('${item.id}', this.value)"
-            >
-          </div>
-        ` : ''}
-      </div>`;
-    }).join('');
-  }
-
+  list.innerHTML=active.length?active.map(item=>`
+    <div class="household-row" id="household-row-${item.id}">
+      <button class="household-delete" title="この項目を閉じる" onclick="deleteHouseholdEntry('${item.id}')">×</button>
+      <div><div class="household-amount">¥${Number(item.amount).toLocaleString('ja-JP')}</div><div class="household-time">${item.time}</div></div>
+      ${item.category==='__OTHER__'
+        ? `<div class="household-custom-display">その他/${esc(item.customName||'')}</div>`
+        : `<select class="household-category" onchange="updateHouseholdCategory('${item.id}',this.value)">${householdOptions(item.category)}</select>`}
+    </div>`).join(''):'<div class="household-empty">LOGボタンを押すと、ここに金額が追加されます。</div>';
   const total=active.reduce((sum,x)=>sum+Number(x.amount||0),0);
-  const expense=active.reduce((sum,x)=>sum+Number(x.amount||0),0);
-
   totalEl.textContent='¥'+total.toLocaleString('ja-JP');
-  breakdown.textContent=`支出 ¥${expense.toLocaleString('ja-JP')}`;
+  breakdown.textContent='合計 ¥'+total.toLocaleString('ja-JP');
+  const input=document.getElementById('householdOtherInput');
+  const btn=document.getElementById('householdOtherButton');
+  if(input) input.disabled=!householdOtherEnabled;
+  if(btn) btn.classList.toggle('active',householdOtherEnabled);
 }
 
 function renderHouseholdRecords(){
