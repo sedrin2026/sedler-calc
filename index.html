@@ -729,7 +729,20 @@
   background:linear-gradient(180deg,#020617 0%,#07111f 100%);
   color:#e2e8f0;
 }
+
 .household-screen.open{display:block;}
+
+/* 家計簿が項目数に応じて縦長になっても、画面中央配置で
+   上部（「電卓に戻る」）が画面外へ押し出されないようにする。 */
+body.household-mode{
+  align-items:flex-start !important;
+  justify-content:center;
+}
+body.household-mode .household-screen{
+  min-height:100dvh;
+  align-self:flex-start;
+}
+
 
 .household-header{
   display:flex;
@@ -2112,13 +2125,14 @@ function openHousehold(){
 
   screen.classList.add('open');
   screen.setAttribute('aria-hidden','false');
+  document.body.classList.add('household-mode');
   document.getElementById('calcCard').style.display='none';
 
   // 開いた時は「現在入力中の項目」だけを表示。
   // 保存済み記録は下部の householdRecords にのみ表示する。
   renderHousehold();
   renderHouseholdRecords();
-  window.scrollTo(0,0);
+  requestAnimationFrame(()=>window.scrollTo(0,0));
 }
 
 function closeHousehold(){
@@ -2127,6 +2141,7 @@ function closeHousehold(){
 
   screen.classList.remove('open');
   screen.setAttribute('aria-hidden','true');
+  document.body.classList.remove('household-mode');
   document.getElementById('calcCard').style.display='';
   window.scrollTo(0,0);
 }
@@ -2160,7 +2175,8 @@ function activeHouseholdEntries(){
   return householdEntries;
 }
 
-const HOUSEHOLD_RECORD_KEY='cyberCalcHouseholdRecords_v1';
+const HOUSEHOLD_RECORD_KEY='cyberCalcHouseholdRecords_v2';
+// v2: アプリ公開時は旧開発・テスト記録を引き継がず、最初は空の保存記録から開始。
 let householdRecords=JSON.parse(localStorage.getItem(HOUSEHOLD_RECORD_KEY)||'[]');
 
 function saveHouseholdRecords(){
