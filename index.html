@@ -2245,7 +2245,11 @@ function renderHouseholdRecords(){
     btn.onclick=e=>{
       e.preventDefault();
       e.stopPropagation();
-      btn.closest('.household-record-card').classList.add('is-closed');
+      const card = btn.closest('.household-record-card');
+      if(card){
+        // 保存記録そのものは削除せず、画面上だけ閉じる。
+        card.style.display='none';
+      }
     };
   });
 }
