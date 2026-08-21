@@ -2248,10 +2248,15 @@ function renderHouseholdRecords(){
       e.preventDefault();
       e.stopPropagation();
       const card = btn.closest('.household-record-card');
-      if(card){
-        // 保存記録そのものは削除せず、画面上だけ閉じる。
-        card.style.setProperty('display','none','important');
-      }
+      if(!card) return;
+
+      const index = Array.from(box.querySelectorAll('.household-record-card')).indexOf(card);
+      if(index < 0 || index >= householdRecords.length) return;
+
+      // ×を押した記録は「閉じる」だけでなく保存データから完全削除。
+      householdRecords.splice(index, 1);
+      saveHouseholdRecords();
+      renderHouseholdRecords();
     };
   });
 }
@@ -2314,9 +2319,18 @@ function renderHouseholdRecords(){
   }).join('');
   box.querySelectorAll('.household-record-delete').forEach(btn=>{
     btn.onclick=e=>{
-      e.preventDefault(); e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
       const card = btn.closest('.household-record-card');
-      if(card) card.style.display = 'none';
+      if(!card) return;
+
+      const index = Array.from(box.querySelectorAll('.household-record-card')).indexOf(card);
+      if(index < 0 || index >= householdRecords.length) return;
+
+      // ×を押した記録は保存データから完全削除する。
+      householdRecords.splice(index, 1);
+      saveHouseholdRecords();
+      renderHouseholdRecords();
     };
   });
 }
