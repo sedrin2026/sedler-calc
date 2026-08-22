@@ -2514,7 +2514,7 @@ function renderHousehold(){
 
 <script>/* CYBER CALC // SCIENTIFIC CALCULATOR - isolated state */
 (function(){
-  let expr=''; let angle='DEG';
+  let expr=''; let angle='DEG'; let ans=null;
   function getOverlay(){return document.getElementById('ccSciOverlay');}
   function getDisplay(){return document.getElementById('ccSciDisplay');}
   function getAngleBtn(){return document.getElementById('ccSciAngle');}
@@ -2534,7 +2534,7 @@ function renderHousehold(){
     const angleBtn=getAngleBtn();
     if(angleBtn){angleBtn.textContent=angle; angleBtn.classList.toggle('active',angle==='RAD');}
   };
-  window.sciInput=function(v){if(expr==='ERR')expr='';expr+=v;render();};
+  window.sciInput=function(v){if(expr==='ERR')expr=''; if(v==='ANS'){ if(ans===null){render();return;} expr += String(ans); } else { expr+=v; } render();};
   // Unary scientific functions: if a value is already entered, apply the function to it.
   // Example: 9 -> √ becomes sqrt(9), so the user can press = and get 3.
   window.sciFunction=function(fn){
@@ -2557,7 +2557,7 @@ function renderHousehold(){
   }
   window.sciCalculate=function(){
     if(!expr)return;
-    try{const n=Number(evaluate(expr)); if(!Number.isFinite(n))throw new Error('invalid'); expr=String(Number(n.toPrecision(12))); render();}
+    try{const n=Number(evaluate(expr)); if(!Number.isFinite(n))throw new Error('invalid'); expr=String(Number(n.toPrecision(12))); ans=Number(expr); render();}
     catch(e){expr='ERR';render();}
   };
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){const overlay=getOverlay(); const fn=document.getElementById('ccFunctionOverlay'); if(overlay&&overlay.classList.contains('cc-open'))closeScientificCalculator(); else if(fn&&fn.classList.contains('cc-open'))closeFunctionMenu();}});})();</script>
@@ -2572,7 +2572,7 @@ function renderHousehold(){
     <div class="cc-sci-grid">
       <button class="fn" onclick="sciFunction('sin')">sin</button><button class="fn" onclick="sciFunction('cos')">cos</button><button class="fn" onclick="sciFunction('tan')">tan</button><button class="fn" onclick="sciFunction('sqrt')">√</button>
       <button class="fn" onclick="sciFunction('ln')">ln</button><button class="fn" onclick="sciFunction('log')">log</button><button class="fn" onclick="sciInput('^')">xʸ</button><button class="fn" onclick="sciInput('²')">x²</button>
-      <button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button><button onclick="sciInput('π')">π</button><button onclick="sciInput('e')">e</button>
+      <button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button><button onclick="sciInput('π')">π</button><button onclick="sciInput('e')">e</button><button class="fn ans" onclick="sciInput('ANS')">ANS</button>
       <button onclick="sciInput('7')">7</button><button onclick="sciInput('8')">8</button><button onclick="sciInput('9')">9</button><button onclick="sciInput('/')">÷</button>
       <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('*')">×</button>
       <button onclick="sciInput('1')">1</button><button onclick="sciInput('2')">2</button><button onclick="sciInput('3')">3</button><button onclick="sciInput('-')">−</button>
