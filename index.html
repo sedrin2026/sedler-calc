@@ -7,14 +7,9 @@
   
   <link rel="manifest" href="./manifest.json">
   <script>
-  // 起動速度優先：初回描画を邪魔しないタイミングでPWAを登録
   if ('serviceWorker' in navigator) {
-    const registerSW = () => navigator.serviceWorker.register('./sw.js').catch(() => {});
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(registerSW, { timeout: 2000 });
-    } else {
-      window.addEventListener('load', registerSW, { once: true });
-    }
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker 登録成功！'));
   }
   </script>
 
@@ -1017,7 +1012,7 @@ body.household-mode .household-screen{
 
 /* 独立した「その他」エリア（合計金額カードの外側） */
 </style>
-<style id="uc-css">#unitConverterBtn{position:fixed;left:14px;bottom:14px;z-index:9000;border:1px solid #06b6d4;border-radius:12px;background:rgba(3,12,22,.94);color:#67e8f9;padding:9px 12px;font-weight:700;box-shadow:0 0 10px rgba(6,182,212,.22)}#unitConverter{position:fixed;inset:0;z-index:9100;display:none;background:rgba(3,8,15,.94);backdrop-filter:blur(8px);padding:16px;box-sizing:border-box;overflow:auto}#unitConverter.open{display:block}.uc-card{max-width:560px;margin:4vh auto 0;padding:18px;border:1px solid #164e63;border-radius:18px;background:#07131f;box-shadow:0 0 24px rgba(6,182,212,.15)}.uc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.uc-title{font-size:20px;font-weight:800;color:#67e8f9;letter-spacing:.08em}.uc-close,.uc-swap{border:1px solid #334155;background:#0f172a;color:#cbd5e1;border-radius:10px;padding:8px 12px}.uc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.uc-grid select,.uc-grid input{width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1b2a;color:#e2e8f0;font-size:16px}.uc-label{font-size:12px;color:#94a3b8;margin-bottom:5px}.uc-swap{display:block;margin:12px auto;color:#67e8f9;border-color:#0891b2;background:#082f49}.uc-result{margin-top:14px;padding:14px;border-radius:12px;background:#0b1b2a;border:1px solid #164e63}.uc-result-main{font-size:25px;font-weight:800;color:#ecfeff;word-break:break-word}.uc-note{margin-top:7px;color:#94a3b8;font-size:12px}@media(max-width:420px){.uc-grid{grid-template-columns:1fr}}</style></head>
+</head>
 
 <body>
 
@@ -1031,6 +1026,32 @@ body.household-mode .household-screen{
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()" style="background:linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important; color:#ffffff !important; border-color:#0284c7 !important;">履歴 📂</div>
       <div class="btn-top-item btn-control log-control" onclick="logActiveValue()">LOG</div>
+      <div class="btn-top-item btn-control cc-tool-launch" id="ccToolsButton" onclick="toggleCcTools()">機能</div>
+
+    </div>
+  </div>
+
+  <div class="cc-tool-drawer" id="ccToolDrawer" aria-hidden="true">
+    <button class="cc-tool-btn active-tool" type="button" onclick="openCcUnit()">単位換算</button>
+    <button class="cc-tool-btn" type="button" disabled>結果コピー</button>
+    <button class="cc-tool-btn" type="button" disabled>＝連打</button>
+    <button class="cc-tool-btn" type="button" disabled>％強化</button>
+    <button class="cc-tool-btn" type="button" disabled>科学計算</button>
+    <div id="ccUnitPanel" aria-hidden="true">
+      <div class="cc-unit-head">
+        <span class="cc-unit-title">// UNIT CONVERTER</span>
+        <button class="cc-unit-close" type="button" onclick="closeCcUnit()">閉じる</button>
+      </div>
+      <div class="cc-unit-grid">
+        <select id="ccUnitCategory" aria-label="カテゴリー"></select>
+        <input id="ccUnitValue" inputmode="decimal" value="1" aria-label="値">
+        <select id="ccUnitFrom" aria-label="変換元"></select>
+        <select id="ccUnitTo" aria-label="変換先"></select>
+      </div>
+      <div class="cc-unit-actions">
+        <button type="button" onclick="swapCcUnit()">⇄ 入替</button>
+      </div>
+      <div id="ccUnitResult">1 → —</div>
     </div>
   </div>
 
@@ -1249,11 +1270,8 @@ body.household-mode .household-screen{
       `${y}.${m}.${d} (${dayName}) ${hh}:${mm}`;
   }
 
-  // 時計表示は分単位なので、毎秒DOMを書き換えない
+  setInterval(updateClock, 1000);
   updateClock();
-  setTimeout(() => {
-    setInterval(updateClock, 60000);
-  }, 60000 - (Date.now() % 60000));
 
 
   /* =========================
@@ -2194,21 +2212,9 @@ function activeHouseholdEntries(){
 }
 
 const HOUSEHOLD_RECORD_KEY='cyberCalcHouseholdRecords_v2';
-// 起動時にはlocalStorageを読まない。家計簿を開いた瞬間に遅延ロードする。
-let householdRecords=null;
-
-function ensureHouseholdRecordsLoaded(){
-  if(householdRecords!==null)return;
-  try{
-    householdRecords=JSON.parse(localStorage.getItem(HOUSEHOLD_RECORD_KEY)||'[]');
-    if(!Array.isArray(householdRecords))householdRecords=[];
-  }catch(e){
-    householdRecords=[];
-  }
-}
+let householdRecords=JSON.parse(localStorage.getItem(HOUSEHOLD_RECORD_KEY)||'[]');
 
 function saveHouseholdRecords(){
-  ensureHouseholdRecordsLoaded();
   localStorage.setItem(HOUSEHOLD_RECORD_KEY,JSON.stringify(householdRecords));
 }
 
@@ -2260,7 +2266,6 @@ function handleHouseholdOtherKey(e){
 }
 
 function recordHouseholdSnapshot(){
-  ensureHouseholdRecordsLoaded();
   const active=activeHouseholdEntries();
   const total=active.reduce((s,x)=>s+Number(x.amount||0),0);
   const note=(document.getElementById('householdNote')?.value||'').trim();
@@ -2293,7 +2298,6 @@ function recordHouseholdSnapshot(){
 }
 
 function renderHouseholdRecords(){
-  ensureHouseholdRecordsLoaded();
   const box=document.getElementById('householdRecords');
   if(!box)return;
   if(!householdRecords.length){box.innerHTML='';return;}
@@ -2372,9 +2376,76 @@ function renderHousehold(){
   breakdown.textContent=`収入 ¥${income.toLocaleString('ja-JP')}　支出 ¥${expense.toLocaleString('ja-JP')}`;
 }
 
-// 家計簿はLOG/画面遷移時に初期化する（初回起動を軽量化）
+renderHousehold();
+renderHouseholdRecords();
 
 </script>
 
-<button id="unitConverterBtn" type="button">↔ CONVERT</button><section id="unitConverter" aria-hidden="true"><div class="uc-card"><div class="uc-head"><div class="uc-title">// UNIT CONVERTER</div><button class="uc-close" id="ucClose" type="button">閉じる</button></div><div class="uc-grid"><div><div class="uc-label">カテゴリー</div><select id="ucCategory"></select></div><div><div class="uc-label">値</div><input id="ucValue" inputmode="decimal" value="1"></div><div><div class="uc-label">変換元</div><select id="ucFrom"></select></div><div><div class="uc-label">変換先</div><select id="ucTo"></select></div></div><button class="uc-swap" id="ucSwap" type="button">⇄ 単位を入れ替え</button><div class="uc-result"><div class="uc-result-main" id="ucResult">—</div><div class="uc-note" id="ucRatio"></div></div></div></section><script>(function(){const C={"長さ":{u:{mm:1e-3,cm:1e-2,m:1,km:1e3,in:.0254,ft:.3048,yd:.9144,mi:1609.344},l:{mm:"ミリメートル (mm)",cm:"センチメートル (cm)",m:"メートル (m)",km:"キロメートル (km)",in:"インチ (in)",ft:"フィート (ft)",yd:"ヤード (yd)",mi:"マイル (mi)"}},"重さ":{u:{mg:1e-6,g:1e-3,kg:1,t:1e3,oz:.028349523125,lb:.45359237},l:{mg:"ミリグラム (mg)",g:"グラム (g)",kg:"キログラム (kg)",t:"トン (t)",oz:"オンス (oz)",lb:"ポンド (lb)"}},"温度":{u:{C:1,F:1,K:1},l:{C:"摂氏 (°C)",F:"華氏 (°F)",K:"ケルビン (K)"}},"体積":{u:{mL:1e-3,L:1,m3:1e3,tsp:.004928921594,tbsp:.01478676478,cup:.2365882365,gal:3.785411784},l:{mL:"ミリリットル (mL)",L:"リットル (L)",m3:"立方メートル (m³)",tsp:"小さじ (tsp)",tbsp:"大さじ (tbsp)",cup:"カップ (cup)",gal:"米ガロン (gal)"}},"面積":{u:{cm2:1e-4,m2:1,km2:1e6,ft2:.09290304,in2:.00064516,acre:4046.8564224,ha:1e4},l:{cm2:"平方センチメートル (cm²)",m2:"平方メートル (m²)",km2:"平方キロメートル (km²)",ft2:"平方フィート (ft²)",in2:"平方インチ (in²)",acre:"エーカー (acre)",ha:"ヘクタール (ha)"}},"速度":{u:{mps:1,kmh:1000/3600,mph:1609.344/3600,knot:1852/3600},l:{mps:"メートル/秒 (m/s)",kmh:"キロメートル/時 (km/h)",mph:"マイル/時 (mph)",knot:"ノット (kn)"}},"データ容量":{u:{B:1,KB:1e3,MB:1e6,GB:1e9,TB:1e12,KiB:1024,MiB:1048576,GiB:1073741824},l:{B:"バイト (B)",KB:"キロバイト (KB)",MB:"メガバイト (MB)",GB:"ギガバイト (GB)",TB:"テラバイト (TB)",KiB:"キビバイト (KiB)",MiB:"メビバイト (MiB)",GiB:"ギビバイト (GiB)"}};const $=id=>document.getElementById(id),cat=$("ucCategory"),from=$("ucFrom"),to=$("ucTo"),val=$("ucValue"),panel=$("unitConverter");function opts(s,o){s.innerHTML=Object.entries(o).map(([k,v])=>`<option value="${k}">${v}</option>`).join("")}function units(){let c=C[cat.value];opts(from,c.l);opts(to,c.l);to.value=Object.keys(c.u)[1]||Object.keys(c.u)[0];calc()}function tc(v,u){return u==='C'?v:u==='F'?(v-32)*5/9:v-273.15}function ct(v,u){return u==='C'?v:u==='F'?v*9/5+32:v+273.15}function calc(){let c=C[cat.value],n=Number(val.value);if(!Number.isFinite(n))return $("ucResult").textContent='—';let out=cat.value==='温度'?ct(tc(n,from.value),to.value):n*c.u[from.value]/c.u[to.value];let s=Math.abs(out)>=1e9||Math.abs(out)>0&&Math.abs(out)<1e-7?out.toPrecision(10):String(Number(out.toFixed(10)));$("ucResult").textContent=s+' '+to.value;$("ucRatio").textContent=n+' '+from.value+' → '+s+' '+to.value}opts(cat,Object.fromEntries(Object.keys(C).map(k=>[k,k])));cat.value='長さ';units();cat.onchange=units;[from,to,val].forEach(x=>x.oninput=calc);$("ucSwap").onclick=()=>{[from.value,to.value]=[to.value,from.value];calc()};$("unitConverterBtn").onclick=()=>{panel.classList.add('open');panel.setAttribute('aria-hidden','false');val.focus();val.select()};$("ucClose").onclick=()=>{panel.classList.remove('open');panel.setAttribute('aria-hidden','true')};})();</script></body>
+
+<script>
+/* ===== CYBER CALC // UNIT CONVERTER v2 ===== */
+(function(){
+  const D={
+    "長さ":[{"mm":.001,"cm":.01,"m":1,"km":1000,"in":.0254,"ft":.3048,"yd":.9144,"mi":1609.344},
+            {"mm":"mm","cm":"cm","m":"m","km":"km","in":"in","ft":"ft","yd":"yd","mi":"mi"}],
+    "重さ":[{"mg":1e-6,"g":.001,"kg":1,"t":1000,"oz":.028349523125,"lb":.45359237},
+            {"mg":"mg","g":"g","kg":"kg","t":"t","oz":"oz","lb":"lb"}],
+    "温度":[{"C":1,"F":1,"K":1},{"C":"°C","F":"°F","K":"K"}],
+    "体積":[{"mL":.001,"L":1,"m3":1000,"tsp":.00492892159375,"tbsp":.01478676478125,"cup":.2365882365,"gal":3.785411784},
+            {"mL":"mL","L":"L","m3":"m³","tsp":"tsp","tbsp":"tbsp","cup":"cup","gal":"gal"}],
+    "面積":[{"cm2":1e-4,"m2":1,"km2":1e6,"ft2":.09290304,"in2":.00064516,"acre":4046.8564224,"ha":10000},
+            {"cm2":"cm²","m2":"m²","km2":"km²","ft2":"ft²","in2":"in²","acre":"acre","ha":"ha"}],
+    "速度":[{"mps":1,"kmh":1000/3600,"mph":1609.344/3600,"knot":1852/3600},
+            {"mps":"m/s","kmh":"km/h","mph":"mph","knot":"kn"}],
+    "データ容量":[{"B":1,"KB":1e3,"MB":1e6,"GB":1e9,"TB":1e12,"KiB":1024,"MiB":1048576,"GiB":1073741824},
+            {"B":"B","KB":"KB","MB":"MB","GB":"GB","TB":"TB","KiB":"KiB","MiB":"MiB","GiB":"GiB"}]
+  };
+  const $=id=>document.getElementById(id);
+  const cat=$("ccUnitCategory"), from=$("ccUnitFrom"), to=$("ccUnitTo"), value=$("ccUnitValue");
+  let ready=false;
+
+  window.toggleCcTools=function(){
+    const d=$("ccToolDrawer");
+    d.classList.toggle("open"); d.setAttribute("aria-hidden",String(!d.classList.contains("open")));
+  };
+  function options(sel,obj,keep){
+    sel.innerHTML=Object.keys(obj).map(k=>'<option value="'+k+'">'+obj[k]+'</option>').join("");
+    if(keep && obj[keep]) sel.value=keep;
+  }
+  function init(){
+    options(cat,Object.fromEntries(Object.keys(D).map(k=>[k,k])));
+    cat.value="長さ"; fill(); ready=true;
+  }
+  function fill(){
+    const oldF=from.value,oldT=to.value, labels=D[cat.value][1];
+    options(from,labels,oldF); options(to,labels,oldT);
+    if(!labels[from.value])from.value=Object.keys(labels)[0];
+    if(!labels[to.value])to.value=Object.keys(labels)[1]||Object.keys(labels)[0];
+    convert();
+  }
+  function convTemp(v,u){return u==="C"?v:u==="F"?(v-32)*5/9:v-273.15}
+  function outTemp(v,u){return u==="C"?v:u==="F"?v*9/5+32:v+273.15}
+  function fmt(n){if(!Number.isFinite(n))return "—"; if(n===0)return "0"; return (Math.abs(n)>=1e9||Math.abs(n)<1e-7)?n.toPrecision(10):String(Number(n.toFixed(10)))}
+  function convert(){
+    const n=Number(value.value); if(!Number.isFinite(n)){ $("ccUnitResult").textContent="入力してください"; return; }
+    let r;
+    if(cat.value==="温度")r=outTemp(convTemp(n,from.value),to.value);
+    else r=n*D[cat.value][0][from.value]/D[cat.value][0][to.value];
+    $("ccUnitResult").textContent=fmt(n)+" "+D[cat.value][1][from.value]+"  →  "+fmt(r)+" "+D[cat.value][1][to.value];
+  }
+  window.openCcUnit=function(){
+    if(!ready)init();
+    $("ccUnitPanel").classList.add("open");
+    $("ccUnitPanel").setAttribute("aria-hidden","false");
+    if(!$("ccToolDrawer").classList.contains("open"))toggleCcTools();
+    value.focus();value.select();
+  };
+  window.closeCcUnit=function(){$("ccUnitPanel").classList.remove("open");$("ccUnitPanel").setAttribute("aria-hidden","true")};
+  window.swapCcUnit=function(){const x=from.value;from.value=to.value;to.value=x;convert()};
+  cat.addEventListener("change",fill); from.addEventListener("change",convert); to.addEventListener("change",convert); value.addEventListener("input",convert);
+  init();
+})();
+</script>
+
+</body>
 </html>
