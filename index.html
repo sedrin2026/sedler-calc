@@ -1077,6 +1077,21 @@ body.household-mode .household-screen{
 
 </style>
 
+<style id="cyber-function-menu-css">
+/* CYBER CALC // Function menu - isolated overlay */
+#ccFunctionOverlay{display:none;position:fixed;inset:0;z-index:99998;box-sizing:border-box;padding:18px;background:rgba(0,0,0,.72);align-items:center;justify-content:center;}
+#ccFunctionOverlay.cc-open{display:flex;}
+#ccFunctionPanel{width:min(92vw,430px);box-sizing:border-box;background:#18222b;border:2px solid #0ea5c9;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 18px rgba(14,165,201,.22);padding:16px;color:#eaf7fb;}
+#ccFunctionPanel .ccf-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+#ccFunctionPanel .ccf-title{font-weight:900;font-size:1.15rem;color:#67e8f9;letter-spacing:.05em;}
+#ccFunctionPanel .ccf-close{border:1px solid #64748b;background:#334155;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800;}
+#ccFunctionPanel .ccf-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+#ccFunctionPanel .ccf-btn{width:100%;border:1px solid #0891b2;border-bottom:3px solid #075985;border-radius:11px;background:linear-gradient(180deg,#0ea5c9,#087ea1);color:#fff;padding:13px 12px;font-size:1rem;font-weight:900;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,.22);}
+#ccFunctionPanel .ccf-btn:active{transform:translateY(2px);border-bottom-width:1px;}
+#ccFunctionPanel .ccf-desc{display:block;margin-top:3px;font-size:.72rem;font-weight:600;opacity:.82;}
+#ccFunctionPanel .ccf-copy{background:linear-gradient(180deg,#7c5aa6,#5b3f7d);border-color:#a78bca;border-bottom-color:#49305f;}
+#ccFunctionToast{margin-top:10px;min-height:1.1em;text-align:center;color:#a7f3d0;font-size:.78rem;font-weight:800;}
+</style>
 <style id="cyber-unit-safe-css">
 /* CYBER CALC // Unit Converter - isolated UI, never participates in calculator layout */
 #ccUnitBtn{font:inherit;}
@@ -1120,7 +1135,7 @@ body.household-mode .household-screen{
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()" style="background:linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important; color:#ffffff !important; border-color:#0284c7 !important;">履歴 📂</div>
       <div class="btn-top-item btn-control log-control" onclick="logActiveValue()">LOG</div>
-      <div class="btn-top-item btn-control" id="ccUnitBtn" onclick="openUnitConverter()">機能</div>
+      <div class="btn-top-item btn-control" id="ccUnitBtn" onclick="openFunctionMenu()">機能</div>
     </div>
   </div>
 
@@ -1351,9 +1366,10 @@ body.household-mode .household-screen{
   ========================= */
 
   let activeSlot = 0;
+  window.activeSlot = activeSlot;
   let expandedCount = 1;
 
-  let slots = [
+  let slots = window.slots = [
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 },
     { value: '0', expr: 'READY', isNew: true, memory: 0 }
@@ -1433,6 +1449,7 @@ body.household-mode .household-screen{
   function switchSlot(index) {
 
     activeSlot = index;
+    window.activeSlot = activeSlot;
 
     for (let i = 0; i < 3; i++) {
       const panel = document.getElementById(`slot-${i}`);
@@ -2468,6 +2485,21 @@ function renderHousehold(){
 
 
 
+<!-- CYBER CALC // FUNCTION MENU (isolated overlay) -->
+<div id="ccFunctionOverlay" aria-hidden="true" onclick="if(event.target===this)closeFunctionMenu()">
+  <div id="ccFunctionPanel" role="dialog" aria-modal="true" aria-labelledby="ccfTitle">
+    <div class="ccf-head">
+      <div class="ccf-title" id="ccfTitle">// 機能</div>
+      <button class="ccf-close" type="button" onclick="closeFunctionMenu()">閉じる</button>
+    </div>
+    <div class="ccf-grid">
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()">↔ 単位換算<span class="ccf-desc">長さ・重さ・温度・体積・面積・速度・データ容量</span></button>
+      <button class="ccf-btn ccf-copy" type="button" onclick="copyCalculationResult()">📋 計算結果をコピー<span class="ccf-desc">現在選択中のスロットの計算結果をコピー</span></button>
+    </div>
+    <div id="ccFunctionToast" aria-live="polite"></div>
+  </div>
+</div>
+
 <!-- CYBER CALC // UNIT CONVERTER (isolated overlay; hidden until opened) -->
 <div id="ccUnitOverlay" aria-hidden="true" onclick="if(event.target===this)closeUnitConverter()">
   <div id="ccUnitPanel" role="dialog" aria-modal="true" aria-labelledby="ccuTitle">
@@ -2489,6 +2521,65 @@ function renderHousehold(){
   </div>
 </div>
 
+
+<script>
+/* CYBER CALC // FUNCTION MENU + RESULT COPY */
+(function(){
+  const overlay=document.getElementById('ccFunctionOverlay');
+  const toast=document.getElementById('ccFunctionToast');
+  window.openFunctionMenu=function(){
+    overlay.classList.add('cc-open');
+    overlay.setAttribute('aria-hidden','false');
+    if(toast) toast.textContent='';
+  };
+  window.closeFunctionMenu=function(){
+    overlay.classList.remove('cc-open');
+    overlay.setAttribute('aria-hidden','true');
+  };
+
+  function fallbackCopy(text){
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.setAttribute('readonly','');
+    ta.style.position='fixed';
+    ta.style.opacity='0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok=false;
+    try{ ok=document.execCommand('copy'); }catch(e){}
+    ta.remove();
+    return ok;
+  }
+
+  window.copyCalculationResult=function(){
+    const s=window.slots && window.slots[window.activeSlot];
+    if(!s){
+      if(toast) toast.textContent='コピーする結果がありません';
+      return;
+    }
+    const raw=String(s.value||'').replace(/,/g,'').trim();
+    if(!/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw) || !Number.isFinite(Number(raw))){
+      if(toast) toast.textContent='先に「＝」で計算結果を確定してください';
+      return;
+    }
+    const text=Number(raw).toLocaleString('ja-JP',{maximumFractionDigits:12});
+    const done=()=>{
+      if(toast) toast.textContent='✓ '+text+' をコピーしました';
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done).catch(()=>{if(fallbackCopy(text))done();else if(toast)toast.textContent='コピーできませんでした';});
+    }else if(fallbackCopy(text)){
+      done();
+    }else{
+      if(toast) toast.textContent='コピーできませんでした';
+    }
+  };
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && overlay.classList.contains('cc-open')) closeFunctionMenu();
+  });
+})();
+</script>
 
 <script>
 /* CYBER CALC // UNIT CONVERTER
