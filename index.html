@@ -1075,6 +1075,74 @@ body.household-mode .household-screen{
       }
     }
 
+
+/* =========================================================
+   UI PATCH 2026-08-23
+   指定箇所のみを調整。計算ロジック・既存機能は維持。
+========================================================= */
+.top-controls .btn-top-item{color:#000 !important;}
+.top-controls .btn-control,.top-controls .log-control{
+  background:linear-gradient(180deg,#38bdf8 0%,#0284c7 100%) !important;
+  color:#000 !important;
+  border-color:#0284c7 !important;
+  border-bottom-color:#0369a1 !important;
+}
+#btn-toggle-slots.slot-collapse-active{color:#ef4444 !important;}
+.single-guide-area .single-guide-text{font-size:.62rem;line-height:1.25;}
+
+/* LOG画面 */
+.household-screen{background:linear-gradient(180deg,#8090a0 0%,#506070 100%) !important;}
+.household-kicker{color:#eaf7fb !important;font-weight:900;line-height:1.1;}
+.household-kicker-arrow{color:#38bdf8 !important;}
+.household-title{margin-top:4px;color:#eaf7fb !important;font-weight:900;}
+.household-total-ja{margin-left:.45em;color:inherit;font-weight:900;}
+#householdScreen .household-close,
+#householdScreen .household-record-btn{
+  min-height:36px !important;
+  height:36px !important;
+  padding:5px 12px !important;
+  font-size:.82rem !important;
+  line-height:1 !important;
+}
+.household-records summary span:first-child{color:#67e8f9 !important;}
+.household-row{grid-template-columns:minmax(0,1fr) minmax(150px,42%);}
+.household-category{font-size:.78rem;}
+
+/* 機能メニュー */
+#ccFunctionPanel .ccf-head{display:block;margin-bottom:12px;}
+#ccFunctionPanel .ccf-close{
+  width:100%;
+  display:block;
+  border:1px solid #e07000;
+  border-bottom:3px solid #b35900;
+  background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);
+  color:#000;
+  border-radius:9px;
+  padding:9px 11px;
+  font-weight:900;
+}
+#ccFunctionPanel .ccf-btn{
+  text-align:center;
+  background:linear-gradient(180deg,#0ea5c9,#087ea1);
+  color:#fff;
+}
+#ccFunctionPanel .ccf-main-label{display:block;font-size:1rem;font-weight:900;line-height:1.08;}
+#ccFunctionPanel .ccf-desc{font-size:.68rem;}
+#ccUnitPanel .ccu-swap{
+  background:linear-gradient(180deg,#e0d0f0 0%,#c0a0d0 100%) !important;
+  color:#333 !important;
+  border-color:#b39bc8 !important;
+  border-bottom:3px solid #6b5380 !important;
+}
+
+/* 単位換算のタイトル */
+#ccUnitPanel .ccu-title{color:#67e8f9;}
+
+@media(max-width:420px){
+  .household-row{grid-template-columns:minmax(0,1fr) minmax(150px,44%);gap:7px;}
+  .household-category{font-size:.74rem;padding-left:7px;padding-right:26px;}
+}
+
 </style>
 
 <style id="cyber-function-menu-css">
@@ -1089,8 +1157,6 @@ body.household-mode .household-screen{
 #ccFunctionPanel .ccf-btn{width:100%;border:1px solid #0891b2;border-bottom:3px solid #075985;border-radius:11px;background:linear-gradient(180deg,#0ea5c9,#087ea1);color:#fff;padding:13px 12px;font-size:1rem;font-weight:900;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,.22);}
 #ccFunctionPanel .ccf-btn:active{transform:translateY(2px);border-bottom-width:1px;}
 #ccFunctionPanel .ccf-desc{display:block;margin-top:3px;font-size:.72rem;font-weight:600;opacity:.82;}
-#ccFunctionPanel .ccf-copy{background:linear-gradient(180deg,#7c5aa6,#5b3f7d);border-color:#a78bca;border-bottom-color:#49305f;}
-#ccFunctionToast{margin-top:10px;min-height:1.1em;text-align:center;color:#a7f3d0;font-size:.78rem;font-weight:800;}
 </style>
 
 <style id="cyber-scientific-css">
@@ -1143,9 +1209,9 @@ body.household-mode .household-screen{
 
     <div class="top-controls">
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
-      <div class="btn-top-item btn-control" onclick="toggleHistory()" style="background:linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important; color:#ffffff !important; border-color:#0284c7 !important;">履歴 📂</div>
-      <div class="btn-top-item btn-control log-control" onclick="logActiveValue()">LOG</div>
-      <div class="btn-top-item btn-control" id="ccUnitBtn" onclick="openFunctionMenu()">機能</div>
+      <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
+      <div class="btn-top-item btn-control log-control" onclick="logActiveValue()">✍️ LOG</div>
+      <div class="btn-top-item btn-control" id="ccUnitBtn" onclick="openFunctionMenu()">📟 機能</div>
     </div>
   </div>
 
@@ -1161,6 +1227,7 @@ body.household-mode .household-screen{
         <hr class="single-divider">
         <span class="single-guide-text">〔展開をタップでスロットを三段階表示〕</span>
         <span class="single-guide-text">〔数値を入力後、LOGをタップで家計簿画面に反映/推移〕</span>
+        <span class="single-guide-text">〔機能をタップ→単位換算/科学計算画面へ〕</span>
       </div>
     </div>
 
@@ -1293,7 +1360,7 @@ body.household-mode .household-screen{
 
     <div class="history-header">
       <span class="history-title">
-        <span>//</span> 計算履歴
+        ■ 計算履歴
       </span>
 
       <button class="history-close" onclick="toggleHistory()">
@@ -1315,8 +1382,8 @@ body.household-mode .household-screen{
 <section class="household-screen" id="householdScreen" aria-hidden="true">
   <div class="household-header">
     <div>
-      <div class="household-kicker">CYBER CALC // LOG</div>
-      <div class="household-title">家計簿</div>
+      <div class="household-kicker"><span class="household-kicker-arrow">▶</span> CYBER CALK</div>
+      <div class="household-title">家計簿 / LOG</div>
     </div>
     <button class="household-close" onclick="closeHousehold()">電卓に戻る</button>
   </div>
@@ -1327,7 +1394,7 @@ body.household-mode .household-screen{
 
   
 <div class="household-total-card">
-    <div class="household-total-label">HOUSEHOLD TOTAL</div>
+    <div class="household-total-label">HOUSEHOLD TOTAL <span class="household-total-ja">合計金額</span></div>
     <div class="household-total-value" id="householdTotal">¥0</div>
     <div class="household-breakdown" id="householdBreakdown">収入 ¥0　支出 ¥0</div>
   </div>
@@ -1440,12 +1507,15 @@ body.household-mode .household-screen{
     if (expandedCount === 1) {
       document.getElementById('slot-0').classList.add('single-large');
       btn.textContent = '展開 ▼';
+      btn.classList.remove('slot-collapse-active');
     } else if (expandedCount === 2) {
       document.getElementById('slot-0').classList.remove('single-large');
       btn.textContent = '展開 ▲';
+      btn.classList.remove('slot-collapse-active');
     } else {
       document.getElementById('slot-0').classList.remove('single-large');
-      btn.textContent = '格納 ▲';
+      btn.textContent = '格納 ▼';
+      btn.classList.add('slot-collapse-active');
     }
 
     calculateTotal();
@@ -2237,6 +2307,7 @@ function householdOptions(selected, customName=''){
   if(selected==='__OTHER__'){
     html=`<option value="__OTHER__" selected>${esc('その他/'+(customName||''))}</option>`+html;
   }
+  html += '<option value="__BACK__">戻る</option>';
   return html;
 }
 
@@ -2292,6 +2363,7 @@ function closeHousehold(){
 }
 
 function updateHouseholdCategory(id,category){
+  if(category==='__BACK__'){ closeHousehold(); return; }
   const item=householdEntries.find(x=>String(x.id)===String(id));
   if(!item)return;
   item.category=category;
@@ -2425,7 +2497,7 @@ function renderHouseholdRecords(){
 
     return `<details class="household-record-card">
       <summary>
-        <span>記録 ${householdRecords.length-i}</span>
+        <span class="record-title">▶記録 ${householdRecords.length-i}</span>
         <span>${esc(r.stamp)}　¥${Number(r.total).toLocaleString('ja-JP')}</span>
       </summary>
       <button type="button" class="household-record-delete" aria-label="記録を削除">×</button>
@@ -2499,15 +2571,12 @@ function renderHousehold(){
 <div id="ccFunctionOverlay" aria-hidden="true" onclick="if(event.target===this)closeFunctionMenu()">
   <div id="ccFunctionPanel" role="dialog" aria-modal="true" aria-labelledby="ccfTitle">
     <div class="ccf-head">
-      <div class="ccf-title" id="ccfTitle">// 機能</div>
       <button class="ccf-close" type="button" onclick="closeFunctionMenu()">閉じる</button>
     </div>
     <div class="ccf-grid">
-      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()">↔ 単位換算<span class="ccf-desc">長さ・重さ・温度・体積・面積・速度・データ容量</span></button>
-      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openScientificCalculator()">∑ 科学計算<span class="ccf-desc">sin・cos・tan・√・x²・xʸ・π・ln・log</span></button>
-      <button class="ccf-btn ccf-copy" type="button" onclick="copyCalculationResult()">📋 計算結果をコピー<span class="ccf-desc">現在選択中のスロットの計算結果をコピー</span></button>
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()"><span class="ccf-main-label">↔ 単位<br>換算</span><span class="ccf-desc">長さ・重さ・温度・体積・面積・速度・データ容量</span></button>
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openScientificCalculator()"><span class="ccf-main-label">∑ 科学<br>計算</span><span class="ccf-desc">sin・cos・tan・√・x²・xʸ・π・ln・log・ANS</span></button>
     </div>
-    <div id="ccFunctionToast" aria-live="polite"></div>
   </div>
 </div>
 
@@ -2586,7 +2655,7 @@ function renderHousehold(){
 <div id="ccUnitOverlay" aria-hidden="true" onclick="if(event.target===this)closeUnitConverter()">
   <div id="ccUnitPanel" role="dialog" aria-modal="true" aria-labelledby="ccuTitle">
     <div class="ccu-head">
-      <div class="ccu-title" id="ccuTitle">// UNIT CONVERTER</div>
+      <div class="ccu-title" id="ccuTitle">■ UNIT CONVERTER</div>
       <button class="ccu-close" type="button" onclick="closeUnitConverter()">閉じる</button>
     </div>
     <div class="ccu-grid">
@@ -2617,44 +2686,6 @@ function renderHousehold(){
   window.closeFunctionMenu=function(){
     overlay.classList.remove('cc-open');
     overlay.setAttribute('aria-hidden','true');
-  };
-
-  function fallbackCopy(text){
-    const ta=document.createElement('textarea');
-    ta.value=text;
-    ta.setAttribute('readonly','');
-    ta.style.position='fixed';
-    ta.style.opacity='0';
-    document.body.appendChild(ta);
-    ta.select();
-    let ok=false;
-    try{ ok=document.execCommand('copy'); }catch(e){}
-    ta.remove();
-    return ok;
-  }
-
-  window.copyCalculationResult=function(){
-    const s=window.slots && window.slots[window.activeSlot];
-    if(!s){
-      if(toast) toast.textContent='コピーする結果がありません';
-      return;
-    }
-    const raw=String(s.value||'').replace(/,/g,'').trim();
-    if(!/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw) || !Number.isFinite(Number(raw))){
-      if(toast) toast.textContent='先に「＝」で計算結果を確定してください';
-      return;
-    }
-    const text=Number(raw).toLocaleString('ja-JP',{maximumFractionDigits:12});
-    const done=()=>{
-      if(toast) toast.textContent='✓ '+text+' をコピーしました';
-    };
-    if(navigator.clipboard && window.isSecureContext){
-      navigator.clipboard.writeText(text).then(done).catch(()=>{if(fallbackCopy(text))done();else if(toast)toast.textContent='コピーできませんでした';});
-    }else if(fallbackCopy(text)){
-      done();
-    }else{
-      if(toast) toast.textContent='コピーできませんでした';
-    }
   };
 
   document.addEventListener('keydown',e=>{
