@@ -1092,7 +1092,16 @@ body.household-mode .household-screen{
 #ccFunctionPanel .ccf-copy{background:linear-gradient(180deg,#7c5aa6,#5b3f7d);border-color:#a78bca;border-bottom-color:#49305f;}
 #ccFunctionToast{margin-top:10px;min-height:1.1em;text-align:center;color:#a7f3d0;font-size:.78rem;font-weight:800;}
 </style>
-\n<style id="cyber-scientific-css">\n#ccFunctionMenu{display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:18px;box-sizing:border-box;}\n#ccFunctionMenu.cc-open{display:flex;}\n#ccFunctionPanel{width:min(92vw,420px);box-sizing:border-box;background:#18222b;border:2px solid #0ea5c9;border-radius:16px;padding:16px;color:#eaf7fb;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 18px rgba(14,165,201,.22);}\n.cc-fn-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.cc-fn-title{font-weight:900;color:#67e8f9;letter-spacing:.05em}.cc-fn-close{border:1px solid #64748b;background:#334155;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800}\n.cc-fn-list{display:grid;gap:10px}.cc-fn-item{width:100%;padding:14px;border-radius:11px;border:1px solid #0e7490;background:#0f2430;color:#e0f2fe;font-size:1rem;font-weight:800;text-align:left}.cc-fn-item:active{transform:scale(.98)}\n#ccSciOverlay{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:14px;box-sizing:border-box}\n#ccSciOverlay.cc-open{display:flex}#ccSciPanel{width:min(95vw,500px);max-height:92dvh;overflow:auto;box-sizing:border-box;background:#18222b;border:2px solid #a855f7;border-radius:16px;padding:14px;color:#f5f3ff;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 20px rgba(168,85,247,.22)}\n.cc-sci-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.cc-sci-title{font-weight:900;color:#d8b4fe}.cc-sci-close{border:1px solid #64748b;background:#334155;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800}\n#ccSciDisplay{margin:12px 0;padding:12px;border:1px solid #475569;border-radius:10px;background:#0b1117;min-height:48px;box-sizing:border-box;font-size:1.45rem;font-weight:800;text-align:right;overflow-x:auto;white-space:nowrap}\n.cc-sci-mode{display:flex;justify-content:flex-end;margin-bottom:8px}.cc-sci-mode button{border:1px solid #64748b;background:#334155;color:#fff;border-radius:8px;padding:6px 10px;font-weight:800}.cc-sci-mode button.active{border-color:#a855f7;background:#4c1d95}\n.cc-sci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.cc-sci-grid button{min-height:46px;border:1px solid #475569;border-radius:9px;background:#24313d;color:#f8fafc;font-weight:800;font-size:.95rem}.cc-sci-grid button.fn{background:#312e3d;color:#e9d5ff;border-color:#7c3aed}.cc-sci-grid button.eq{background:#7c3aed;border-color:#a855f7}.cc-sci-grid button.wide{grid-column:span 2}.cc-sci-note{margin-top:9px;color:#94a3b8;font-size:.72rem}\n</style>\n
+
+<style id="cyber-scientific-css">
+#ccSciOverlay{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:14px;box-sizing:border-box}
+#ccSciOverlay.cc-open{display:flex}#ccSciPanel{width:min(95vw,500px);max-height:92dvh;overflow:auto;box-sizing:border-box;background:#18222b;border:2px solid #a855f7;border-radius:16px;padding:14px;color:#f5f3ff;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 20px rgba(168,85,247,.22)}
+.cc-sci-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.cc-sci-title{font-weight:900;color:#d8b4fe}.cc-sci-close{border:1px solid #64748b;background:#334155;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800}
+#ccSciDisplay{margin:12px 0;padding:12px;border:1px solid #475569;border-radius:10px;background:#0b1117;min-height:48px;box-sizing:border-box;font-size:1.45rem;font-weight:800;text-align:right;overflow-x:auto;white-space:nowrap}
+.cc-sci-mode{display:flex;justify-content:flex-end;margin-bottom:8px}.cc-sci-mode button{border:1px solid #64748b;background:#334155;color:#fff;border-radius:8px;padding:6px 10px;font-weight:800}.cc-sci-mode button.active{border-color:#a855f7;background:#4c1d95}
+.cc-sci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.cc-sci-grid button{min-height:46px;border:1px solid #475569;border-radius:9px;background:#24313d;color:#f8fafc;font-weight:800;font-size:.95rem}.cc-sci-grid button.fn{background:#312e3d;color:#e9d5ff;border-color:#7c3aed}.cc-sci-grid button.eq{background:#7c3aed;border-color:#a855f7}.cc-sci-grid button.wide{grid-column:span 2}.cc-sci-note{margin-top:9px;color:#94a3b8;font-size:.72rem}
+</style>
+
 <style id="cyber-unit-safe-css">
 /* CYBER CALC // Unit Converter - isolated UI, never participates in calculator layout */
 #ccUnitBtn{font:inherit;}
@@ -2495,19 +2504,19 @@ function renderHousehold(){
     </div>
     <div class="ccf-grid">
       <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()">↔ 単位換算<span class="ccf-desc">長さ・重さ・温度・体積・面積・速度・データ容量</span></button>
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openScientificCalculator()">∑ 科学計算<span class="ccf-desc">sin・cos・tan・√・x²・xʸ・π・ln・log</span></button>
       <button class="ccf-btn ccf-copy" type="button" onclick="copyCalculationResult()">📋 計算結果をコピー<span class="ccf-desc">現在選択中のスロットの計算結果をコピー</span></button>
     </div>
     <div id="ccFunctionToast" aria-live="polite"></div>
   </div>
 </div>
 
-\n<script>/* CYBER CALC // SCIENTIFIC CALCULATOR - isolated state */
+
+<script>/* CYBER CALC // SCIENTIFIC CALCULATOR - isolated state */
 (function(){
   let expr=''; let angle='DEG';
   const overlay=document.getElementById('ccSciOverlay'); const display=document.getElementById('ccSciDisplay'); const angleBtn=document.getElementById('ccSciAngle');
   function render(){display.textContent=expr||'0';}
-  window.openFunctionMenu=function(){const m=document.getElementById('ccFunctionMenu');m.classList.add('cc-open');m.setAttribute('aria-hidden','false');};
-  window.closeFunctionMenu=function(){const m=document.getElementById('ccFunctionMenu');m.classList.remove('cc-open');m.setAttribute('aria-hidden','true');};
   window.openScientificCalculator=function(){expr='';render();overlay.classList.add('cc-open');overlay.setAttribute('aria-hidden','false');};
   window.closeScientificCalculator=function(){overlay.classList.remove('cc-open');overlay.setAttribute('aria-hidden','true');};
   window.toggleSciAngle=function(){angle=angle==='DEG'?'RAD':'DEG';angleBtn.textContent=angle;angleBtn.classList.toggle('active',angle==='RAD');};
@@ -2528,9 +2537,29 @@ function renderHousehold(){
     try{const n=Number(evaluate(expr)); if(!Number.isFinite(n))throw new Error('invalid'); expr=String(Number(n.toPrecision(12))); render();}
     catch(e){expr='ERR';render();}
   };
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(overlay.classList.contains('cc-open'))closeScientificCalculator();else if(document.getElementById('ccFunctionMenu').classList.contains('cc-open'))closeFunctionMenu();}});})();</script>\n
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(overlay.classList.contains('cc-open'))closeScientificCalculator();else if(document.getElementById('ccFunctionOverlay').classList.contains('cc-open'))closeFunctionMenu();}});})();</script>
+
 <!-- CYBER CALC // UNIT CONVERTER (isolated overlay; hidden until opened) -->
-\n<div id="ccFunctionMenu" aria-hidden="true" onclick="if(event.target===this)closeFunctionMenu()">\n  <div id="ccFunctionPanel" role="dialog" aria-modal="true">\n    <div class="cc-fn-head"><div class="cc-fn-title">// FUNCTIONS</div><button class="cc-fn-close" type="button" onclick="closeFunctionMenu()">閉じる</button></div>\n    <div class="cc-fn-list">\n      <button class="cc-fn-item" type="button" onclick="closeFunctionMenu();openUnitConverter()">↔ 単位換算</button>\n      <button class="cc-fn-item" type="button" onclick="closeFunctionMenu();openScientificCalculator()">∑ 科学計算</button>\n    </div>\n  </div>\n</div>\n\n<div id="ccSciOverlay" aria-hidden="true" onclick="if(event.target===this)closeScientificCalculator()">\n  <div id="ccSciPanel" role="dialog" aria-modal="true" aria-labelledby="ccSciTitle">\n    <div class="cc-sci-head"><div class="cc-sci-title" id="ccSciTitle">// SCIENTIFIC CALC</div><button class="cc-sci-close" type="button" onclick="closeScientificCalculator()">閉じる</button></div>\n    <div id="ccSciDisplay">0</div>\n    <div class="cc-sci-mode"><button id="ccSciAngle" type="button" onclick="toggleSciAngle()">DEG</button></div>\n    <div class="cc-sci-grid">\n      <button class="fn" onclick="sciInput('sin(')">sin</button><button class="fn" onclick="sciInput('cos(')">cos</button><button class="fn" onclick="sciInput('tan(')">tan</button><button class="fn" onclick="sciInput('sqrt(')">√</button>\n      <button class="fn" onclick="sciInput('ln(')">ln</button><button class="fn" onclick="sciInput('log(')">log</button><button class="fn" onclick="sciInput('^')">xʸ</button><button class="fn" onclick="sciInput('²')">x²</button>\n      <button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button><button onclick="sciInput('π')">π</button><button onclick="sciInput('e')">e</button>\n      <button onclick="sciInput('7')">7</button><button onclick="sciInput('8')">8</button><button onclick="sciInput('9')">9</button><button onclick="sciInput('/')">÷</button>\n      <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('*')">×</button>\n      <button onclick="sciInput('1')">1</button><button onclick="sciInput('2')">2</button><button onclick="sciInput('3')">3</button><button onclick="sciInput('-')">−</button>\n      <button onclick="sciInput('0')">0</button><button onclick="sciInput('.')">.</button><button onclick="sciBackspace()">⌫</button><button onclick="sciInput('+')">＋</button>\n      <button class="wide" onclick="sciClear()">C</button><button class="eq" onclick="sciCalculate()">＝</button>\n    </div>\n    <div class="cc-sci-note">sin / cos / tan は DEG（度）モード。x²、√、xʸ、π、e、ln、log に対応。</div>\n  </div>\n</div>\n
+
+<div id="ccSciOverlay" aria-hidden="true" onclick="if(event.target===this)closeScientificCalculator()">
+  <div id="ccSciPanel" role="dialog" aria-modal="true" aria-labelledby="ccSciTitle">
+    <div class="cc-sci-head"><div class="cc-sci-title" id="ccSciTitle">// SCIENTIFIC CALC</div><button class="cc-sci-close" type="button" onclick="closeScientificCalculator()">閉じる</button></div>
+    <div id="ccSciDisplay">0</div>
+    <div class="cc-sci-mode"><button id="ccSciAngle" type="button" onclick="toggleSciAngle()">DEG</button></div>
+    <div class="cc-sci-grid">
+      <button class="fn" onclick="sciInput('sin(')">sin</button><button class="fn" onclick="sciInput('cos(')">cos</button><button class="fn" onclick="sciInput('tan(')">tan</button><button class="fn" onclick="sciInput('sqrt(')">√</button>
+      <button class="fn" onclick="sciInput('ln(')">ln</button><button class="fn" onclick="sciInput('log(')">log</button><button class="fn" onclick="sciInput('^')">xʸ</button><button class="fn" onclick="sciInput('²')">x²</button>
+      <button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button><button onclick="sciInput('π')">π</button><button onclick="sciInput('e')">e</button>
+      <button onclick="sciInput('7')">7</button><button onclick="sciInput('8')">8</button><button onclick="sciInput('9')">9</button><button onclick="sciInput('/')">÷</button>
+      <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('*')">×</button>
+      <button onclick="sciInput('1')">1</button><button onclick="sciInput('2')">2</button><button onclick="sciInput('3')">3</button><button onclick="sciInput('-')">−</button>
+      <button onclick="sciInput('0')">0</button><button onclick="sciInput('.')">.</button><button onclick="sciBackspace()">⌫</button><button onclick="sciInput('+')">＋</button>
+      <button class="wide" onclick="sciClear()">C</button><button class="eq" onclick="sciCalculate()">＝</button>
+    </div>
+    <div class="cc-sci-note">sin / cos / tan は DEG（度）モード。x²、√、xʸ、π、e、ln、log に対応。</div>
+  </div>
+</div>
+
 <div id="ccUnitOverlay" aria-hidden="true" onclick="if(event.target===this)closeUnitConverter()">
   <div id="ccUnitPanel" role="dialog" aria-modal="true" aria-labelledby="ccuTitle">
     <div class="ccu-head">
