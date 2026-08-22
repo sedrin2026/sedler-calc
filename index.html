@@ -2548,7 +2548,7 @@ function renderHousehold(){
   window.sciClear=function(){expr='';render();};
   function evaluate(raw){
     let x=raw.replace(/×/g,'*').replace(/÷/g,'/').replace(/π/g,'Math.PI').replace(/²/g,'**2').replace(/\^/g,'**').replace(/\be\b/g,'Math.E');
-    x=x.replace(/sqrt\(/g,'Math.sqrt(').replace(/ln\(/g,'Math.log(').replace(/log\(/g,'Math.log10(');
+    x=x.replace(/sqrt\(/g,'Math.sqrt(').replace(/log\(/g,'Math.log10(').replace(/ln\(/g,'Math.log(');
     const trig=angle==='DEG'?'(Math.PI/180)*':' ';
     x=x.replace(/sin\(/g,'Math.sin('+trig).replace(/cos\(/g,'Math.cos('+trig).replace(/tan\(/g,'Math.tan('+trig);
     if(!/^[0-9+\-*/().,\sA-Za-z]+$/.test(x))throw new Error('invalid');
