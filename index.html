@@ -2515,11 +2515,25 @@ function renderHousehold(){
 <script>/* CYBER CALC // SCIENTIFIC CALCULATOR - isolated state */
 (function(){
   let expr=''; let angle='DEG';
-  const overlay=document.getElementById('ccSciOverlay'); const display=document.getElementById('ccSciDisplay'); const angleBtn=document.getElementById('ccSciAngle');
-  function render(){display.textContent=expr||'0';}
-  window.openScientificCalculator=function(){expr='';render();overlay.classList.add('cc-open');overlay.setAttribute('aria-hidden','false');};
-  window.closeScientificCalculator=function(){overlay.classList.remove('cc-open');overlay.setAttribute('aria-hidden','true');};
-  window.toggleSciAngle=function(){angle=angle==='DEG'?'RAD':'DEG';angleBtn.textContent=angle;angleBtn.classList.toggle('active',angle==='RAD');};
+  function getOverlay(){return document.getElementById('ccSciOverlay');}
+  function getDisplay(){return document.getElementById('ccSciDisplay');}
+  function getAngleBtn(){return document.getElementById('ccSciAngle');}
+  function render(){const display=getDisplay(); if(display) display.textContent=expr||'0';}
+  window.openScientificCalculator=function(){
+    const overlay=getOverlay();
+    if(!overlay)return;
+    expr=''; render(); overlay.classList.add('cc-open'); overlay.setAttribute('aria-hidden','false');
+  };
+  window.closeScientificCalculator=function(){
+    const overlay=getOverlay();
+    if(!overlay)return;
+    overlay.classList.remove('cc-open'); overlay.setAttribute('aria-hidden','true');
+  };
+  window.toggleSciAngle=function(){
+    angle=angle==='DEG'?'RAD':'DEG';
+    const angleBtn=getAngleBtn();
+    if(angleBtn){angleBtn.textContent=angle; angleBtn.classList.toggle('active',angle==='RAD');}
+  };
   window.sciInput=function(v){if(expr==='ERR')expr='';expr+=v;render();};
   window.sciBackspace=function(){expr=expr.slice(0,-1);render();};
   window.sciClear=function(){expr='';render();};
@@ -2537,7 +2551,7 @@ function renderHousehold(){
     try{const n=Number(evaluate(expr)); if(!Number.isFinite(n))throw new Error('invalid'); expr=String(Number(n.toPrecision(12))); render();}
     catch(e){expr='ERR';render();}
   };
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(overlay.classList.contains('cc-open'))closeScientificCalculator();else if(document.getElementById('ccFunctionOverlay').classList.contains('cc-open'))closeFunctionMenu();}});})();</script>
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const overlay=getOverlay(); const fn=document.getElementById('ccFunctionOverlay'); if(overlay&&overlay.classList.contains('cc-open'))closeScientificCalculator(); else if(fn&&fn.classList.contains('cc-open'))closeFunctionMenu();}});})();</script>
 
 <!-- CYBER CALC // UNIT CONVERTER (isolated overlay; hidden until opened) -->
 
