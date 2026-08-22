@@ -2535,6 +2535,15 @@ function renderHousehold(){
     if(angleBtn){angleBtn.textContent=angle; angleBtn.classList.toggle('active',angle==='RAD');}
   };
   window.sciInput=function(v){if(expr==='ERR')expr='';expr+=v;render();};
+  // Unary scientific functions: if a value is already entered, apply the function to it.
+  // Example: 9 -> √ becomes sqrt(9), so the user can press = and get 3.
+  window.sciFunction=function(fn){
+    if(expr==='ERR')expr='';
+    if(!expr){expr=fn+'(';render();return;}
+    const wrapped=/[0-9)]$/.test(expr)||expr==='π'||expr==='e';
+    expr=wrapped?(fn+'('+expr+')'):(expr+fn+'(');
+    render();
+  };
   window.sciBackspace=function(){expr=expr.slice(0,-1);render();};
   window.sciClear=function(){expr='';render();};
   function evaluate(raw){
@@ -2561,8 +2570,8 @@ function renderHousehold(){
     <div id="ccSciDisplay">0</div>
     <div class="cc-sci-mode"><button id="ccSciAngle" type="button" onclick="toggleSciAngle()">DEG</button></div>
     <div class="cc-sci-grid">
-      <button class="fn" onclick="sciInput('sin(')">sin</button><button class="fn" onclick="sciInput('cos(')">cos</button><button class="fn" onclick="sciInput('tan(')">tan</button><button class="fn" onclick="sciInput('sqrt(')">√</button>
-      <button class="fn" onclick="sciInput('ln(')">ln</button><button class="fn" onclick="sciInput('log(')">log</button><button class="fn" onclick="sciInput('^')">xʸ</button><button class="fn" onclick="sciInput('²')">x²</button>
+      <button class="fn" onclick="sciFunction('sin')">sin</button><button class="fn" onclick="sciFunction('cos')">cos</button><button class="fn" onclick="sciFunction('tan')">tan</button><button class="fn" onclick="sciFunction('sqrt')">√</button>
+      <button class="fn" onclick="sciFunction('ln')">ln</button><button class="fn" onclick="sciFunction('log')">log</button><button class="fn" onclick="sciInput('^')">xʸ</button><button class="fn" onclick="sciInput('²')">x²</button>
       <button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button><button onclick="sciInput('π')">π</button><button onclick="sciInput('e')">e</button>
       <button onclick="sciInput('7')">7</button><button onclick="sciInput('8')">8</button><button onclick="sciInput('9')">9</button><button onclick="sciInput('/')">÷</button>
       <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('*')">×</button>
