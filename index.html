@@ -7,9 +7,14 @@
   
   <link rel="manifest" href="./manifest.json">
   <script>
+  // 起動速度優先：初回描画を邪魔しないタイミングでPWAを登録
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log('Service Worker 登録成功！'));
+    const registerSW = () => navigator.serviceWorker.register('./sw.js').catch(() => {});
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(registerSW, { timeout: 2000 });
+    } else {
+      window.addEventListener('load', registerSW, { once: true });
+    }
   }
   </script>
 
@@ -1012,6 +1017,37 @@ body.household-mode .household-screen{
 
 /* 独立した「その他」エリア（合計金額カードの外側） */
 </style>
+
+<style id="cyber-unit-safe-css">
+/* CYBER CALC // Unit Converter - isolated UI, never participates in calculator layout */
+#ccUnitBtn{font:inherit;}
+#ccUnitOverlay{display:none;position:fixed;inset:0;z-index:99999;box-sizing:border-box;padding:18px;background:rgba(0,0,0,.72);align-items:center;justify-content:center;}
+#ccUnitOverlay.cc-open{display:flex;}
+#ccUnitPanel{width:min(94vw,520px);max-height:88dvh;overflow:auto;box-sizing:border-box;background:#18222b;border:2px solid #0ea5c9;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 18px rgba(14,165,201,.22);padding:16px;color:#eaf7fb;}
+#ccUnitPanel .ccu-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+#ccUnitPanel .ccu-title{font-weight:900;font-size:1.15rem;color:#67e8f9;letter-spacing:.05em;}
+#ccUnitPanel .ccu-close{border:1px solid #64748b;background:#334155;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800;}
+#ccUnitPanel .ccu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#ccUnitPanel label{display:block;font-size:.72rem;color:#a5b4fc;margin:0 0 4px 2px;font-weight:800;}
+#ccUnitPanel select,#ccUnitPanel input{width:100%;box-sizing:border-box;border:1px solid #475569;border-radius:9px;background:#0f1720;color:#f8fafc;padding:10px;font-size:1rem;outline:none;}
+#ccUnitPanel input:focus,#ccUnitPanel select:focus{border-color:#22d3ee;box-shadow:0 0 0 2px rgba(34,211,238,.14);}
+#ccUnitPanel .ccu-swap{display:block;margin:11px auto 0;border:1px solid #0891b2;background:#0e7490;color:#fff;border-radius:9px;padding:7px 15px;font-weight:900;}
+#ccUnitPanel .ccu-result{margin-top:12px;border:1px solid #155e75;border-radius:11px;background:#0b1620;padding:13px;}
+#ccUnitPanel .ccu-main{font-size:1.45rem;font-weight:900;word-break:break-word;color:#ecfeff;}
+#ccUnitPanel .ccu-sub{margin-top:5px;color:#94a3b8;font-size:.75rem;}
+@media(max-width:520px){
+  #ccUnitPanel{padding:13px;max-height:90dvh;}
+  #ccUnitPanel .ccu-grid{grid-template-columns:1fr;}
+}
+/* Keep the existing header layout stable; the new entry is compact and allowed to shrink. */
+@media(max-width:560px){
+  .top-controls{gap:3px;min-width:0;flex:1;justify-content:flex-end;}
+  .top-controls .btn-top-item{min-width:0;padding-left:7px;padding-right:7px;flex:1 1 0;}
+  .clock-badge{flex:0 1 auto;min-width:0;}
+  #ccUnitBtn{min-width:48px!important;}
+}
+</style>
+
 </head>
 
 <body>
@@ -1026,32 +1062,7 @@ body.household-mode .household-screen{
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()" style="background:linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important; color:#ffffff !important; border-color:#0284c7 !important;">履歴 📂</div>
       <div class="btn-top-item btn-control log-control" onclick="logActiveValue()">LOG</div>
-      <div class="btn-top-item btn-control cc-tool-launch" id="ccToolsButton" onclick="toggleCcTools()">機能</div>
-
-    </div>
-  </div>
-
-  <div class="cc-tool-drawer" id="ccToolDrawer" aria-hidden="true">
-    <button class="cc-tool-btn active-tool" type="button" onclick="openCcUnit()">単位換算</button>
-    <button class="cc-tool-btn" type="button" disabled>結果コピー</button>
-    <button class="cc-tool-btn" type="button" disabled>＝連打</button>
-    <button class="cc-tool-btn" type="button" disabled>％強化</button>
-    <button class="cc-tool-btn" type="button" disabled>科学計算</button>
-    <div id="ccUnitPanel" aria-hidden="true">
-      <div class="cc-unit-head">
-        <span class="cc-unit-title">// UNIT CONVERTER</span>
-        <button class="cc-unit-close" type="button" onclick="closeCcUnit()">閉じる</button>
-      </div>
-      <div class="cc-unit-grid">
-        <select id="ccUnitCategory" aria-label="カテゴリー"></select>
-        <input id="ccUnitValue" inputmode="decimal" value="1" aria-label="値">
-        <select id="ccUnitFrom" aria-label="変換元"></select>
-        <select id="ccUnitTo" aria-label="変換先"></select>
-      </div>
-      <div class="cc-unit-actions">
-        <button type="button" onclick="swapCcUnit()">⇄ 入替</button>
-      </div>
-      <div id="ccUnitResult">1 → —</div>
+      <div class="btn-top-item btn-control" id="ccUnitBtn" onclick="openUnitConverter()">機能</div>
     </div>
   </div>
 
@@ -1270,8 +1281,11 @@ body.household-mode .household-screen{
       `${y}.${m}.${d} (${dayName}) ${hh}:${mm}`;
   }
 
-  setInterval(updateClock, 1000);
+  // 時計表示は分単位なので、毎秒DOMを書き換えない
   updateClock();
+  setTimeout(() => {
+    setInterval(updateClock, 60000);
+  }, 60000 - (Date.now() % 60000));
 
 
   /* =========================
@@ -2212,9 +2226,21 @@ function activeHouseholdEntries(){
 }
 
 const HOUSEHOLD_RECORD_KEY='cyberCalcHouseholdRecords_v2';
-let householdRecords=JSON.parse(localStorage.getItem(HOUSEHOLD_RECORD_KEY)||'[]');
+// 起動時にはlocalStorageを読まない。家計簿を開いた瞬間に遅延ロードする。
+let householdRecords=null;
+
+function ensureHouseholdRecordsLoaded(){
+  if(householdRecords!==null)return;
+  try{
+    householdRecords=JSON.parse(localStorage.getItem(HOUSEHOLD_RECORD_KEY)||'[]');
+    if(!Array.isArray(householdRecords))householdRecords=[];
+  }catch(e){
+    householdRecords=[];
+  }
+}
 
 function saveHouseholdRecords(){
+  ensureHouseholdRecordsLoaded();
   localStorage.setItem(HOUSEHOLD_RECORD_KEY,JSON.stringify(householdRecords));
 }
 
@@ -2266,6 +2292,7 @@ function handleHouseholdOtherKey(e){
 }
 
 function recordHouseholdSnapshot(){
+  ensureHouseholdRecordsLoaded();
   const active=activeHouseholdEntries();
   const total=active.reduce((s,x)=>s+Number(x.amount||0),0);
   const note=(document.getElementById('householdNote')?.value||'').trim();
@@ -2298,6 +2325,7 @@ function recordHouseholdSnapshot(){
 }
 
 function renderHouseholdRecords(){
+  ensureHouseholdRecordsLoaded();
   const box=document.getElementById('householdRecords');
   if(!box)return;
   if(!householdRecords.length){box.innerHTML='';return;}
@@ -2376,76 +2404,84 @@ function renderHousehold(){
   breakdown.textContent=`収入 ¥${income.toLocaleString('ja-JP')}　支出 ¥${expense.toLocaleString('ja-JP')}`;
 }
 
-renderHousehold();
-renderHouseholdRecords();
+// 家計簿はLOG/画面遷移時に初期化する（初回起動を軽量化）
 
 </script>
+
+
+
+<!-- CYBER CALC // UNIT CONVERTER (isolated overlay; hidden until opened) -->
+<div id="ccUnitOverlay" aria-hidden="true" onclick="if(event.target===this)closeUnitConverter()">
+  <div id="ccUnitPanel" role="dialog" aria-modal="true" aria-labelledby="ccuTitle">
+    <div class="ccu-head">
+      <div class="ccu-title" id="ccuTitle">// UNIT CONVERTER</div>
+      <button class="ccu-close" type="button" onclick="closeUnitConverter()">閉じる</button>
+    </div>
+    <div class="ccu-grid">
+      <div><label for="ccuCategory">カテゴリー</label><select id="ccuCategory"></select></div>
+      <div><label for="ccuValue">数値</label><input id="ccuValue" inputmode="decimal" autocomplete="off" value="1"></div>
+      <div><label for="ccuFrom">変換元</label><select id="ccuFrom"></select></div>
+      <div><label for="ccuTo">変換先</label><select id="ccuTo"></select></div>
+    </div>
+    <button class="ccu-swap" type="button" onclick="swapUnitConverter()">⇄ 単位を入れ替え</button>
+    <div class="ccu-result">
+      <div class="ccu-main" id="ccuResult">—</div>
+      <div class="ccu-sub" id="ccuSub"></div>
+    </div>
+  </div>
+</div>
 
 
 <script>
-/* ===== CYBER CALC // UNIT CONVERTER v2 ===== */
+/* CYBER CALC // UNIT CONVERTER
+   Completely isolated from existing calculator state/functions. */
 (function(){
-  const D={
-    "長さ":[{"mm":.001,"cm":.01,"m":1,"km":1000,"in":.0254,"ft":.3048,"yd":.9144,"mi":1609.344},
-            {"mm":"mm","cm":"cm","m":"m","km":"km","in":"in","ft":"ft","yd":"yd","mi":"mi"}],
-    "重さ":[{"mg":1e-6,"g":.001,"kg":1,"t":1000,"oz":.028349523125,"lb":.45359237},
-            {"mg":"mg","g":"g","kg":"kg","t":"t","oz":"oz","lb":"lb"}],
-    "温度":[{"C":1,"F":1,"K":1},{"C":"°C","F":"°F","K":"K"}],
-    "体積":[{"mL":.001,"L":1,"m3":1000,"tsp":.00492892159375,"tbsp":.01478676478125,"cup":.2365882365,"gal":3.785411784},
-            {"mL":"mL","L":"L","m3":"m³","tsp":"tsp","tbsp":"tbsp","cup":"cup","gal":"gal"}],
-    "面積":[{"cm2":1e-4,"m2":1,"km2":1e6,"ft2":.09290304,"in2":.00064516,"acre":4046.8564224,"ha":10000},
-            {"cm2":"cm²","m2":"m²","km2":"km²","ft2":"ft²","in2":"in²","acre":"acre","ha":"ha"}],
-    "速度":[{"mps":1,"kmh":1000/3600,"mph":1609.344/3600,"knot":1852/3600},
-            {"mps":"m/s","kmh":"km/h","mph":"mph","knot":"kn"}],
-    "データ容量":[{"B":1,"KB":1e3,"MB":1e6,"GB":1e9,"TB":1e12,"KiB":1024,"MiB":1048576,"GiB":1073741824},
-            {"B":"B","KB":"KB","MB":"MB","GB":"GB","TB":"TB","KiB":"KiB","MiB":"MiB","GiB":"GiB"}]
+  const data={
+    '長さ':{u:{mm:0.001,cm:0.01,m:1,km:1000,in:0.0254,ft:0.3048,yd:0.9144,mi:1609.344},l:{mm:'ミリメートル (mm)',cm:'センチメートル (cm)',m:'メートル (m)',km:'キロメートル (km)',in:'インチ (in)',ft:'フィート (ft)',yd:'ヤード (yd)',mi:'マイル (mi)'}},
+    '重さ':{u:{mg:0.000001,g:0.001,kg:1,t:1000,oz:0.028349523125,lb:0.45359237},l:{mg:'ミリグラム (mg)',g:'グラム (g)',kg:'キログラム (kg)',t:'トン (t)',oz:'オンス (oz)',lb:'ポンド (lb)'}},
+    '温度':{u:{C:1,F:1,K:1},l:{C:'摂氏 (°C)',F:'華氏 (°F)',K:'ケルビン (K)'}},
+    '体積':{u:{mL:0.001,L:1,m3:1000,tsp:0.00492892159375,tbsp:0.01478676478125,cup:0.2365882365,gal:3.785411784},l:{mL:'ミリリットル (mL)',L:'リットル (L)',m3:'立方メートル (m³)',tsp:'小さじ (tsp)',tbsp:'大さじ (tbsp)',cup:'カップ (cup)',gal:'米ガロン (gal)'}},
+    '面積':{u:{cm2:0.0001,m2:1,km2:1000000,ft2:0.09290304,in2:0.00064516,acre:4046.8564224,ha:10000},l:{cm2:'平方センチメートル (cm²)',m2:'平方メートル (m²)',km2:'平方キロメートル (km²)',ft2:'平方フィート (ft²)',in2:'平方インチ (in²)',acre:'エーカー (acre)',ha:'ヘクタール (ha)'}},
+    '速度':{u:{mps:1,kmh:1000/3600,mph:1609.344/3600,knot:1852/3600},l:{mps:'メートル/秒 (m/s)',kmh:'キロメートル/時 (km/h)',mph:'マイル/時 (mph)',knot:'ノット (kn)'}},
+    'データ容量':{u:{B:1,KB:1000,MB:1e6,GB:1e9,TB:1e12,KiB:1024,MiB:1024**2,GiB:1024**3},l:{B:'バイト (B)',KB:'キロバイト (KB)',MB:'メガバイト (MB)',GB:'ギガバイト (GB)',TB:'テラバイト (TB)',KiB:'キビバイト (KiB)',MiB:'メビバイト (MiB)',GiB:'ギビバイト (GiB)'}}
   };
   const $=id=>document.getElementById(id);
-  const cat=$("ccUnitCategory"), from=$("ccUnitFrom"), to=$("ccUnitTo"), value=$("ccUnitValue");
+  const cat=$('ccuCategory'),from=$('ccuFrom'),to=$('ccuTo'),value=$('ccuValue'),overlay=$('ccUnitOverlay');
   let ready=false;
-
-  window.toggleCcTools=function(){
-    const d=$("ccToolDrawer");
-    d.classList.toggle("open"); d.setAttribute("aria-hidden",String(!d.classList.contains("open")));
-  };
-  function options(sel,obj,keep){
-    sel.innerHTML=Object.keys(obj).map(k=>'<option value="'+k+'">'+obj[k]+'</option>').join("");
-    if(keep && obj[keep]) sel.value=keep;
-  }
+  function options(el, obj){el.innerHTML=Object.keys(obj).map(k=>'<option value="'+k+'">'+obj[k]+'</option>').join('');}
   function init(){
-    options(cat,Object.fromEntries(Object.keys(D).map(k=>[k,k])));
-    cat.value="長さ"; fill(); ready=true;
+    if(ready)return;
+    options(cat,Object.fromEntries(Object.keys(data).map(k=>[k,k])));
+    cat.value='長さ'; fillUnits(); ready=true;
   }
-  function fill(){
-    const oldF=from.value,oldT=to.value, labels=D[cat.value][1];
-    options(from,labels,oldF); options(to,labels,oldT);
-    if(!labels[from.value])from.value=Object.keys(labels)[0];
-    if(!labels[to.value])to.value=Object.keys(labels)[1]||Object.keys(labels)[0];
+  function fillUnits(){
+    const d=data[cat.value], oldF=from.value, oldT=to.value, keys=Object.keys(d.u);
+    options(from,d.l); options(to,d.l);
+    from.value=d.l[oldF]?oldF:keys[0];
+    to.value=d.l[oldT]?oldT:(keys[1]||keys[0]);
     convert();
   }
-  function convTemp(v,u){return u==="C"?v:u==="F"?(v-32)*5/9:v-273.15}
-  function outTemp(v,u){return u==="C"?v:u==="F"?v*9/5+32:v+273.15}
-  function fmt(n){if(!Number.isFinite(n))return "—"; if(n===0)return "0"; return (Math.abs(n)>=1e9||Math.abs(n)<1e-7)?n.toPrecision(10):String(Number(n.toFixed(10)))}
+  function cToBase(v,u){return u==='C'?v:u==='F'?(v-32)*5/9:v-273.15;}
+  function baseToC(v,u){return u==='C'?v:u==='F'?v*9/5+32:v+273.15;}
   function convert(){
-    const n=Number(value.value); if(!Number.isFinite(n)){ $("ccUnitResult").textContent="入力してください"; return; }
-    let r;
-    if(cat.value==="温度")r=outTemp(convTemp(n,from.value),to.value);
-    else r=n*D[cat.value][0][from.value]/D[cat.value][0][to.value];
-    $("ccUnitResult").textContent=fmt(n)+" "+D[cat.value][1][from.value]+"  →  "+fmt(r)+" "+D[cat.value][1][to.value];
+    const d=data[cat.value], n=Number(value.value);
+    if(!Number.isFinite(n)){ $('ccuResult').textContent='—'; $('ccuSub').textContent=''; return; }
+    let out;
+    if(cat.value==='温度') out=baseToC(cToBase(n,from.value),to.value);
+    else out=n*d.u[from.value]/d.u[to.value];
+    const shown=(Math.abs(out)>=1e9 || (Math.abs(out)>0&&Math.abs(out)<1e-7))?out.toPrecision(10):Number(out.toFixed(10)).toString();
+    $('ccuResult').textContent=shown+' '+to.value;
+    $('ccuSub').textContent=n+' '+from.value+' → '+shown+' '+to.value;
   }
-  window.openCcUnit=function(){
-    if(!ready)init();
-    $("ccUnitPanel").classList.add("open");
-    $("ccUnitPanel").setAttribute("aria-hidden","false");
-    if(!$("ccToolDrawer").classList.contains("open"))toggleCcTools();
-    value.focus();value.select();
+  window.openUnitConverter=function(){
+    init(); overlay.classList.add('cc-open'); overlay.setAttribute('aria-hidden','false');
+    setTimeout(()=>{value.focus();value.select();},0);
   };
-  window.closeCcUnit=function(){$("ccUnitPanel").classList.remove("open");$("ccUnitPanel").setAttribute("aria-hidden","true")};
-  window.swapCcUnit=function(){const x=from.value;from.value=to.value;to.value=x;convert()};
-  cat.addEventListener("change",fill); from.addEventListener("change",convert); to.addEventListener("change",convert); value.addEventListener("input",convert);
-  init();
+  window.closeUnitConverter=function(){overlay.classList.remove('cc-open');overlay.setAttribute('aria-hidden','true');};
+  window.swapUnitConverter=function(){const x=from.value;from.value=to.value;to.value=x;convert();};
+  cat.addEventListener('change',fillUnits); from.addEventListener('change',convert); to.addEventListener('change',convert); value.addEventListener('input',convert);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('cc-open'))closeUnitConverter();});
 })();
 </script>
-
 </body>
 </html>
