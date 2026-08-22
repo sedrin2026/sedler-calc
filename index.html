@@ -1016,6 +1016,65 @@ body.household-mode .household-screen{
 
 
 /* 独立した「その他」エリア（合計金額カードの外側） */
+
+
+    /* =========================================================
+       3段スロット表示の安定化
+       - スロット内の数字が縦方向に切れない
+       - 既存の高さ配分を壊さず、3段時だけ文字を安全に縮小
+       ========================================================= */
+    .display-panel-container {
+      min-height: 0;
+      flex: 1 1 0;
+    }
+
+    .slot-panel {
+      min-height: 0 !important;
+      min-width: 0;
+      flex: 1 1 0;
+      box-sizing: border-box;
+    }
+
+    .display-slot-value {
+      min-height: 0;
+      min-width: 0;
+      flex: 0 1 auto;
+      line-height: 0.95;
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+
+    /* 2段表示：少し余裕を持たせる */
+    .calc-card.expanded-2 .display-slot-value {
+      font-size: clamp(1.65rem, 7.5vw, 2.15rem) !important;
+      line-height: 0.92;
+    }
+
+    /* 3段表示：数字の上下が絶対にパネルからはみ出さないサイズ */
+    .calc-card.expanded-3 .slot-panel {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+
+    .calc-card.expanded-3 .display-slot-value {
+      font-size: clamp(1.4rem, 6.8vw, 1.9rem) !important;
+      line-height: 0.9;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    /* 短い画面でも3段スロットを優先して収める */
+    @media (max-height: 700px) {
+      .calc-card.expanded-3 .display-slot-value {
+        font-size: clamp(1.25rem, 6vw, 1.65rem) !important;
+      }
+      .calc-card.expanded-3 .expr-line-slot {
+        font-size: 0.68rem;
+        min-height: 12px;
+        margin-top: 6px;
+      }
+    }
+
 </style>
 
 <style id="cyber-unit-safe-css">
@@ -1058,7 +1117,6 @@ body.household-mode .household-screen{
     <div class="clock-badge" id="clock">2026.08.12 (水) 04:30</div>
 
     <div class="top-controls">
-      <div class="btn-top-item btn-ac-all" onclick="allClearActive()">AC</div>
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()" style="background:linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important; color:#ffffff !important; border-color:#0284c7 !important;">履歴 📂</div>
       <div class="btn-top-item btn-control log-control" onclick="logActiveValue()">LOG</div>
