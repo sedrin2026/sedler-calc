@@ -1283,6 +1283,109 @@ body.household-mode .household-screen{
   text-shadow: 0 0 5px rgba(103,232,249,.55) !important;
 }
 </style>
+
+<style id="cyber-manual-ui">
+/* CYBER CALK manual: added without changing existing calculator UI */
+.status-info-stack{
+  flex:0 0 46%;
+  max-width:46%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.status-info-stack .clock-badge{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  min-height:26px;
+}
+.manual-btn{
+  width:100%;
+  min-width:0;
+  min-height:26px;
+  box-sizing:border-box;
+  padding:3px 6px;
+  border:1px solid #285d73;
+  border-radius:4px;
+  background:#112222;
+  color:#39f3ff;
+  font-family:var(--calc-font);
+  font-size:.66rem;
+  font-weight:800;
+  letter-spacing:.02em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-shadow:0 0 5px rgba(57,243,255,.45);
+  box-shadow:inset 0 0 6px rgba(57,243,255,.08);
+}
+.manual-btn:active{transform:translateY(1px);}
+.cyber-manual-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  padding:14px;
+  box-sizing:border-box;
+  background:rgba(0,0,0,.72);
+  align-items:center;
+  justify-content:center;
+}
+.cyber-manual-overlay.cc-open{display:flex;}
+.cyber-manual-panel{
+  width:min(94vw,500px);
+  max-height:88dvh;
+  overflow:auto;
+  box-sizing:border-box;
+  background:#18222b;
+  border:2px solid #22d3ee;
+  border-radius:14px;
+  padding:12px;
+  color:#f8fafc;
+  box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 18px rgba(34,211,238,.18);
+}
+.cyber-manual-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  color:#67e8f9;
+  font-family:var(--calc-font);
+  font-size:.88rem;
+  font-weight:900;
+  text-shadow:0 0 5px rgba(57,243,255,.45);
+}
+.cyber-manual-close{
+  flex:0 0 auto;
+  border:1px solid #e07000;
+  border-radius:7px;
+  padding:4px 8px;
+  background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);
+  color:#000;
+  font-size:.7rem;
+  font-weight:900;
+}
+.cyber-manual-body{
+  display:grid;
+  gap:7px;
+  margin-top:10px;
+}
+.manual-section{
+  display:grid;
+  gap:2px;
+  padding:7px 8px;
+  border:1px solid #285d73;
+  border-radius:8px;
+  background:#112222;
+}
+.manual-section strong{color:#67e8f9;font-size:.75rem;}
+.manual-section span{color:#fff;font-size:.68rem;line-height:1.35;}
+@media(max-width:560px){
+  .status-info-stack{flex-basis:46%;max-width:46%;}
+  .manual-btn{font-size:.6rem;padding-left:4px;padding-right:4px;}
+}
+</style>
 </head>
 
 <body>
@@ -1290,7 +1393,10 @@ body.household-mode .household-screen{
 <div class="calc-card" id="calcCard">
 
   <div class="status-bar">
-    <div class="clock-badge" id="clock">2026.08.12 (水) 04:30</div>
+    <div class="status-info-stack">
+      <div class="clock-badge" id="clock">2026.08.12 (水) 04:30</div>
+      <button class="manual-btn" type="button" onclick="openCyberManual()">CYBER CALK 説明書</button>
+    </div>
 
     <div class="top-controls">
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
@@ -1490,6 +1596,22 @@ body.household-mode .household-screen{
 </section>
 
 <button id="pwa-install-btn">📲 アプリをインストール</button>
+
+<div id="cyberManualOverlay" class="cyber-manual-overlay" aria-hidden="true" onclick="if(event.target===this)closeCyberManual()">
+  <div class="cyber-manual-panel" role="dialog" aria-modal="true" aria-labelledby="cyberManualTitle">
+    <div class="cyber-manual-head">
+      <div id="cyberManualTitle">▶ CYBER CALK 説明書</div>
+      <button type="button" class="cyber-manual-close" onclick="closeCyberManual()">CLOSE</button>
+    </div>
+    <div class="cyber-manual-body">
+      <div class="manual-section"><strong>🧮 通常計算</strong><span>数字・四則演算・％・メモリーなど、基本的な計算ができます。</span></div>
+      <div class="manual-section"><strong>🔬 科学計算</strong><span>sin・cos・tan・√・x²・xʸ・π・e・ln・log・ANSに対応。DEGREE / RADIANを切り替えられます。</span></div>
+      <div class="manual-section"><strong>📏 単位換算</strong><span>長さ・重さ・温度・体積・面積・速度・データ容量を換算できます。</span></div>
+      <div class="manual-section"><strong>✍️ 家計簿 / LOG</strong><span>計算結果をLOGへ追加して、家計簿として記録・確認できます。<br>例：5,000入力→LOGボタン→収入欄に5,000円が自動で追加→メニューから項目名を選択→電卓画面に戻って繰り返す→合計金額表示→記録。</span></div>
+      <div class="manual-section"><strong>📂 履歴・スロット</strong><span>「履歴」で計算履歴を確認。「展開」で最大3つのスロットを表示できます。</span></div>
+    </div>
+  </div>
+</div>
 
 <script>
 
@@ -2850,5 +2972,23 @@ function renderHousehold(){
 #ccSciPanel .cc-sci-note{margin-top:5px !important;font-size:.62rem !important;line-height:1.15 !important}
 </style>
 
+
+<script>
+function openCyberManual(){
+  const overlay=document.getElementById('cyberManualOverlay');
+  if(!overlay) return;
+  overlay.classList.add('cc-open');
+  overlay.setAttribute('aria-hidden','false');
+}
+function closeCyberManual(){
+  const overlay=document.getElementById('cyberManualOverlay');
+  if(!overlay) return;
+  overlay.classList.remove('cc-open');
+  overlay.setAttribute('aria-hidden','true');
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeCyberManual();
+});
+</script>
 </body>
 </html>
