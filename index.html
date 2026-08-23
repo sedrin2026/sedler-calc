@@ -1138,6 +1138,20 @@ body.household-mode .household-screen{
 /* 単位換算のタイトル */
 #ccUnitPanel .ccu-title{color:#67e8f9;}
 
+/* ===== UI微調整：機能タブ／機能メニュー ===== */
+#ccUnitBtn .top-btn-text{font-size:0.75rem !important;}
+#ccFunctionPanel .ccf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+#ccFunctionPanel .ccf-btn{min-width:0;padding:12px 8px;}
+#ccFunctionPanel .ccf-main-label{display:block;font-size:.86rem !important;line-height:1.1 !important;white-space:nowrap;}
+#ccFunctionPanel .ccf-desc{display:block;margin-top:6px;line-height:1.35;font-size:.64rem !important;font-weight:700;letter-spacing:.01em;}
+#ccFunctionPanel .ccf-desc span{display:block;white-space:nowrap;}
+@media(max-width:420px){
+  #ccFunctionPanel .ccf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  #ccFunctionPanel .ccf-btn{padding:10px 5px;}
+  #ccFunctionPanel .ccf-main-label{font-size:.78rem !important;}
+  #ccFunctionPanel .ccf-desc{font-size:.56rem !important;line-height:1.35;}
+}
+
 @media(max-width:420px){
   .household-row{grid-template-columns:minmax(0,1fr) minmax(150px,44%);gap:7px;}
   .household-category{font-size:.74rem;padding-left:7px;padding-right:26px;}
@@ -2605,8 +2619,8 @@ function renderHousehold(){
       <button class="ccf-close" type="button" onclick="closeFunctionMenu()">閉じる</button>
     </div>
     <div class="ccf-grid">
-      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()"><span class="ccf-main-label">↔ 単位<br>換算</span><span class="ccf-desc">長さ・重さ・温度・体積・面積・速度・データ容量</span></button>
-      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openScientificCalculator()"><span class="ccf-main-label">∑ 科学<br>計算</span><span class="ccf-desc">sin・cos・tan・√・x²・xʸ・π・ln・log・ANS</span></button>
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()"><span class="ccf-main-label">↔ 単位換算</span><span class="ccf-desc"><span>長さ・重さ・温度・体積</span><span>面積・速度・データ容量</span></span></button>
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openScientificCalculator()"><span class="ccf-main-label">∑ 科学計算</span><span class="ccf-desc"><span>sin・cos・tan・√・x²</span><span>xʸ・π・ln・log・ANS</span></span></button>
     </div>
   </div>
 </div>
