@@ -1116,14 +1116,15 @@ body.household-mode .household-screen{
 /* 機能メニュー */
 #ccFunctionPanel .ccf-head{display:block;margin-bottom:12px;}
 #ccFunctionPanel .ccf-close{
-  width:100%;
+  width:78%;
+  margin:0 auto;
   display:block;
   border:1px solid #e07000;
   border-bottom:3px solid #b35900;
   background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);
   color:#000;
   border-radius:9px;
-  padding:9px 11px;
+  padding:6px 10px;
   font-weight:900;
 }
 #ccFunctionPanel .ccf-btn{
@@ -1213,10 +1214,10 @@ body.household-mode .household-screen{
 <style id="cyber-scientific-css">
 #ccSciOverlay{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:14px;box-sizing:border-box}
 #ccSciOverlay.cc-open{display:flex}#ccSciPanel{width:min(95vw,500px);max-height:92dvh;overflow:auto;box-sizing:border-box;background:#18222b;border:2px solid #a855f7;border-radius:16px;padding:14px;color:#f5f3ff;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 20px rgba(168,85,247,.22)}
-.cc-sci-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.cc-sci-title{font-weight:900;color:#d8b4fe}.cc-sci-close{border:1px solid #64748b;background:#334155;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800}
-#ccSciDisplay{margin:12px 0;padding:12px;border:1px solid #475569;border-radius:10px;background:#0b1117;min-height:48px;box-sizing:border-box;font-size:1.45rem;font-weight:800;text-align:right;overflow-x:auto;white-space:nowrap}
+.cc-sci-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.cc-sci-title{font-weight:900;font-size:.86rem;color:#d8b4fe}.cc-sci-close{border:1px solid #e07000;background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);color:#000;border-radius:9px;padding:5px 7px;font-weight:800;font-size:.78rem;min-width:68px;width:68px}
+#ccSciDisplay{position:sticky;top:0;z-index:20;margin:8px 0 12px;padding:12px;border:2px solid #06b6d4;border-radius:10px;background:linear-gradient(180deg,#ccfbff 0%,#7ee7fc 100%);color:#082f49;min-height:48px;box-sizing:border-box;font-size:1.45rem;font-weight:800;text-align:right;overflow-x:auto;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .cc-sci-mode{display:flex;justify-content:flex-end;margin-bottom:8px}.cc-sci-mode button{border:1px solid #64748b;background:#334155;color:#fff;border-radius:8px;padding:6px 10px;font-weight:800}.cc-sci-mode button.active{border-color:#a855f7;background:#4c1d95}
-.cc-sci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.cc-sci-grid button{min-height:46px;border:1px solid #475569;border-radius:9px;background:#24313d;color:#f8fafc;font-weight:800;font-size:.95rem}.cc-sci-grid button.fn{background:#312e3d;color:#e9d5ff;border-color:#7c3aed}.cc-sci-grid button.eq{background:#7c3aed;border-color:#a855f7}.cc-sci-grid button.wide{grid-column:span 2}.cc-sci-note{margin-top:9px;color:#94a3b8;font-size:.72rem}
+.cc-sci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.cc-sci-grid button{min-height:46px;border:1px solid #475569;border-radius:9px;background:#24313d;color:#f8fafc;font-weight:800;font-size:.95rem}.cc-sci-grid button.fn{background:#312e3d;color:#e9d5ff;border-color:#7c3aed}.cc-sci-grid button.eq{background:#7c3aed;border-color:#a855f7}.cc-sci-grid button.wide{grid-column:span 2}.cc-sci-spacer{display:block;min-height:46px}.cc-sci-note{margin-top:8px;color:#39f3ff;font-size:.72rem;font-weight:800;text-shadow:0 0 5px rgba(57,243,255,.45)}
 </style>
 
 <style id="cyber-unit-safe-css">
@@ -1247,8 +1248,44 @@ body.household-mode .household-screen{
   .clock-badge{flex:0 1 auto;min-width:0;}
   #ccUnitBtn{min-width:48px!important;}
 }
+
+/* ===== UI微調整：家計簿画面 ===== */
+#householdScreen .household-kicker{
+  color:#38bdf8 !important;
+}
+#householdScreen .household-kicker-arrow{
+  color:#38bdf8 !important;
+}
+#householdScreen .household-record-btn{
+  background:linear-gradient(180deg,#67e8f9 0%,#22d3ee 100%) !important;
+  border-color:#0891b2 !important;
+  color:#06202a !important;
+  box-shadow:0 5px 0 #0e7490,0 8px 16px rgba(34,211,238,.28) !important;
+}
+#householdScreen .household-record-btn:active{
+  transform:translateY(2px);
+  box-shadow:0 3px 0 #0e7490,0 5px 12px rgba(34,211,238,.22) !important;
+}
 </style>
 
+
+<style id="unit-converter-final-ui">
+/* Unit Converter final compact header */
+#ccUnitTitle {
+  font-size: 0.88rem !important;
+}
+#ccUnitClose, #ccUnitConverterClose, button[onclick*="closeUnit"], button[onclick*="unitClose"] {
+  background: linear-gradient(135deg,#ff9f43,#ff7a00) !important;
+  color: #000 !important;
+  width: 92px !important;
+  min-width: 92px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 4px 10px !important;
+  font-size: 0.78rem !important;
+  line-height: 1 !important;
+}
+</style>
 </head>
 
 <body>
@@ -2622,7 +2659,7 @@ function renderHousehold(){
 <div id="ccFunctionOverlay" aria-hidden="true" onclick="if(event.target===this)closeFunctionMenu()">
   <div id="ccFunctionPanel" role="dialog" aria-modal="true" aria-labelledby="ccfTitle">
     <div class="ccf-head">
-      <button class="ccf-close" type="button" onclick="closeFunctionMenu()">閉じる</button>
+      <button class="ccf-close" type="button" onclick="closeFunctionMenu()">CLOSE</button>
     </div>
     <div class="ccf-grid">
       <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()"><span class="ccf-main-label">単位換算</span><span class="ccf-desc"><span>長さ・重さ・温度・体積</span><span>面積・速度・データ容量</span></span></button>
@@ -2634,7 +2671,7 @@ function renderHousehold(){
 
 <script>/* CYBER CALC // SCIENTIFIC CALCULATOR - isolated state */
 (function(){
-  let expr=''; let angle='DEG'; let ans=null;
+  let expr=''; let angle='DEGREE'; let ans=null;
   function getOverlay(){return document.getElementById('ccSciOverlay');}
   function getDisplay(){return document.getElementById('ccSciDisplay');}
   function getAngleBtn(){return document.getElementById('ccSciAngle');}
@@ -2650,9 +2687,9 @@ function renderHousehold(){
     overlay.classList.remove('cc-open'); overlay.setAttribute('aria-hidden','true');
   };
   window.toggleSciAngle=function(){
-    angle=angle==='DEG'?'RAD':'DEG';
+    angle=angle==='DEGREE'?'RADIAN':'DEGREE';
     const angleBtn=getAngleBtn();
-    if(angleBtn){angleBtn.textContent=angle; angleBtn.classList.toggle('active',angle==='RAD');}
+    if(angleBtn){angleBtn.textContent=angle; angleBtn.classList.toggle('active',angle==='RADIAN');}
   };
   window.sciInput=function(v){if(expr==='ERR')expr=''; if(v==='ANS'){ if(ans===null){render();return;} expr += String(ans); } else { expr+=v; } render();};
   // Unary scientific functions: if a value is already entered, apply the function to it.
@@ -2669,7 +2706,7 @@ function renderHousehold(){
   function evaluate(raw){
     let x=raw.replace(/×/g,'*').replace(/÷/g,'/').replace(/π/g,'Math.PI').replace(/²/g,'**2').replace(/\^/g,'**').replace(/\be\b/g,'Math.E');
     x=x.replace(/sqrt\(/g,'Math.sqrt(').replace(/log\(/g,'Math.log10(').replace(/ln\(/g,'Math.log(');
-    const trig=angle==='DEG'?'(Math.PI/180)*':' ';
+    const trig=angle==='DEGREE'?'(Math.PI/180)*':' ';
     x=x.replace(/sin\(/g,'Math.sin('+trig).replace(/cos\(/g,'Math.cos('+trig).replace(/tan\(/g,'Math.tan('+trig);
     if(!/^[0-9+\-*/().,\sA-Za-z]+$/.test(x))throw new Error('invalid');
     if(/Math\.(?!PI|E|sqrt|log10|log|sin|cos|tan)/.test(x))throw new Error('invalid');
@@ -2686,29 +2723,29 @@ function renderHousehold(){
 
 <div id="ccSciOverlay" aria-hidden="true" onclick="if(event.target===this)closeScientificCalculator()">
   <div id="ccSciPanel" role="dialog" aria-modal="true" aria-labelledby="ccSciTitle">
-    <div class="cc-sci-head"><div class="cc-sci-title" id="ccSciTitle">SCIENTIFIC CALC</div><button class="cc-sci-close" type="button" onclick="closeScientificCalculator()">閉じる</button></div>
+    <div class="cc-sci-head"><div class="cc-sci-title" id="ccSciTitle">SCIENTIFIC CALC</div><button class="cc-sci-close" type="button" onclick="closeScientificCalculator()">CLOSE</button></div>
     <div id="ccSciDisplay">0</div>
-    <div class="cc-sci-mode"><button id="ccSciAngle" type="button" onclick="toggleSciAngle()">DEG</button></div>
+    <div class="cc-sci-mode"><button id="ccSciAngle" type="button" onclick="toggleSciAngle()">DEGREE</button></div>
     <div class="cc-sci-grid">
       <button class="fn" onclick="sciFunction('sin')">sin</button><button class="fn" onclick="sciFunction('cos')">cos</button><button class="fn" onclick="sciFunction('tan')">tan</button><button class="fn" onclick="sciFunction('sqrt')">√</button>
       <button class="fn" onclick="sciFunction('ln')">ln</button><button class="fn" onclick="sciFunction('log')">log</button><button class="fn" onclick="sciInput('^')">xʸ</button><button class="fn" onclick="sciInput('²')">x²</button>
-      <button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button><button onclick="sciInput('π')">π</button><button onclick="sciInput('e')">e</button><button class="fn ans" onclick="sciInput('ANS')">ANS</button>
+      <button class="fn" onclick="sciInput('(')">(</button><button class="fn" onclick="sciInput(')')">)</button><button class="fn" onclick="sciInput('π')">π</button><button class="fn" onclick="sciInput('e')">e</button>
+      <button class="fn ans" onclick="sciInput('ANS')">ANS</button><button onclick="sciInput('.')">.</button><button onclick="sciInput('/')">÷</button><span aria-hidden="true" class="cc-sci-spacer"></span>
       <button onclick="sciInput('7')">7</button><button onclick="sciInput('8')">8</button><button onclick="sciInput('9')">9</button><button onclick="sciInput('*')">×</button>
       <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('-')">−</button>
       <button onclick="sciInput('1')">1</button><button onclick="sciInput('2')">2</button><button onclick="sciInput('3')">3</button><button onclick="sciInput('+')">＋</button>
       <button onclick="sciInput('0')">0</button><button onclick="sciInput('00')">00</button><button onclick="sciInput('000')">000</button><button onclick="sciBackspace()">⌫</button>
-      <button onclick="sciInput('.')">.</button><button onclick="sciInput('/')">÷</button><button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button>
       <button class="wide" onclick="sciClear()">C</button><button class="eq" onclick="sciCalculate()">＝</button>
     </div>
-    <div class="cc-sci-note">sin / cos / tan は DEG（度）モード。x²、√、xʸ、π、e、ln、log に対応。</div>
+    <div class="cc-sci-note">sin / cos / tan は DEGREE（度）モード。x²、√、xʸ、π、e、ln、log に対応。</div>
   </div>
 </div>
 
 <div id="ccUnitOverlay" aria-hidden="true" onclick="if(event.target===this)closeUnitConverter()">
   <div id="ccUnitPanel" role="dialog" aria-modal="true" aria-labelledby="ccuTitle">
     <div class="ccu-head">
-      <div class="ccu-title" id="ccuTitle">■ UNIT CONVERTER</div>
-      <button class="ccu-close" type="button" onclick="closeUnitConverter()">閉じる</button>
+      <div class="ccu-title" id="ccuTitle">▶ UNIT CONVERTER</div>
+      <button class="ccu-close" type="button" onclick="closeUnitConverter()">CLOSE</button>
     </div>
     <div class="ccu-grid">
       <div><label for="ccuCategory">カテゴリー</label><select id="ccuCategory"></select></div>
@@ -2797,5 +2834,47 @@ function renderHousehold(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('cc-open'))closeUnitConverter();});
 })();
 </script>
+
+<style id="unit-converter-final-fix">
+/* Unit Converter final UI adjustments */
+#unitConverterScreen .unit-close,
+#unitConverterScreen .close-btn,
+#unitConverterScreen button[data-action="close"],
+#unitConverterScreen button[onclick*="close"],
+#unitConverterScreen button[onclick*="unit"] {
+  background: #f59e0b !important;
+  color: #000 !important;
+}
+</style>
+
+</body>
+</html>
+
+<style id="unit-converter-final-ui">
+/* Unit Converter final UI adjustments */
+#ccUnitPanel .ccu-title{
+  color:#39f3ff !important;
+  text-shadow:0 0 5px rgba(57,243,255,.55);
+}
+#ccUnitPanel .ccu-close{
+  background:#7c3aed !important;
+  border-color:#a855f7 !important;
+  color:#000 !important;
+}
+</style>
+
+
+<style id="unit-converter-final-fix">
+/* Unit Converter final UI adjustments */
+#unitConverterScreen .unit-close,
+#unitConverterScreen .close-btn,
+#unitConverterScreen button[data-action="close"],
+#unitConverterScreen button[onclick*="close"],
+#unitConverterScreen button[onclick*="unit"] {
+  background: #f59e0b !important;
+  color: #000 !important;
+}
+</style>
+
 </body>
 </html>
