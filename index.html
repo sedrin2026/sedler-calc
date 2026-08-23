@@ -1286,6 +1286,14 @@ body.household-mode .household-screen{
   line-height: 1 !important;
 }
 </style>
+
+<style id="unit-converter-label-color-fix">
+/* UNIT CONVERTER field labels: match title neon cyan */
+#ccUnitPanel .ccu-grid label {
+  color: #67e8f9 !important;
+  text-shadow: 0 0 5px rgba(103,232,249,.55) !important;
+}
+</style>
 </head>
 
 <body>
@@ -2749,7 +2757,7 @@ function renderHousehold(){
     </div>
     <div class="ccu-grid">
       <div><label for="ccuCategory">カテゴリー</label><select id="ccuCategory"></select></div>
-      <div><label for="ccuValue">数値</label><input id="ccuValue" inputmode="decimal" autocomplete="off" value="1"></div>
+      <div><label for="ccuValue">数値</label><input id="ccuValue" inputmode="decimal" autocomplete="off" value="0"></div>
       <div><label for="ccuFrom">変換元</label><select id="ccuFrom"></select></div>
       <div><label for="ccuTo">変換先</label><select id="ccuTo"></select></div>
     </div>
@@ -2847,46 +2855,24 @@ function renderHousehold(){
 }
 </style>
 
-</body>
-</html>
-
-<style id="unit-converter-final-ui">
-/* Unit Converter final UI adjustments */
-#ccUnitPanel .ccu-title{
-  color:#39f3ff !important;
-  text-shadow:0 0 5px rgba(57,243,255,.55);
-}
-#ccUnitPanel .ccu-close{
-  background:#7c3aed !important;
-  border-color:#a855f7 !important;
-  color:#000 !important;
-}
-</style>
-
-
-<style id="unit-converter-final-fix">
-/* Unit Converter final UI adjustments */
-#unitConverterScreen .unit-close,
-#unitConverterScreen .close-btn,
-#unitConverterScreen button[data-action="close"],
-#unitConverterScreen button[onclick*="close"],
-#unitConverterScreen button[onclick*="unit"] {
-  background: #f59e0b !important;
-  color: #000 !important;
-}
-
-/* ===== 2026-08-24 UNIT CONVERTER / TOP FUNCTION PATCH ===== */
+<style id="final-ui-2026-08-24">
+/* Unit Converter: default numeric value */
 #ccUnitPanel .ccu-title{
   font-size:.72rem !important;
   color:#67e8f9 !important;
   font-weight:900 !important;
   letter-spacing:.01em;
+  text-shadow:0 0 5px rgba(57,243,255,.55);
 }
 #ccUnitPanel .ccu-close{
   background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%) !important;
-  color:#fff !important;
+  color:#000 !important;
   border:1px solid #e07000 !important;
   border-bottom:3px solid #b35900 !important;
+}
+#ccUnitPanel .ccu-grid label{
+  color:#67e8f9 !important;
+  text-shadow:0 0 5px rgba(57,243,255,.45);
 }
 #ccUnitBtn .top-btn-text{
   font-family:var(--calc-font) !important;
@@ -2894,6 +2880,23 @@ function renderHousehold(){
   font-weight:700 !important;
   color:#000 !important;
 }
+
+/* Scientific Calculator: fit the complete UI in one viewport without overlap */
+#ccSciPanel{
+  max-height:calc(100dvh - 16px) !important;
+  overflow:hidden !important;
+  padding:9px !important;
+}
+#ccSciPanel .cc-sci-head{gap:6px}
+#ccSciPanel .cc-sci-title{font-size:.78rem !important;line-height:1.1 !important}
+#ccSciPanel .cc-sci-close{min-width:62px;width:62px;padding:4px 6px;font-size:.72rem;line-height:1.1}
+#ccSciDisplay{margin:6px 0 7px !important;padding:8px !important;min-height:40px !important;font-size:1.25rem !important}
+#ccSciPanel .cc-sci-mode{margin-bottom:5px !important}
+#ccSciPanel .cc-sci-mode button{padding:4px 8px !important;font-size:.72rem !important}
+#ccSciPanel .cc-sci-grid{gap:4px !important}
+#ccSciPanel .cc-sci-grid button{min-height:37px !important;font-size:.82rem !important;padding:4px 2px !important}
+#ccSciPanel .cc-sci-spacer{min-height:37px !important}
+#ccSciPanel .cc-sci-note{margin-top:5px !important;font-size:.62rem !important;line-height:1.15 !important}
 </style>
 
 </body>
