@@ -789,7 +789,7 @@ body.household-mode .household-screen{
 .household-empty{
   padding:20px 12px;
   text-align:center;
-  color:#64748b;
+  color:#ffffff;
   font-size:.8rem;
   border:1px dashed rgba(100,116,139,.35);
   border-radius:14px;
@@ -2417,7 +2417,7 @@ function closeHousehold(){
 }
 
 function updateHouseholdCategory(id,category){
-  if(category==='__BACK__'){ closeHousehold(); return; }
+  if(category==='__BACK__'){ renderHousehold(); return; }
   const item=householdEntries.find(x=>String(x.id)===String(id));
   if(!item)return;
   item.category=category;
