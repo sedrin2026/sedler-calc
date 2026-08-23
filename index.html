@@ -10,7 +10,15 @@
   // 起動速度優先：初回表示・操作を最優先し、PWA登録は少し遅らせる
   if ('serviceWorker' in navigator) {
     const registerSW = () => navigator.serviceWorker.register('./sw.js').catch(() => {});
-    window.addEventListener('load', () => setTimeout(registerSW, 1200), { once: true });
+    // 初回表示を最優先。ブラウザがアイドルになってからSW登録を開始。
+    window.addEventListener('load', () => {
+      const start = () => setTimeout(registerSW, 800);
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(start, { timeout: 1600 });
+      } else {
+        setTimeout(start, 900);
+      }
+    }, { once: true });
   }
   </script>
 
@@ -1194,7 +1202,7 @@ body.household-mode .household-screen{
 #ccFunctionPanel{width:min(92vw,430px);box-sizing:border-box;background:#18222b;border:2px solid #0ea5c9;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 18px rgba(14,165,201,.22);padding:16px;color:#eaf7fb;}
 #ccFunctionPanel .ccf-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
 #ccFunctionPanel .ccf-title{font-weight:900;font-size:1.15rem;color:#67e8f9;letter-spacing:.05em;}
-#ccFunctionPanel .ccf-close{border:1px solid #e07000;background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);color:#000;border-radius:9px;padding:7px 11px;font-weight:800;box-shadow:0 3px 6px rgba(255,128,0,.25);}
+#ccFunctionPanel .ccf-close{width:90px !important;min-width:90px !important;height:30px !important;min-height:30px !important;padding:4px 8px !important;font-size:.72rem !important;line-height:1 !important;border:1px solid #e07000;background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);color:#fff !important;border-radius:8px;font-weight:800;box-shadow:0 3px 6px rgba(255,128,0,.25);}
 #ccFunctionPanel .ccf-grid{display:grid;grid-template-columns:1fr;gap:10px;}
 #ccFunctionPanel .ccf-btn{width:100%;border:1px solid #0891b2;border-bottom:3px solid #075985;border-radius:11px;background:linear-gradient(180deg,#0ea5c9,#087ea1);color:#fff;padding:13px 12px;font-size:1rem;font-weight:900;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,.22);}
 #ccFunctionPanel .ccf-btn:active{transform:translateY(2px);border-bottom-width:1px;}
@@ -1391,6 +1399,39 @@ body.household-mode .household-screen{
 @media(max-width:560px){
   .status-info-stack{flex-basis:46%;max-width:46%;}
   .manual-btn{font-size:.6rem;padding-left:8px;padding-right:4px;}
+}
+</style>
+
+<style id="startup-performance-final">
+/* STARTUP PERFORMANCE: hidden overlays do not participate in initial layout/paint. */
+#ccFunctionOverlay, #ccSciOverlay, #ccUnitOverlay, #cyberManualOverlay {
+  contain: layout paint;
+}
+</style>
+
+<style id="cc-function-close-final-fix">
+/* 機能メニュー CLOSE：最終固定 */
+#ccFunctionOverlay #ccFunctionPanel .ccf-head .ccf-close{
+  display:block !important;
+  flex:0 0 90px !important;
+  width:90px !important;
+  min-width:90px !important;
+  max-width:90px !important;
+  height:30px !important;
+  min-height:30px !important;
+  max-height:30px !important;
+  box-sizing:border-box !important;
+  margin:0 auto !important;
+  padding:4px 8px !important;
+  font-size:.72rem !important;
+  line-height:1 !important;
+  text-align:center !important;
+  color:#fff !important;
+  background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%) !important;
+  border:1px solid #e07000 !important;
+  border-bottom:3px solid #b35900 !important;
+  border-radius:8px !important;
+  font-weight:800 !important;
 }
 </style>
 </head>
@@ -2542,7 +2583,7 @@ function closeHousehold(){
   document.body.classList.remove('household-mode');
   const calc=document.getElementById('calcCard');
   if(calc)calc.style.display='';
-  window.scrollTo(0,0);
+  requestAnimationFrame(() => window.scrollTo(0,0));
 }
 
 function updateHouseholdCategory(id,category){
