@@ -1141,15 +1141,16 @@ body.household-mode .household-screen{
 /* ===== UI微調整：機能タブ／機能メニュー ===== */
 #ccUnitBtn .top-btn-text{font-size:0.75rem !important;}
 #ccFunctionPanel .ccf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
-#ccFunctionPanel .ccf-btn{min-width:0;padding:12px 8px;}
-#ccFunctionPanel .ccf-main-label{display:block;font-size:.86rem !important;line-height:1.1 !important;white-space:nowrap;}
-#ccFunctionPanel .ccf-desc{display:block;margin-top:6px;line-height:1.35;font-size:.64rem !important;font-weight:700;letter-spacing:.01em;}
+#ccFunctionPanel .ccf-btn{min-width:0;padding:8px 8px;}
+#ccFunctionPanel .ccf-btn{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:76px;}
+#ccFunctionPanel .ccf-main-label{display:block;width:100%;font-size:.90rem !important;line-height:1.08 !important;white-space:nowrap;text-align:center;font-weight:900;}
+#ccFunctionPanel .ccf-desc{display:block;width:100%;margin-top:4px;line-height:1.25;font-size:.64rem !important;font-weight:700;letter-spacing:.01em;text-align:center;}
 #ccFunctionPanel .ccf-desc span{display:block;white-space:nowrap;}
 @media(max-width:420px){
   #ccFunctionPanel .ccf-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
-  #ccFunctionPanel .ccf-btn{padding:10px 5px;}
+  #ccFunctionPanel .ccf-btn{padding:7px 5px;min-height:70px;}
   #ccFunctionPanel .ccf-main-label{font-size:.78rem !important;}
-  #ccFunctionPanel .ccf-desc{font-size:.56rem !important;line-height:1.35;}
+  #ccFunctionPanel .ccf-desc{font-size:.56rem !important;line-height:1.22;margin-top:3px;}
 }
 
 @media(max-width:420px){
@@ -1197,7 +1198,7 @@ body.household-mode .household-screen{
 #ccFunctionPanel{width:min(92vw,430px);box-sizing:border-box;background:#18222b;border:2px solid #0ea5c9;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 18px rgba(14,165,201,.22);padding:16px;color:#eaf7fb;}
 #ccFunctionPanel .ccf-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
 #ccFunctionPanel .ccf-title{font-weight:900;font-size:1.15rem;color:#67e8f9;letter-spacing:.05em;}
-#ccFunctionPanel .ccf-close{border:1px solid #64748b;background:#334155;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800;}
+#ccFunctionPanel .ccf-close{border:1px solid #e07000;background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);color:#000;border-radius:9px;padding:7px 11px;font-weight:800;box-shadow:0 3px 6px rgba(255,128,0,.25);}
 #ccFunctionPanel .ccf-grid{display:grid;grid-template-columns:1fr;gap:10px;}
 #ccFunctionPanel .ccf-btn{width:100%;border:1px solid #0891b2;border-bottom:3px solid #075985;border-radius:11px;background:linear-gradient(180deg,#0ea5c9,#087ea1);color:#fff;padding:13px 12px;font-size:1rem;font-weight:900;text-align:left;box-shadow:0 3px 6px rgba(0,0,0,.22);}
 #ccFunctionPanel .ccf-btn:active{transform:translateY(2px);border-bottom-width:1px;}
@@ -2542,7 +2543,7 @@ function renderHouseholdRecords(){
 
     return `<details class="household-record-card">
       <summary>
-        <span class="record-title">▶記録 ${householdRecords.length-i}</span>
+        <span class="record-title">記録 ${householdRecords.length-i}</span>
         <span>${esc(r.stamp)}　¥${Number(r.total).toLocaleString('ja-JP')}</span>
       </summary>
       <button type="button" class="household-record-delete" aria-label="記録を削除">×</button>
@@ -2619,8 +2620,8 @@ function renderHousehold(){
       <button class="ccf-close" type="button" onclick="closeFunctionMenu()">閉じる</button>
     </div>
     <div class="ccf-grid">
-      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()"><span class="ccf-main-label">↔ 単位換算</span><span class="ccf-desc"><span>長さ・重さ・温度・体積</span><span>面積・速度・データ容量</span></span></button>
-      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openScientificCalculator()"><span class="ccf-main-label">∑ 科学計算</span><span class="ccf-desc"><span>sin・cos・tan・√・x²</span><span>xʸ・π・ln・log・ANS</span></span></button>
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openUnitConverter()"><span class="ccf-main-label">単位換算</span><span class="ccf-desc"><span>長さ・重さ・温度・体積</span><span>面積・速度・データ容量</span></span></button>
+      <button class="ccf-btn" type="button" onclick="closeFunctionMenu();openScientificCalculator()"><span class="ccf-main-label">科学計算</span><span class="ccf-desc"><span>sin・cos・tan・√・x²</span><span>xʸ・π・ln・log・ANS</span></span></button>
     </div>
   </div>
 </div>
