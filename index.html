@@ -1002,12 +1002,15 @@ body.household-mode .household-screen{
 /* LOGボタンと家計簿アクションボタンを同色で統一 */
 #householdScreen .household-close,
 #householdScreen .household-record-btn{
-  background:linear-gradient(180deg,#22d3ee 0%,#0e7490 100%) !important;
-  color:#fff !important;
-  border:1px solid #06b6d4 !important;
-  border-bottom:3px solid #075985 !important;
-  box-shadow:0 4px 10px rgba(0,0,0,.28);
+  background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%) !important;
+  color:#000 !important;
+  border:1px solid #e07000 !important;
+  border-bottom:3px solid #b35900 !important;
+  box-shadow:0 4px 10px rgba(255,128,0,.30);
   font-weight:900;
+}
+#householdScreen .household-close{
+  /* 「＝」ボタンと同色 */
 }
 #householdScreen .household-close:active,
 #householdScreen .household-record-btn:active{
@@ -1105,6 +1108,8 @@ body.household-mode .household-screen{
   line-height:1 !important;
 }
 .household-records summary span:first-child{color:#67e8f9 !important;}
+.household-records summary::marker{color:#67e8f9 !important;}
+.household-records summary::-webkit-details-marker{color:#67e8f9 !important;}
 .household-row{grid-template-columns:minmax(0,1fr) minmax(150px,42%);}
 .household-category{font-size:.78rem;}
 
@@ -2681,17 +2686,18 @@ function renderHousehold(){
 
 <div id="ccSciOverlay" aria-hidden="true" onclick="if(event.target===this)closeScientificCalculator()">
   <div id="ccSciPanel" role="dialog" aria-modal="true" aria-labelledby="ccSciTitle">
-    <div class="cc-sci-head"><div class="cc-sci-title" id="ccSciTitle">// SCIENTIFIC CALC</div><button class="cc-sci-close" type="button" onclick="closeScientificCalculator()">閉じる</button></div>
+    <div class="cc-sci-head"><div class="cc-sci-title" id="ccSciTitle">SCIENTIFIC CALC</div><button class="cc-sci-close" type="button" onclick="closeScientificCalculator()">閉じる</button></div>
     <div id="ccSciDisplay">0</div>
     <div class="cc-sci-mode"><button id="ccSciAngle" type="button" onclick="toggleSciAngle()">DEG</button></div>
     <div class="cc-sci-grid">
       <button class="fn" onclick="sciFunction('sin')">sin</button><button class="fn" onclick="sciFunction('cos')">cos</button><button class="fn" onclick="sciFunction('tan')">tan</button><button class="fn" onclick="sciFunction('sqrt')">√</button>
       <button class="fn" onclick="sciFunction('ln')">ln</button><button class="fn" onclick="sciFunction('log')">log</button><button class="fn" onclick="sciInput('^')">xʸ</button><button class="fn" onclick="sciInput('²')">x²</button>
       <button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button><button onclick="sciInput('π')">π</button><button onclick="sciInput('e')">e</button><button class="fn ans" onclick="sciInput('ANS')">ANS</button>
-      <button onclick="sciInput('7')">7</button><button onclick="sciInput('8')">8</button><button onclick="sciInput('9')">9</button><button onclick="sciInput('/')">÷</button>
-      <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('*')">×</button>
-      <button onclick="sciInput('1')">1</button><button onclick="sciInput('2')">2</button><button onclick="sciInput('3')">3</button><button onclick="sciInput('-')">−</button>
-      <button onclick="sciInput('0')">0</button><button onclick="sciInput('.')">.</button><button onclick="sciBackspace()">⌫</button><button onclick="sciInput('+')">＋</button>
+      <button onclick="sciInput('7')">7</button><button onclick="sciInput('8')">8</button><button onclick="sciInput('9')">9</button><button onclick="sciInput('*')">×</button>
+      <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('-')">−</button>
+      <button onclick="sciInput('1')">1</button><button onclick="sciInput('2')">2</button><button onclick="sciInput('3')">3</button><button onclick="sciInput('+')">＋</button>
+      <button onclick="sciInput('0')">0</button><button onclick="sciInput('00')">00</button><button onclick="sciInput('000')">000</button><button onclick="sciBackspace()">⌫</button>
+      <button onclick="sciInput('.')">.</button><button onclick="sciInput('/')">÷</button><button onclick="sciInput('(')">(</button><button onclick="sciInput(')')">)</button>
       <button class="wide" onclick="sciClear()">C</button><button class="eq" onclick="sciCalculate()">＝</button>
     </div>
     <div class="cc-sci-note">sin / cos / tan は DEG（度）モード。x²、√、xʸ、π、e、ln、log に対応。</div>
