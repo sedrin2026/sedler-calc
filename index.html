@@ -2744,7 +2744,7 @@ function renderHousehold(){
 <div id="ccUnitOverlay" aria-hidden="true" onclick="if(event.target===this)closeUnitConverter()">
   <div id="ccUnitPanel" role="dialog" aria-modal="true" aria-labelledby="ccuTitle">
     <div class="ccu-head">
-      <div class="ccu-title" id="ccuTitle">▶ UNIT CONVERTER</div>
+      <div class="ccu-title" id="ccuTitle">▶UNIT CONVERTER/単位換算</div>
       <button class="ccu-close" type="button" onclick="closeUnitConverter()">CLOSE</button>
     </div>
     <div class="ccu-grid">
@@ -2873,6 +2873,26 @@ function renderHousehold(){
 #unitConverterScreen button[onclick*="unit"] {
   background: #f59e0b !important;
   color: #000 !important;
+}
+
+/* ===== 2026-08-24 UNIT CONVERTER / TOP FUNCTION PATCH ===== */
+#ccUnitPanel .ccu-title{
+  font-size:.72rem !important;
+  color:#67e8f9 !important;
+  font-weight:900 !important;
+  letter-spacing:.01em;
+}
+#ccUnitPanel .ccu-close{
+  background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%) !important;
+  color:#fff !important;
+  border:1px solid #e07000 !important;
+  border-bottom:3px solid #b35900 !important;
+}
+#ccUnitBtn .top-btn-text{
+  font-family:var(--calc-font) !important;
+  font-size:.75rem !important;
+  font-weight:700 !important;
+  color:#000 !important;
 }
 </style>
 
