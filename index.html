@@ -1143,6 +1143,37 @@ body.household-mode .household-screen{
   .household-category{font-size:.74rem;padding-left:7px;padding-right:26px;}
 }
 
+
+/* ===== 上部4タブ：税込ボタンと同系色に統一 ===== */
+.top-controls .btn-top-item {
+  background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%) !important;
+  color: #000000 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-bottom: 3px solid #94a3b8 !important;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.15) !important;
+}
+
+/* LOG / 機能：文字を上、ミニアイコンを下 */
+.top-controls .top-icon-text,
+.top-controls #ccUnitBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0px;
+  line-height: 1;
+}
+.top-controls .top-btn-text {
+  display: block;
+  color: #000000 !important;
+  line-height: 1;
+}
+.top-controls .top-btn-icon {
+  display: block;
+  font-size: 0.82em;
+  line-height: 1;
+  margin-top: 1px;
+}
 </style>
 
 <style id="cyber-function-menu-css">
@@ -1210,8 +1241,8 @@ body.household-mode .household-screen{
     <div class="top-controls">
       <div class="btn-top-item btn-control" id="btn-toggle-slots" onclick="toggleSlots()">展開 ▼</div>
       <div class="btn-top-item btn-control" onclick="toggleHistory()">履歴 📂</div>
-      <div class="btn-top-item btn-control log-control" onclick="logActiveValue()">✍️ LOG</div>
-      <div class="btn-top-item btn-control" id="ccUnitBtn" onclick="openFunctionMenu()">📟 機能</div>
+      <div class="btn-top-item btn-control log-control top-icon-text" onclick="logActiveValue()"><span class="top-btn-text">LOG</span><span class="top-btn-icon">✍️</span></div>
+      <div class="btn-top-item btn-control" id="ccUnitBtn" onclick="openFunctionMenu()"><span class="top-btn-text">機能</span><span class="top-btn-icon">📟</span></div>
     </div>
   </div>
 
