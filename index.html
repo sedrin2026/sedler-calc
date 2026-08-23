@@ -7,14 +7,10 @@
   
   <link rel="manifest" href="./manifest.json">
   <script>
-  // 起動速度優先：初回描画を邪魔しないタイミングでPWAを登録
+  // 起動速度優先：初回表示・操作を最優先し、PWA登録は少し遅らせる
   if ('serviceWorker' in navigator) {
     const registerSW = () => navigator.serviceWorker.register('./sw.js').catch(() => {});
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(registerSW, { timeout: 2000 });
-    } else {
-      window.addEventListener('load', registerSW, { once: true });
-    }
+    window.addEventListener('load', () => setTimeout(registerSW, 1200), { once: true });
   }
   </script>
 
@@ -711,7 +707,6 @@
       transform: translateX(-50%) translateY(2px);
       box-shadow: 0 2px 10px rgba(0,0,0,0.4);
     }
-  
 
 /* =========================================================
    CYBER CALC // HOUSEHOLD LOG (OPTION)
@@ -747,7 +742,6 @@ body.household-mode .household-screen{
   min-height:100dvh;
   align-self:flex-start;
 }
-
 
 .household-header{
   display:flex;
@@ -1017,9 +1011,7 @@ body.household-mode .household-screen{
   background:linear-gradient(180deg,#0e7490 0%,#075985 100%) !important;
 }
 
-
 /* 独立した「その他」エリア（合計金額カードの外側） */
-
 
     /* =========================================================
        3段スロット表示の安定化
@@ -1077,7 +1069,6 @@ body.household-mode .household-screen{
         margin-top: 6px;
       }
     }
-
 
 /* =========================================================
    UI PATCH 2026-08-23
@@ -1164,7 +1155,6 @@ body.household-mode .household-screen{
   .household-category{font-size:.74rem;padding-left:7px;padding-right:26px;}
 }
 
-
 /* ===== 上部4タブ：税込ボタンと同系色に統一 ===== */
 .top-controls .btn-top-item {
   background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%) !important;
@@ -1217,7 +1207,7 @@ body.household-mode .household-screen{
 .cc-sci-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.cc-sci-title{font-weight:900;font-size:.86rem;color:#d8b4fe}.cc-sci-close{border:1px solid #e07000;background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);color:#000;border-radius:9px;padding:5px 7px;font-weight:800;font-size:.78rem;min-width:68px;width:68px}
 #ccSciDisplay{position:sticky;top:0;z-index:20;margin:8px 0 12px;padding:12px;border:2px solid #06b6d4;border-radius:10px;background:linear-gradient(180deg,#ccfbff 0%,#7ee7fc 100%);color:#082f49;min-height:48px;box-sizing:border-box;font-size:1.45rem;font-weight:800;text-align:right;overflow-x:auto;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .cc-sci-mode{display:flex;justify-content:flex-end;margin-bottom:8px}.cc-sci-mode button{border:1px solid #64748b;background:#334155;color:#fff;border-radius:8px;padding:6px 10px;font-weight:800}.cc-sci-mode button.active{border-color:#a855f7;background:#4c1d95}
-.cc-sci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.cc-sci-grid button{min-height:46px;border:1px solid #475569;border-radius:9px;background:#24313d;color:#f8fafc;font-weight:800;font-size:.95rem}.cc-sci-grid button.fn{background:#312e3d;color:#e9d5ff;border-color:#7c3aed}.cc-sci-grid button.eq{background:#7c3aed;border-color:#a855f7}.cc-sci-grid button.wide{grid-column:span 2}.cc-sci-grid button.cc-sci-clear{background:linear-gradient(180deg,#ffb030 0%,#ff8000 100%);border-color:#e07000;color:#000}.cc-sci-spacer{display:block;min-height:46px}.cc-sci-note{margin-top:8px;color:#39f3ff;font-size:.72rem;font-weight:800;text-shadow:0 0 5px rgba(57,243,255,.45)}
+.cc-sci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.cc-sci-grid button{min-height:46px;border:1px solid #475569;border-radius:9px;background:#24313d;color:#f8fafc;font-weight:800;font-size:.95rem}.cc-sci-grid button.fn{background:#312e3d;color:#e9d5ff;border-color:#7c3aed}.cc-sci-grid button.eq{background:#7c3aed;border-color:#a855f7}.cc-sci-grid button.wide{grid-column:span 2}.cc-sci-spacer{display:block;min-height:46px}.cc-sci-note{margin-top:8px;color:#39f3ff;font-size:.72rem;font-weight:800;text-shadow:0 0 5px rgba(57,243,255,.45)}
 </style>
 
 <style id="cyber-unit-safe-css">
@@ -1267,7 +1257,6 @@ body.household-mode .household-screen{
   box-shadow:0 3px 0 #0e7490,0 5px 12px rgba(34,211,238,.22) !important;
 }
 </style>
-
 
 <style id="unit-converter-final-ui">
 /* Unit Converter final compact header */
@@ -1474,7 +1463,6 @@ body.household-mode .household-screen{
 
 </div>
 
-<!-- CYBER CALC // HOUSEHOLD LOG -->
 <section class="household-screen" id="householdScreen" aria-hidden="true">
   <div class="household-header">
     <div>
@@ -1488,7 +1476,6 @@ body.household-mode .household-screen{
     <div class="household-empty" id="householdEmpty">LOGボタンを押すと、ここに金額が追加されます。</div>
   </div>
 
-  
 <div class="household-total-card">
     <div class="household-total-label">HOUSEHOLD TOTAL <span class="household-total-ja">合計金額</span></div>
     <div class="household-total-value" id="householdTotal">¥0</div>
@@ -1533,7 +1520,6 @@ body.household-mode .household-screen{
     setInterval(updateClock, 60000);
   }, 60000 - (Date.now() % 60000));
 
-
   /* =========================
      スロット
   ========================= */
@@ -1550,14 +1536,12 @@ body.household-mode .household-screen{
 
   let historyArr = [];
 
-
   /* =========================================================
      TOTAL保持状態
   ========================================================= */
 
   let totalValue = 0;
   let totalLocked = false;
-
 
   /* =========================
      スロット展開（1段→2段→3段→1段ループ）
@@ -1585,7 +1569,6 @@ body.household-mode .household-screen{
 
     applySlotVisibility();
   }
-
 
   function applySlotVisibility() {
 
@@ -1617,7 +1600,6 @@ body.household-mode .household-screen{
     calculateTotal();
   }
 
-
   /* =========================
      スロット切替
   ========================= */
@@ -1636,7 +1618,6 @@ body.household-mode .household-screen{
       }
     }
   }
-
 
   /* =========================
      数値の小数点以下2桁制限・整形処理
@@ -1678,7 +1659,6 @@ body.household-mode .household-screen{
 
     return intPart;
   }
-
 
   /* =========================
      数字表示（掛け算記号を「×」に統一）
@@ -1748,7 +1728,6 @@ body.household-mode .household-screen{
     return intPart;
   }
 
-
   /* =========================================================
      TOTAL計算
   ========================================================= */
@@ -1786,7 +1765,6 @@ body.household-mode .household-screen{
       totalValue.toLocaleString('ja-JP');
   }
 
-
   /* =========================
      画面更新
   ========================= */
@@ -1811,7 +1789,6 @@ body.household-mode .household-screen{
 
     calculateTotal();
   }
-
 
   /* =========================
      数字・演算子入力
@@ -1886,7 +1863,6 @@ body.household-mode .household-screen{
     updateView();
   }
 
-
   /* =========================
      1文字削除
   ========================= */
@@ -1915,7 +1891,6 @@ body.household-mode .household-screen{
     updateView();
   }
 
-
   /* =========================================================
      中央左側の大きなAC
   ========================================================= */
@@ -1933,7 +1908,6 @@ body.household-mode .household-screen{
 
     updateView();
   }
-
 
   /* =========================================================
      上部右側のAC
@@ -1954,7 +1928,6 @@ body.household-mode .household-screen{
     updateView();
   }
 
-
   /* =========================
      メモリー
   ========================= */
@@ -1965,7 +1938,6 @@ body.household-mode .household-screen{
 
     updateView();
   }
-
 
   function memPlus() {
 
@@ -1984,7 +1956,6 @@ body.household-mode .household-screen{
     updateView();
   }
 
-
   function memMinus() {
 
     let s = slots[activeSlot];
@@ -2002,7 +1973,6 @@ body.household-mode .household-screen{
     updateView();
   }
 
-
   function memRecall() {
 
     let s = slots[activeSlot];
@@ -2013,7 +1983,6 @@ body.household-mode .household-screen{
 
     updateView();
   }
-
 
   /* =========================
      税・割引メニュー
@@ -2044,7 +2013,6 @@ body.household-mode .household-screen{
       targetEl.classList.add('open');
     }
   }
-
 
   /* =========================================================
      割引
@@ -2093,7 +2061,6 @@ body.household-mode .household-screen{
 
     document.getElementById('discDropdown').classList.remove('open');
   }
-
 
   /* =========================
      税計算
@@ -2171,7 +2138,6 @@ body.household-mode .household-screen{
       .getElementById('taxExDropdown')
       .classList.remove('open');
   }
-
 
   /* =========================================================
      「＝」計算
@@ -2255,7 +2221,6 @@ body.household-mode .household-screen{
     }
   }
 
-
   /* =========================
      履歴追加
   ========================= */
@@ -2288,7 +2253,6 @@ body.household-mode .household-screen{
 
     renderHistory();
   }
-
 
   /* =========================
      履歴表示
@@ -2331,7 +2295,6 @@ body.household-mode .household-screen{
     list.innerHTML = html;
   }
 
-
   /* =========================
      履歴開閉
   ========================= */
@@ -2340,7 +2303,6 @@ body.household-mode .household-screen{
     const drawer = document.getElementById('historyDrawer');
     drawer.classList.toggle('open');
   }
-
 
   /* =========================
      PWA
@@ -2357,7 +2319,6 @@ body.household-mode .household-screen{
     }
   );
 
-
   document.getElementById('pwa-install-btn').addEventListener(
     'click',
     async () => {
@@ -2372,14 +2333,11 @@ body.household-mode .household-screen{
     }
   );
 
-
   /* =========================
      初期表示
   ========================= */
 
   updateView();
-
-
 
 /* =========================================================
    CYBER CALC // HOUSEHOLD LOG
@@ -2661,9 +2619,6 @@ function renderHousehold(){
 
 </script>
 
-
-
-<!-- CYBER CALC // FUNCTION MENU (isolated overlay) -->
 <div id="ccFunctionOverlay" aria-hidden="true" onclick="if(event.target===this)closeFunctionMenu()">
   <div id="ccFunctionPanel" role="dialog" aria-modal="true" aria-labelledby="ccfTitle">
     <div class="ccf-head">
@@ -2675,7 +2630,6 @@ function renderHousehold(){
     </div>
   </div>
 </div>
-
 
 <script>/* CYBER CALC // SCIENTIFIC CALCULATOR - isolated state */
 (function(){
@@ -2727,8 +2681,6 @@ function renderHousehold(){
   };
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){const overlay=getOverlay(); const fn=document.getElementById('ccFunctionOverlay'); if(overlay&&overlay.classList.contains('cc-open'))closeScientificCalculator(); else if(fn&&fn.classList.contains('cc-open'))closeFunctionMenu();}});})();</script>
 
-<!-- CYBER CALC // UNIT CONVERTER (isolated overlay; hidden until opened) -->
-
 <div id="ccSciOverlay" aria-hidden="true" onclick="if(event.target===this)closeScientificCalculator()">
   <div id="ccSciPanel" role="dialog" aria-modal="true" aria-labelledby="ccSciTitle">
     <div class="cc-sci-head"><div class="cc-sci-title" id="ccSciTitle">SCIENTIFIC CALC</div><button class="cc-sci-close" type="button" onclick="closeScientificCalculator()">CLOSE</button></div>
@@ -2743,7 +2695,7 @@ function renderHousehold(){
       <button onclick="sciInput('4')">4</button><button onclick="sciInput('5')">5</button><button onclick="sciInput('6')">6</button><button onclick="sciInput('-')">−</button>
       <button onclick="sciInput('1')">1</button><button onclick="sciInput('2')">2</button><button onclick="sciInput('3')">3</button><button onclick="sciInput('+')">＋</button>
       <button onclick="sciInput('0')">0</button><button onclick="sciInput('00')">00</button><button onclick="sciInput('000')">000</button><button onclick="sciBackspace()">⌫</button>
-      <button class="wide cc-sci-clear" onclick="sciClear()">C</button><button class="eq" onclick="sciCalculate()">＝</button>
+      <button class="wide" onclick="sciClear()">C</button><button class="eq" onclick="sciCalculate()">＝</button>
     </div>
     <div class="cc-sci-note">sin / cos / tan は DEGREE（度）モード。x²、√、xʸ、π、e、ln、log に対応。</div>
   </div>
@@ -2768,7 +2720,6 @@ function renderHousehold(){
     </div>
   </div>
 </div>
-
 
 <script>
 /* CYBER CALC // FUNCTION MENU + RESULT COPY */
